@@ -137,11 +137,11 @@
     
     /* Dynamic height constraints based on visible sections */
     .app.has-metrics .accordion[data-open="true"] {
-      max-height: calc(100% - 60px); /* Reserve space for one collapsed section */
+      max-height: calc(100% - 80px); /* Reserve space for metrics bar */
     }
     
     .app.has-queue .accordion[data-open="true"] {
-      max-height: calc(100% - 120px); /* Reserve space for two collapsed sections */
+      max-height: calc(100% - 140px); /* Reserve space for metrics bar + one collapsed section */
     }
     
     .acc-toggle{
@@ -177,11 +177,52 @@
     
     .acc-toggle .right{font-weight:700; font-size:16px;}
 
-    .metrics-inline{display:flex; gap:6px; overflow:hidden; max-width:70%;}
-    .metric{display:flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:var(--surface-2); border:1px solid var(--divider); font-size:11px;}
-    .metric .k{font-weight:700;}
-    .metric .l{color:var(--muted);}
-    .metrics-vertical{display:flex; flex-direction:column; gap:8px; padding:10px;}
+    /* Fixed metrics bar at top */
+    .metrics-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.6s ease;
+    }
+    
+    .metrics-bar.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .metric-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      min-height: 44px;
+      text-align: center;
+    }
+    
+    .metric-box .value {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    
+    .metric-box .label {
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1;
+    }
 
     .feed-item,.task{border-radius:var(--radius-lg); background:var(--surface-2); border:1px solid var(--divider); padding:10px; margin-bottom: 8px;}
     .feed-item:last-child,.task:last-child{margin-bottom: 0;}
@@ -281,21 +322,10 @@
 
   <div class="app" id="app">
 
-    <!-- Metrics Accordion -->
-    <section class="accordion" id="metrics" data-open="false" style="display: none;">
-      <div class="acc-toggle">
-        <span>Metrics</span>
-        <div class="metrics-inline" id="metrics-inline">
-          <!-- Will be populated by JavaScript -->
-        </div>
-        <span class="right">+</span>
-      </div>
-      <div class="acc-body">
-        <div class="metrics-vertical" id="metrics-vertical">
-          <!-- Will be populated by JavaScript -->
-        </div>
-      </div>
-    </section>
+    <!-- Fixed Metrics Bar -->
+    <div class="metrics-bar" id="metrics-bar" style="display: none;">
+      <!-- Will be populated by JavaScript -->
+    </div>
 
     <!-- Live Feed Accordion (default open) -->
     <section class="accordion" id="feed" data-open="true">
@@ -355,17 +385,14 @@
     }
     
     function renderMetrics(metrics) {
-      const inlineContainer = document.getElementById('metrics-inline');
-      const verticalContainer = document.getElementById('metrics-vertical');
+      const metricsBar = document.getElementById('metrics-bar');
       
-      // Show first 3 metrics inline
-      inlineContainer.innerHTML = metrics.slice(0, 3).map(m => 
-        `<div class="metric"><span class="k">${m.key}</span><span class="l">${m.label}</span></div>`
-      ).join('');
-      
-      // Show all metrics in expanded view
-      verticalContainer.innerHTML = metrics.map(m => 
-        `<div class="metric"><span class="k">${m.key}</span><span class="l">${m.label}</span></div>`
+      // Render all metrics as boxes
+      metricsBar.innerHTML = metrics.map(m => 
+        `<div class="metric-box">
+          <div class="value">${m.key}</div>
+          <div class="label">${m.label}</div>
+        </div>`
       ).join('');
     }
     
@@ -685,7 +712,7 @@
       const onboarding = document.getElementById('onboarding');
       const app = document.getElementById('app');
       const nav = document.getElementById('nav');
-      const metricsSection = document.getElementById('metrics');
+      const metricsBar = document.getElementById('metrics-bar');
       const feedSection = document.getElementById('feed');
       const queueSection = document.getElementById('queue');
       
@@ -707,12 +734,12 @@
           initApp();
         }, 600);
         
-        // Show Metrics section after 5 seconds
+        // Show Metrics bar after 5 seconds
         setTimeout(() => {
           app.classList.add('has-metrics');
-          metricsSection.style.display = 'flex';
+          metricsBar.style.display = 'flex';
           setTimeout(() => {
-            metricsSection.classList.add('visible');
+            metricsBar.classList.add('visible');
           }, 50);
         }, 5600);
         
