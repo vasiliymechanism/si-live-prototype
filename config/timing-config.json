@@ -1,0 +1,22 @@
+{
+  "onboarding": {
+    "fadeOutDuration": 400,
+    "appRevealDelay": 600,
+    "feedSectionDelay": 600
+  },
+  "uiReveal": {
+    "queueSectionDelay": 5600,
+    "metricsAndNavDelay": 10600,
+    "staggerDelay": 50
+  },
+  "simulation": {
+    "initialSearchDelay": 3000,
+    "stateTransitionMin": 500,
+    "stateTransitionMax": 1500,
+    "searchingDurationMin": 2000,
+    "searchingDurationMax": 4000,
+    "terminalStateNextSearchMin": 1000,
+    "terminalStateNextSearchMax": 2000,
+    "simulationResetDelay": 10000
+  }
+}

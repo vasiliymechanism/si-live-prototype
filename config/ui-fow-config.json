@@ -1,0 +1,37 @@
+{
+  "revealSequence": [
+    {
+      "step": "feedSection",
+      "delay": 0,
+      "dependencies": ["onboardingComplete"],
+      "effects": ["showFeedSection", "startSimulation"]
+    },
+    {
+      "step": "queueSection",
+      "delay": 5000,
+      "dependencies": ["feedSection"],
+      "effects": [
+        "showQueueSection", 
+        "addHasQueueClass", 
+        "addWithNavClass", 
+        "showNavPlaceholder"
+      ]
+    },
+    {
+      "step": "metricsAndNav",
+      "delay": 5000,
+      "dependencies": ["queueSection"],
+      "effects": [
+        "showMetricsBar", 
+        "showNavigation", 
+        "hideNavPlaceholder", 
+        "addHasMetricsClass"
+      ]
+    }
+  ],
+  "conditions": {
+    "minScholarshipsBeforeQueue": 2,
+    "minSubmittedBeforeMetrics": 1,
+    "enableEarlyNavIfUserInteracts": true
+  }
+}

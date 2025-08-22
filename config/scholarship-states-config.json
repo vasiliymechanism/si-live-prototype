@@ -1,0 +1,153 @@
+{
+  "states": {
+    "SCANNING": {
+      "progress": 5,
+      "label": "Scanning scholarship database",
+      "type": "normal",
+      "icon": "🔍",
+      "duration": { "min": 800, "max": 1200 }
+    },
+    "CHECKING_DEADLINE": {
+      "progress": 15,
+      "label": "Checking application deadline",
+      "type": "normal",
+      "icon": "📅",
+      "duration": { "min": 600, "max": 1000 }
+    },
+    "VERIFYING_TRANSCRIPTS": {
+      "progress": 25,
+      "label": "Verifying academic transcripts",
+      "type": "normal",
+      "icon": "📋",
+      "duration": { "min": 1000, "max": 1500 }
+    },
+    "CHECKING_ELIGIBILITY": {
+      "progress": 35,
+      "label": "Verifying eligibility requirements",
+      "type": "normal",
+      "icon": "✅",
+      "duration": { "min": 800, "max": 1200 }
+    },
+    "AI_ANALYZING_FIT": {
+      "progress": 45,
+      "label": "AI analyzing scholarship fit",
+      "type": "normal",
+      "icon": "🤖",
+      "duration": { "min": 1200, "max": 1800 }
+    },
+    "MATCH_FOUND": {
+      "progress": 55,
+      "label": "Match found! Proceeding with application",
+      "type": "success",
+      "icon": "🎯",
+      "duration": { "min": 500, "max": 800 }
+    },
+    "GETTING_REQUIREMENTS": {
+      "progress": 65,
+      "label": "Gathering application requirements",
+      "type": "normal",
+      "icon": "📝",
+      "duration": { "min": 800, "max": 1200 }
+    },
+    "PREPARING_MATERIALS": {
+      "progress": 75,
+      "label": "Preparing application materials",
+      "type": "normal",
+      "icon": "📄",
+      "duration": { "min": 1000, "max": 1500 }
+    },
+    "GENERATING_ESSAY": {
+      "progress": 85,
+      "label": "AI generating personalized essay",
+      "type": "normal",
+      "icon": "✍️",
+      "duration": { "min": 2000, "max": 3000 }
+    },
+    "FINALIZING_APPLICATION": {
+      "progress": 95,
+      "label": "Finalizing application package",
+      "type": "normal",
+      "icon": "📦",
+      "duration": { "min": 800, "max": 1200 }
+    },
+    "READY_TO_SUBMIT": {
+      "progress": 100,
+      "label": "Application ready for submission",
+      "type": "success",
+      "icon": "🚀",
+      "duration": { "min": 500, "max": 1000 }
+    },
+    "SUBMITTED": {
+      "progress": 100,
+      "label": "Application submitted successfully",
+      "type": "success",
+      "icon": "✨",
+      "duration": null
+    },
+    "DEADLINE_PASSED": {
+      "progress": 15,
+      "label": "Deadline has passed",
+      "type": "failed",
+      "icon": "⏰",
+      "duration": null
+    },
+    "NOT_ELIGIBLE": {
+      "progress": 35,
+      "label": "Not eligible for this scholarship",
+      "type": "failed",
+      "icon": "❌",
+      "duration": null
+    },
+    "ACTION_REQUIRED_MATERIALS": {
+      "progress": 75,
+      "label": "Action required: Upload documents",
+      "type": "caution",
+      "icon": "⚠️",
+      "duration": null
+    },
+    "ACTION_REQUIRED_ESSAY": {
+      "progress": 85,
+      "label": "Action required: Review essay",
+      "type": "caution",
+      "icon": "⚠️",
+      "duration": null
+    }
+  },
+  "transitions": {
+    "SCANNING": { "CHECKING_DEADLINE": 1.0 },
+    "CHECKING_DEADLINE": { 
+      "VERIFYING_TRANSCRIPTS": 0.75, 
+      "DEADLINE_PASSED": 0.25 
+    },
+    "VERIFYING_TRANSCRIPTS": { "CHECKING_ELIGIBILITY": 1.0 },
+    "CHECKING_ELIGIBILITY": { 
+      "AI_ANALYZING_FIT": 0.65, 
+      "NOT_ELIGIBLE": 0.35 
+    },
+    "AI_ANALYZING_FIT": { "MATCH_FOUND": 1.0 },
+    "MATCH_FOUND": { "GETTING_REQUIREMENTS": 1.0 },
+    "GETTING_REQUIREMENTS": { "PREPARING_MATERIALS": 1.0 },
+    "PREPARING_MATERIALS": { 
+      "ACTION_REQUIRED_MATERIALS": 0.3, 
+      "GENERATING_ESSAY": 0.7 
+    },
+    "ACTION_REQUIRED_MATERIALS": { "GENERATING_ESSAY": 1.0 },
+    "GENERATING_ESSAY": { 
+      "ACTION_REQUIRED_ESSAY": 0.4, 
+      "FINALIZING_APPLICATION": 0.6 
+    },
+    "ACTION_REQUIRED_ESSAY": { "FINALIZING_APPLICATION": 1.0 },
+    "FINALIZING_APPLICATION": { 
+      "READY_TO_SUBMIT": 0.6, 
+      "SUBMITTED": 0.4 
+    },
+    "READY_TO_SUBMIT": { "SUBMITTED": 1.0 }
+  },
+  "terminalStates": [
+    "DEADLINE_PASSED", 
+    "NOT_ELIGIBLE", 
+    "ACTION_REQUIRED_MATERIALS", 
+    "ACTION_REQUIRED_ESSAY", 
+    "SUBMITTED"
+  ]
+}

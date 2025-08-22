@@ -1,32 +1,62 @@
 [
   {
     "name": "STEM Stars Scholarship",
-    "progress": 62,
-    "isOlder": false
+    "amount": 5000,
+    "estimatedTimeToComplete": 120,
+    "deadline": "2025-03-15"
   },
   {
     "name": "Emerging Leaders Essay Award",
-    "progress": 28,
-    "isOlder": false
+    "amount": 3000,
+    "estimatedTimeToComplete": 90,
+    "deadline": "2025-04-01"
   },
   {
     "name": "Community Builder Grant",
-    "progress": 100,
-    "isOlder": false
+    "amount": 2500,
+    "estimatedTimeToComplete": 60,
+    "deadline": "2025-02-28"
   },
   {
     "name": "Local Community Service Award",
-    "progress": 100,
-    "isOlder": true
+    "amount": 1500,
+    "estimatedTimeToComplete": 45,
+    "deadline": "2025-01-30"
   },
   {
     "name": "Innovation Challenge Grant",
-    "progress": 45,
-    "isOlder": false
+    "amount": 7500,
+    "estimatedTimeToComplete": 180,
+    "deadline": "2025-05-15"
   },
   {
     "name": "Academic Excellence Award",
-    "progress": 78,
-    "isOlder": false
+    "amount": 4000,
+    "estimatedTimeToComplete": 100,
+    "deadline": "2025-03-30"
+  },
+  {
+    "name": "Future Leaders Engineering Grant",
+    "amount": 6000,
+    "estimatedTimeToComplete": 150,
+    "deadline": "2025-04-15"
+  },
+  {
+    "name": "Women in Tech Scholarship",
+    "amount": 3500,
+    "estimatedTimeToComplete": 110,
+    "deadline": "2025-03-01"
+  },
+  {
+    "name": "Environmental Science Fellowship",
+    "amount": 8000,
+    "estimatedTimeToComplete": 200,
+    "deadline": "2025-06-01"
+  },
+  {
+    "name": "First Generation College Grant",
+    "amount": 2000,
+    "estimatedTimeToComplete": 75,
+    "deadline": "2025-02-15"
   }
 ]

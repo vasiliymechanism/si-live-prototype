@@ -1,0 +1,81 @@
+{
+  "metrics": [
+    {
+      "key": "timeSaved",
+      "label": "saved",
+      "format": "duration",
+      "calculation": {
+        "type": "sum",
+        "source": "scholarships",
+        "field": "estimatedTimeToComplete",
+        "filter": { 
+          "currentState": [
+            "SUBMITTED", 
+            "READY_TO_SUBMIT",
+            "FINALIZING_APPLICATION"
+          ] 
+        }
+      }
+    },
+    {
+      "key": "totalApplied",
+      "label": "applied",
+      "format": "currency",
+      "calculation": {
+        "type": "sum",
+        "source": "scholarships",
+        "field": "amount",
+        "filter": { 
+          "currentState": ["SUBMITTED"] 
+        }
+      }
+    },
+    {
+      "key": "matchesFound",
+      "label": "matches",
+      "format": "number",
+      "calculation": {
+        "type": "count",
+        "source": "scholarships",
+        "filter": { 
+          "currentState": [
+            "MATCH_FOUND", 
+            "GETTING_REQUIREMENTS", 
+            "PREPARING_MATERIALS", 
+            "GENERATING_ESSAY", 
+            "FINALIZING_APPLICATION", 
+            "READY_TO_SUBMIT", 
+            "SUBMITTED"
+          ] 
+        }
+      }
+    },
+    {
+      "key": "submitted",
+      "label": "submitted",
+      "format": "number",
+      "calculation": {
+        "type": "count",
+        "source": "scholarships",
+        "filter": { 
+          "currentState": ["SUBMITTED"] 
+        }
+      }
+    },
+    {
+      "key": "actionRequired",
+      "label": "blocked",
+      "format": "number",
+      "calculation": {
+        "type": "count",
+        "source": "scholarships",
+        "filter": { 
+          "currentState": [
+            "ACTION_REQUIRED_MATERIALS", 
+            "ACTION_REQUIRED_ESSAY"
+          ] 
+        }
+      }
+    }
+  ]
+}
