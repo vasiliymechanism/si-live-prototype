@@ -12,8 +12,61 @@
       --radius-xl:16px; --radius-lg:12px;
     }
     body{margin:0; font-family:ui-sans-serif,system-ui; background:var(--bg); color:var(--text); overflow:hidden;}
+    
+    /* Onboarding styles */
+    .onboarding {
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .start-button {
+      background: linear-gradient(135deg, var(--primary), #7aa2ff);
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      min-width: 280px;
+    }
+    
+    .start-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(76, 130, 255, 0.3);
+    }
+    
+    .start-button:active {
+      transform: translateY(0);
+    }
+    
+    .onboarding-text {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    
+    .onboarding-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 300px;
+      line-height: 1.4;
+    }
+    
+    /* App container - hidden initially, no bottom padding until nav appears */
     .app{
-      height:calc(100dvh - 74px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); 
+      height:100dvh;
       max-width:420px; 
       margin:0 auto; 
       padding:calc(8px + env(safe-area-inset-top)) 12px 8px; 
@@ -21,6 +74,42 @@
       flex-direction:column; 
       gap:10px;
       overflow:hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+    
+    .app.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .app.with-nav {
+      height: calc(100dvh - 74px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      transition: height 0.6s ease;
+    }
+    
+    /* Navigation - hidden initially */
+    .nav{
+      position:fixed; 
+      bottom:calc(10px + env(safe-area-inset-bottom)); 
+      left:50%; 
+      transform:translateX(-50%) translateY(100px); 
+      width:min(420px,92%); 
+      display:flex; 
+      justify-content:space-around; 
+      background:var(--surface); 
+      border:1px solid var(--divider); 
+      border-radius:14px; 
+      box-shadow:var(--shadow); 
+      padding:8px;
+      opacity: 0;
+      transition: all 0.6s ease 0.3s;
+    }
+    
+    .nav.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .accordion{
@@ -42,7 +131,17 @@
     
     .accordion[data-open="true"] {
       flex: 1 1 0; /* Grow to fill space, but respect max constraints */
-      max-height: calc(100% - 120px); /* Reserve space for other collapsed sections */
+      max-height: none; /* Remove fixed constraint initially */
+      transition: all 0.6s ease;
+    }
+    
+    /* Dynamic height constraints based on visible sections */
+    .app.has-metrics .accordion[data-open="true"] {
+      max-height: calc(100% - 60px); /* Reserve space for one collapsed section */
+    }
+    
+    .app.has-queue .accordion[data-open="true"] {
+      max-height: calc(100% - 120px); /* Reserve space for two collapsed sections */
     }
     
     .acc-toggle{
@@ -174,10 +273,16 @@
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="onboarding" id="onboarding">
+    <div class="onboarding-text">Find Your Perfect Scholarships</div>
+    <div class="onboarding-subtitle">Our AI will scan thousands of scholarships and automatically match you with the best opportunities</div>
+    <button class="start-button" onclick="startApp()">Start matching me to scholarships</button>
+  </div>
+
+  <div class="app" id="app">
 
     <!-- Metrics Accordion -->
-    <section class="accordion" id="metrics" data-open="false">
+    <section class="accordion" id="metrics" data-open="false" style="display: none;">
       <div class="acc-toggle">
         <span>Metrics</span>
         <div class="metrics-inline" id="metrics-inline">
@@ -209,7 +314,7 @@
     </section>
 
     <!-- Action Required Accordion -->
-    <section class="accordion" id="queue" data-open="false">
+    <section class="accordion" id="queue" data-open="false" style="display: none;">
       <div class="acc-toggle">
         <div>
           <span class="title">Action Required</span><br>
@@ -225,7 +330,7 @@
     </section>
 
   </div>
-  <nav class="nav"><a class="active" href="#">Home</a><a href="#">Queue</a><a href="#">Metrics</a><a href="#">Account</a></nav>
+  <nav class="nav" id="nav"><a class="active" href="#">Home</a><a href="#">Queue</a><a href="#">Metrics</a><a href="#">Account</a></nav>
   <script>
     // Data loading and rendering functions
     const API_BASE = './data/'; // For local files, change to your API endpoint later
@@ -338,17 +443,29 @@
       ).join('');
     }
     
+    // Initialize state configuration and start simulation
+    async function initLiveSimulation() {
+      await loadStateConfig();
+      
+      // Start live updates 3 seconds after feed becomes visible
+      setTimeout(() => {
+        showSearchingIndicator();
+      }, 3000);
+    }
+    
     // Initialize app
     async function initApp() {
       await Promise.all([
         loadMetrics(),
-        loadFeed(),
-        loadTasks()
+        loadTasks() // Load tasks but don't render feed until live simulation takes over
       ]);
       
       // Start live simulation after initial load
       await initLiveSimulation();
     }
+    
+    // Don't auto-initialize on page load anymore
+    // App starts when user clicks the start button
     
     // Accordion functionality
     document.querySelectorAll('.accordion').forEach(acc => {
@@ -360,8 +477,8 @@
       });
     });
     
-    // Load data when page loads
-    document.addEventListener('DOMContentLoaded', initApp);
+    // Load data when user starts the app, not on page load
+    // document.addEventListener('DOMContentLoaded', initApp);
     
     // Live feed simulation with search states
     let feedData = [];
@@ -558,14 +675,60 @@
       }
     }
     
-    // Initialize state configuration and start simulation
-    async function initLiveSimulation() {
-      await loadStateConfig();
+    // App initialization and onboarding
+    let appInitialized = false;
+    
+    function startApp() {
+      if (appInitialized) return;
+      appInitialized = true;
       
-      // Start live updates 3 seconds after page load
+      const onboarding = document.getElementById('onboarding');
+      const app = document.getElementById('app');
+      const nav = document.getElementById('nav');
+      const metricsSection = document.getElementById('metrics');
+      const feedSection = document.getElementById('feed');
+      const queueSection = document.getElementById('queue');
+      
+      // Hide onboarding screen
+      onboarding.style.opacity = '0';
+      onboarding.style.transform = 'translateY(-20px)';
+      
       setTimeout(() => {
-        showSearchingIndicator();
-      }, 3000);
+        onboarding.style.display = 'none';
+        
+        // Show app container
+        app.classList.add('visible');
+        
+        // Show Live Feed first (takes full space)
+        setTimeout(() => {
+          feedSection.classList.add('visible');
+          
+          // Initialize data loading and start live simulation
+          initApp();
+        }, 600);
+        
+        // Show Metrics section after 5 seconds
+        setTimeout(() => {
+          app.classList.add('has-metrics');
+          metricsSection.style.display = 'flex';
+          setTimeout(() => {
+            metricsSection.classList.add('visible');
+          }, 50);
+        }, 5600);
+        
+        // Show Action Required section and navigation after 10 seconds total
+        setTimeout(() => {
+          app.classList.add('has-queue');
+          app.classList.add('with-nav');
+          
+          queueSection.style.display = 'flex';
+          setTimeout(() => {
+            queueSection.classList.add('visible');
+            nav.classList.add('visible');
+          }, 50);
+        }, 10600);
+        
+      }, 400);
     }
     
     // Optional: Auto-refresh static data every 30 seconds
