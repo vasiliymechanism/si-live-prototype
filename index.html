@@ -89,7 +89,7 @@
       transition: height 0.6s ease;
     }
     
-    /* Navigation - hidden initially */
+    /* Navigation - hidden initially with pointer-events disabled */
     .nav{
       position:fixed; 
       bottom:calc(10px + env(safe-area-inset-bottom)); 
@@ -105,11 +105,32 @@
       padding:8px;
       opacity: 0;
       transition: all 0.6s ease 0.3s;
+      pointer-events: none; /* Prevent clicks when hidden */
     }
     
     .nav.visible {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
+      pointer-events: auto; /* Re-enable clicks when visible */
+    }
+    
+    /* Tab placeholder - same styling but not interactive */
+    .nav-placeholder {
+      position: fixed;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(420px, 92%);
+      height: 58px; /* Same height as real nav */
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      border-radius: 14px;
+      opacity: 0.3;
+      display: none;
+    }
+    
+    .nav-placeholder.visible {
+      display: block;
     }
 
     .accordion{
@@ -136,11 +157,11 @@
     }
     
     /* Dynamic height constraints based on visible sections */
-    .app.has-metrics .accordion[data-open="true"] {
-      max-height: calc(100% - 80px); /* Reserve space for metrics bar */
+    .app.has-queue .accordion[data-open="true"] {
+      max-height: calc(100% - 60px); /* Reserve space for one collapsed section */
     }
     
-    .app.has-queue .accordion[data-open="true"] {
+    .app.has-metrics .accordion[data-open="true"] {
       max-height: calc(100% - 140px); /* Reserve space for metrics bar + one collapsed section */
     }
     
@@ -175,11 +196,17 @@
       height: 0; /* Force content to be constrained by flex */
     }
     
+    .acc-toggle .title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
     .acc-toggle .right{font-weight:700; font-size:16px;}
 
     /* Fixed metrics bar at top */
     .metrics-bar {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       padding: 12px;
       background: var(--surface);
@@ -195,6 +222,18 @@
     .metrics-bar.visible {
       opacity: 1;
       transform: translateY(0);
+    }
+    
+    .metrics-header {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .metrics-grid {
+      display: flex;
+      gap: 8px;
     }
     
     .metric-box {
@@ -324,15 +363,18 @@
 
     <!-- Fixed Metrics Bar -->
     <div class="metrics-bar" id="metrics-bar" style="display: none;">
-      <!-- Will be populated by JavaScript -->
+      <div class="metrics-header">Your Stats</div>
+      <div class="metrics-grid" id="metrics-grid">
+        <!-- Will be populated by JavaScript -->
+      </div>
     </div>
 
     <!-- Live Feed Accordion (default open) -->
     <section class="accordion" id="feed" data-open="true">
       <div class="acc-toggle">
         <div>
-          <span class="title">Live Feed</span><br>
-          <span class="subtitle">Real-time progress</span>
+          <span class="title">Your Progress</span><br>
+          <span class="subtitle">Live feed</span>
         </div>
         <span class="right">−</span>
       </div>
@@ -348,7 +390,7 @@
       <div class="acc-toggle">
         <div>
           <span class="title">Action Required</span><br>
-          <span class="subtitle">Tasks blocking apps</span>
+          <span class="subtitle">Unlock more scholarships</span>
         </div>
         <span class="right">+</span>
       </div>
@@ -360,7 +402,12 @@
     </section>
 
   </div>
-  <nav class="nav" id="nav"><a class="active" href="#">Home</a><a href="#">Queue</a><a href="#">Metrics</a><a href="#">Account</a></nav>
+  
+  <!-- Tab placeholder for visual layout -->
+  <div class="nav-placeholder" id="nav-placeholder"></div>
+  
+  <!-- Actual navigation -->
+  <nav class="nav" id="nav"><a class="active" href="#">Home</a><a href="#">To-Do</a><a href="#">Stats</a><a href="#">Account</a></nav>
   <script>
     // Data loading and rendering functions
     const API_BASE = './data/'; // For local files, change to your API endpoint later
@@ -385,10 +432,10 @@
     }
     
     function renderMetrics(metrics) {
-      const metricsBar = document.getElementById('metrics-bar');
+      const metricsGrid = document.getElementById('metrics-grid');
       
       // Render all metrics as boxes
-      metricsBar.innerHTML = metrics.map(m => 
+      metricsGrid.innerHTML = metrics.map(m => 
         `<div class="metric-box">
           <div class="value">${m.key}</div>
           <div class="label">${m.label}</div>
@@ -712,6 +759,7 @@
       const onboarding = document.getElementById('onboarding');
       const app = document.getElementById('app');
       const nav = document.getElementById('nav');
+      const navPlaceholder = document.getElementById('nav-placeholder');
       const metricsBar = document.getElementById('metrics-bar');
       const feedSection = document.getElementById('feed');
       const queueSection = document.getElementById('queue');
@@ -734,23 +782,26 @@
           initApp();
         }, 600);
         
-        // Show Metrics bar after 5 seconds
-        setTimeout(() => {
-          app.classList.add('has-metrics');
-          metricsBar.style.display = 'flex';
-          setTimeout(() => {
-            metricsBar.classList.add('visible');
-          }, 50);
-        }, 5600);
-        
-        // Show Action Required section and navigation after 10 seconds total
+        // Show Action Required section after 5 seconds
         setTimeout(() => {
           app.classList.add('has-queue');
-          app.classList.add('with-nav');
+          app.classList.add('with-nav'); // Reserve space for tabs immediately
+          navPlaceholder.classList.add('visible'); // Show placeholder
           
           queueSection.style.display = 'flex';
           setTimeout(() => {
             queueSection.classList.add('visible');
+          }, 50);
+        }, 5600);
+        
+        // Show Metrics bar and Navigation together after 10 seconds total
+        setTimeout(() => {
+          app.classList.add('has-metrics');
+          
+          metricsBar.style.display = 'flex';
+          navPlaceholder.classList.remove('visible'); // Hide placeholder
+          setTimeout(() => {
+            metricsBar.classList.add('visible');
             nav.classList.add('visible');
           }, 50);
         }, 10600);
