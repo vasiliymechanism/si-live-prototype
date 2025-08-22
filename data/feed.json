@@ -1,0 +1,32 @@
+[
+  {
+    "name": "STEM Stars Scholarship",
+    "progress": 62,
+    "isOlder": false
+  },
+  {
+    "name": "Emerging Leaders Essay Award",
+    "progress": 28,
+    "isOlder": false
+  },
+  {
+    "name": "Community Builder Grant",
+    "progress": 100,
+    "isOlder": false
+  },
+  {
+    "name": "Local Community Service Award",
+    "progress": 100,
+    "isOlder": true
+  },
+  {
+    "name": "Innovation Challenge Grant",
+    "progress": 45,
+    "isOlder": false
+  },
+  {
+    "name": "Academic Excellence Award",
+    "progress": 78,
+    "isOlder": false
+  }
+]

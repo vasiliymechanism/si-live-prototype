@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Scholarship Tracker — Mobile Mockup (2025)</title>
+  <style>
+    :root{
+      --bg: #0b0d12; --surface: #11141b; --surface-2:#151924; --text:#e9ecf5;
+      --muted:#9aa3b2; --primary:#4c82ff; --good:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --divider:rgba(255,255,255,0.07); --shadow:0 8px 28px rgba(0,0,0,0.35);
+      --radius-xl:16px; --radius-lg:12px;
+    }
+    body{margin:0; font-family:ui-sans-serif,system-ui; background:var(--bg); color:var(--text); overflow:hidden;}
+    .app{
+      height:100dvh; 
+      max-width:420px; 
+      margin:0 auto; 
+      padding:calc(8px + env(safe-area-inset-top)) 12px calc(74px + env(safe-area-inset-bottom)); 
+      display:flex; 
+      flex-direction:column; 
+      gap:10px;
+      overflow:hidden;
+    }
+
+    .accordion{
+      border-radius:var(--radius-xl); 
+      background:var(--surface); 
+      border:1px solid var(--divider); 
+      box-shadow:var(--shadow); 
+      overflow:hidden; 
+      cursor:pointer;
+      transition: flex-grow 0.35s ease;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .accordion[data-open="false"] {
+      flex-grow: 0;
+    }
+    
+    .accordion[data-open="true"] {
+      flex-grow: 1;
+    }
+    
+    .acc-toggle{
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      padding:12px; 
+      user-select:none;
+      flex-shrink: 0;
+    }
+    
+    .acc-body{
+      overflow:hidden; 
+      transition:all .35s ease; 
+      border-top:1px solid var(--divider);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .accordion[data-open="false"] .acc-body{
+      max-height: 0;
+      border-top: none;
+    }
+    
+    .accordion[data-open="true"] .acc-body{
+      max-height: 100%;
+      overflow: auto;
+    }
+    
+    .acc-toggle .right{font-weight:700; font-size:16px;}
+
+    .metrics-inline{display:flex; gap:6px; overflow:hidden; max-width:70%;}
+    .metric{display:flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:var(--surface-2); border:1px solid var(--divider); font-size:11px;}
+    .metric .k{font-weight:700;}
+    .metric .l{color:var(--muted);}
+    .metrics-vertical{display:flex; flex-direction:column; gap:8px; padding:10px;}
+
+    .feed-item,.task{border-radius:var(--radius-lg); background:var(--surface-2); border:1px solid var(--divider); padding:10px; margin-bottom: 8px;}
+    .feed-item:last-child,.task:last-child{margin-bottom: 0;}
+    .fi-top{display:flex; justify-content:space-between; font-size:14px; font-weight:600;}
+    .bar{height:8px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:4px;}
+    .bar .fill{height:100%; background:linear-gradient(90deg,var(--primary),#7aa2ff); width:var(--w,0%);}
+    .pill-mini{font-size:10px; padding:2px 6px; border-radius:999px; border:1px solid var(--divider);}
+    .older{opacity:0.65;}
+
+    .btn{border:1px solid var(--divider); background:transparent; color:var(--text); border-radius:10px; padding:6px 10px; font-size:12px;}
+    .btn.primary{background:var(--primary); border-color:transparent; color:#fff;}
+    .actions{display:flex; gap:8px; margin-top:6px;}
+
+    .nav{position:fixed; bottom:calc(10px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(420px,92%); display:flex; justify-content:space-around; background:var(--surface); border:1px solid var(--divider); border-radius:14px; box-shadow:var(--shadow); padding:8px;}
+    .nav a{flex:1; text-align:center; text-decoration:none; color:var(--muted); font-size:11px; padding:6px 0; border-radius:10px;}
+    .nav a.active{color:var(--text); background:var(--surface-2); border:1px solid var(--divider);}
+
+    /* Content containers with proper scrolling */
+    .feed-content, .queue-content {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    
+    .feed-content .feed-item, .queue-content .task {
+      margin-bottom: 8px;
+    }
+    
+    .feed-content .feed-item:last-child, .queue-content .task:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Metrics Accordion -->
+    <section class="accordion" id="metrics" data-open="false">
+      <div class="acc-toggle">
+        <span>Metrics</span>
+        <div class="metrics-inline" id="metrics-inline">
+          <!-- Will be populated by JavaScript -->
+        </div>
+        <span class="right">+</span>
+      </div>
+      <div class="acc-body">
+        <div class="metrics-vertical" id="metrics-vertical">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Feed Accordion (default open) -->
+    <section class="accordion" id="feed" data-open="true">
+      <div class="acc-toggle">
+        <div>
+          <span class="title">Live Feed</span><br>
+          <span class="subtitle">Real-time progress</span>
+        </div>
+        <span class="right">−</span>
+      </div>
+      <div class="acc-body">
+        <div class="feed-content" id="feed-content">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Required Accordion -->
+    <section class="accordion" id="queue" data-open="false">
+      <div class="acc-toggle">
+        <div>
+          <span class="title">Action Required</span><br>
+          <span class="subtitle">Tasks blocking apps</span>
+        </div>
+        <span class="right">+</span>
+      </div>
+      <div class="acc-body">
+        <div class="queue-content" id="queue-content">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <nav class="nav"><a class="active" href="#">Home</a><a href="#">Queue</a><a href="#">Metrics</a><a href="#">Account</a></nav>
+  <script>
+    // Data loading and rendering functions
+    const API_BASE = './data/'; // For local files, change to your API endpoint later
+    
+    // Load and render metrics
+    async function loadMetrics() {
+      try {
+        const response = await fetch(`${API_BASE}metrics.json`);
+        const metrics = await response.json();
+        renderMetrics(metrics);
+      } catch (error) {
+        console.error('Error loading metrics:', error);
+        // Fallback data
+        renderMetrics([
+          {key: "3h 45m", label: "saved"},
+          {key: "$124,500", label: "applied"},
+          {key: "37", label: "matches"},
+          {key: "12", label: "submitted"},
+          {key: "4", label: "blocked"}
+        ]);
+      }
+    }
+    
+    function renderMetrics(metrics) {
+      const inlineContainer = document.getElementById('metrics-inline');
+      const verticalContainer = document.getElementById('metrics-vertical');
+      
+      // Show first 3 metrics inline
+      inlineContainer.innerHTML = metrics.slice(0, 3).map(m => 
+        `<div class="metric"><span class="k">${m.key}</span><span class="l">${m.label}</span></div>`
+      ).join('');
+      
+      // Show all metrics in expanded view
+      verticalContainer.innerHTML = metrics.map(m => 
+        `<div class="metric"><span class="k">${m.key}</span><span class="l">${m.label}</span></div>`
+      ).join('');
+    }
+    
+    // Load and render feed items
+    async function loadFeed() {
+      try {
+        const response = await fetch(`${API_BASE}feed.json`);
+        const feed = await response.json();
+        renderFeed(feed);
+      } catch (error) {
+        console.error('Error loading feed:', error);
+        // Fallback data
+        renderFeed([
+          {name: "STEM Stars Scholarship", progress: 62, isOlder: false},
+          {name: "Emerging Leaders Essay Award", progress: 28, isOlder: false},
+          {name: "Community Builder Grant", progress: 100, isOlder: false},
+          {name: "Local Community Service Award", progress: 100, isOlder: true},
+          {name: "Innovation Challenge Grant", progress: 45, isOlder: false},
+          {name: "Academic Excellence Award", progress: 78, isOlder: false}
+        ]);
+      }
+    }
+    
+    function renderFeed(feedItems) {
+      const container = document.getElementById('feed-content');
+      container.innerHTML = feedItems.map(item => 
+        `<article class="feed-item ${item.isOlder ? 'older' : ''}">
+          <div class="fi-top">
+            <div>${item.name}</div>
+            <div class="pill-mini">${item.progress}%</div>
+          </div>
+          <div class="bar">
+            <div class="fill" style="--w:${item.progress}%"></div>
+          </div>
+        </article>`
+      ).join('');
+    }
+    
+    // Load and render tasks
+    async function loadTasks() {
+      try {
+        const response = await fetch(`${API_BASE}tasks.json`);
+        const tasks = await response.json();
+        renderTasks(tasks);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+        // Fallback data
+        renderTasks([
+          {name: "Upload transcript (PDF)", time: "5 min", primaryAction: "Start", secondaryAction: "Later"},
+          {name: "Polish leadership essay", time: "20 min", primaryAction: "Resume", secondaryAction: "Skip"},
+          {name: "Request recommendation letter", time: "2 min", primaryAction: "Start", secondaryAction: "Later"},
+          {name: "Complete financial aid form", time: "15 min", primaryAction: "Start", secondaryAction: "Later"}
+        ]);
+      }
+    }
+    
+    function renderTasks(tasks) {
+      const container = document.getElementById('queue-content');
+      container.innerHTML = tasks.map(task => 
+        `<article class="task">
+          <div class="fi-top">
+            <div>${task.name}</div>
+            <div class="pill-mini">${task.time}</div>
+          </div>
+          <div class="actions">
+            <button class="btn primary">${task.primaryAction}</button>
+            <button class="btn">${task.secondaryAction}</button>
+          </div>
+        </article>`
+      ).join('');
+    }
+    
+    // Initialize app
+    async function initApp() {
+      await Promise.all([
+        loadMetrics(),
+        loadFeed(),
+        loadTasks()
+      ]);
+    }
+    
+    // Accordion functionality
+    document.querySelectorAll('.accordion').forEach(acc => {
+      const toggle=acc.querySelector('.acc-toggle'); const icon=acc.querySelector('.right'); const body=acc.querySelector('.acc-body');
+      acc.addEventListener('click', e=>{
+        const open=acc.getAttribute('data-open')==='true';
+        document.querySelectorAll('.accordion').forEach(a=>{a.setAttribute('data-open','false'); a.querySelector('.right').textContent='+'; a.querySelector('.acc-body').setAttribute('aria-hidden','true');});
+        if(!open){acc.setAttribute('data-open','true'); if(icon) icon.textContent='−'; if(body) body.setAttribute('aria-hidden','false');} else {acc.setAttribute('data-open','false'); if(icon) icon.textContent='+'; if(body) body.setAttribute('aria-hidden','true');}
+      });
+    });
+    
+    // Load data when page loads
+    document.addEventListener('DOMContentLoaded', initApp);
+    
+    // Optional: Auto-refresh data every 30 seconds
+    setInterval(initApp, 30000);
+  </script>
+</body>
+</html>

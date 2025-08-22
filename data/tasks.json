@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Upload transcript (PDF)",
+    "time": "5 min",
+    "primaryAction": "Start",
+    "secondaryAction": "Later"
+  },
+  {
+    "name": "Polish leadership essay",
+    "time": "20 min",
+    "primaryAction": "Resume",
+    "secondaryAction": "Skip"
+  },
+  {
+    "name": "Request recommendation letter",
+    "time": "2 min",
+    "primaryAction": "Start",
+    "secondaryAction": "Later"
+  },
+  {
+    "name": "Complete financial aid form",
+    "time": "15 min",
+    "primaryAction": "Start",
+    "secondaryAction": "Later"
+  }
+]
