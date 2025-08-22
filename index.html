@@ -707,13 +707,60 @@
           initApp();
         }, 600);
         
-        // Show Metrics section after 5 seconds
+        // Show Metrics section after 5 seconds using FLIP technique
         setTimeout(() => {
+          const feedSection = document.getElementById('feed');
+          
+          // FIRST: Measure Live Feed's current position
+          const firstRect = feedSection.getBoundingClientRect();
+          
+          // LAST: Add Metrics to layout (this causes Live Feed to jump down)
           app.classList.add('has-metrics');
           metricsSection.style.display = 'flex';
-          setTimeout(() => {
+          
+          // Measure Live Feed's new position after layout change
+          const lastRect = feedSection.getBoundingClientRect();
+          
+          // INVERT: Calculate how much Live Feed moved and transform it back
+          const deltaY = firstRect.top - lastRect.top;
+          
+          // Apply invert transforms instantly (no transitions)
+          metricsSection.classList.add('flip-invert');
+          feedSection.classList.add('flip-invert');
+          
+          // Move Live Feed back to where it was
+          feedSection.style.transform = `translateY(${deltaY}px)`;
+          
+          // Start Metrics above its final position  
+          metricsSection.style.transform = `translateY(${deltaY - 80}px)`;
+          metricsSection.style.opacity = '0';
+          
+          // Force reflow to ensure transforms are applied
+          feedSection.offsetHeight;
+          
+          // PLAY: Animate everything to final positions
+          requestAnimationFrame(() => {
+            // Re-enable transitions
+            metricsSection.classList.remove('flip-invert');
+            metricsSection.classList.add('flip-play');
+            feedSection.classList.remove('flip-invert');
+            feedSection.classList.add('flip-play');
+            
+            // Animate to final positions
+            feedSection.style.transform = 'translateY(0)';
+            metricsSection.style.transform = 'translateY(0)';
+            metricsSection.style.opacity = '1';
             metricsSection.classList.add('visible');
-          }, 50);
+            
+            // Clean up after animation
+            setTimeout(() => {
+              metricsSection.classList.remove('flip-play');
+              feedSection.classList.remove('flip-play');
+              metricsSection.style.transform = '';
+              feedSection.style.transform = '';
+              metricsSection.style.opacity = '';
+            }, 600);
+          });
         }, 5600);
         
         // Show Action Required section and navigation after 10 seconds total
