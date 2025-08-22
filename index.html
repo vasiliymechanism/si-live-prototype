@@ -13,10 +13,10 @@
     }
     body{margin:0; font-family:ui-sans-serif,system-ui; background:var(--bg); color:var(--text); overflow:hidden;}
     .app{
-      height:100dvh; 
+      height:calc(100dvh - 74px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); 
       max-width:420px; 
       margin:0 auto; 
-      padding:calc(8px + env(safe-area-inset-top)) 12px calc(74px + env(safe-area-inset-bottom)); 
+      padding:calc(8px + env(safe-area-inset-top)) 12px 8px; 
       display:flex; 
       flex-direction:column; 
       gap:10px;
@@ -30,18 +30,19 @@
       box-shadow:var(--shadow); 
       overflow:hidden; 
       cursor:pointer;
-      transition: flex-grow 0.35s ease;
+      transition: all 0.35s ease;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
     }
     
     .accordion[data-open="false"] {
-      flex-grow: 0;
+      flex: 0 0 auto; /* Don't grow, don't shrink, auto height */
     }
     
     .accordion[data-open="true"] {
-      flex-grow: 1;
+      flex: 1 1 0; /* Grow to fill space, but respect max constraints */
+      max-height: calc(100% - 120px); /* Reserve space for other collapsed sections */
     }
     
     .acc-toggle{
@@ -54,22 +55,25 @@
     }
     
     .acc-body{
-      overflow:hidden; 
-      transition:all .35s ease; 
-      border-top:1px solid var(--divider);
-      flex-grow: 1;
+      overflow: hidden; 
+      transition: all .35s ease; 
+      border-top: 1px solid var(--divider);
       display: flex;
       flex-direction: column;
+      min-height: 0;
+      flex: 1 1 0; /* Take remaining space but don't exceed parent */
     }
     
     .accordion[data-open="false"] .acc-body{
       max-height: 0;
       border-top: none;
+      flex: 0 0 0;
     }
     
     .accordion[data-open="true"] .acc-body{
-      max-height: 100%;
-      overflow: auto;
+      flex: 1 1 0;
+      overflow: hidden;
+      height: 0; /* Force content to be constrained by flex */
     }
     
     .acc-toggle .right{font-weight:700; font-size:16px;}
@@ -208,18 +212,20 @@
       try {
         const response = await fetch(`${API_BASE}feed.json`);
         const feed = await response.json();
-        renderFeed(feed);
+        feedData = [...feed]; // Store in global variable for live updates
+        renderFeed(feedData);
       } catch (error) {
         console.error('Error loading feed:', error);
         // Fallback data
-        renderFeed([
+        feedData = [
           {name: "STEM Stars Scholarship", progress: 62, isOlder: false},
           {name: "Emerging Leaders Essay Award", progress: 28, isOlder: false},
           {name: "Community Builder Grant", progress: 100, isOlder: false},
           {name: "Local Community Service Award", progress: 100, isOlder: true},
           {name: "Innovation Challenge Grant", progress: 45, isOlder: false},
           {name: "Academic Excellence Award", progress: 78, isOlder: false}
-        ]);
+        ];
+        renderFeed(feedData);
       }
     }
     
@@ -294,8 +300,77 @@
     // Load data when page loads
     document.addEventListener('DOMContentLoaded', initApp);
     
-    // Optional: Auto-refresh data every 30 seconds
-    setInterval(initApp, 30000);
+    // Live feed simulation
+    let feedData = [];
+    let simulationIndex = 0;
+    
+    // Pool of realistic scholarship updates for simulation
+    const simulationUpdates = [
+      {name: "Future Leaders Engineering Grant", progress: 15, isOlder: false},
+      {name: "Women in Tech Scholarship", progress: 33, isOlder: false},
+      {name: "Community Impact Award", progress: 8, isOlder: false},
+      {name: "First Generation College Grant", progress: 67, isOlder: false},
+      {name: "Environmental Science Fellowship", progress: 42, isOlder: false},
+      {name: "Merit-Based Achievement Award", progress: 89, isOlder: false},
+      {name: "Research Excellence Grant", progress: 55, isOlder: false},
+      {name: "Local Business Scholarship", progress: 23, isOlder: false},
+      {name: "Arts & Culture Foundation Grant", progress: 76, isOlder: false},
+      {name: "Healthcare Heroes Scholarship", progress: 91, isOlder: false},
+      {name: "Innovation Challenge Award", progress: 12, isOlder: false},
+      {name: "Student Leadership Grant", progress: 58, isOlder: false}
+    ];
+    
+    function addLiveFeedUpdate() {
+      if (simulationIndex < simulationUpdates.length) {
+        const newItem = {...simulationUpdates[simulationIndex]};
+        
+        // Add some randomness to progress for realism
+        newItem.progress = Math.min(100, newItem.progress + Math.floor(Math.random() * 10));
+        
+        feedData.unshift(newItem); // Add to beginning of array
+        
+        // Mark older items as older after 6 items
+        if (feedData.length > 6) {
+          feedData.slice(6).forEach(item => item.isOlder = true);
+        }
+        
+        // Keep only last 10 items to prevent infinite growth
+        if (feedData.length > 10) {
+          feedData = feedData.slice(0, 10);
+        }
+        
+        renderFeed(feedData);
+        simulationIndex++;
+        
+        // Add visual highlight for new items and auto-scroll
+        const feedContainer = document.getElementById('feed-content');
+        const firstItem = feedContainer.querySelector('.feed-item');
+        if (firstItem) {
+          firstItem.style.transform = 'scale(1.02)';
+          firstItem.style.transition = 'transform 0.3s ease';
+          setTimeout(() => {
+            firstItem.style.transform = 'scale(1)';
+          }, 300);
+          
+          // Auto-scroll to top to show new item
+          feedContainer.scrollTop = 0;
+        }
+      } else {
+        // Reset simulation after all items are shown
+        setTimeout(() => {
+          simulationIndex = 0;
+          feedData = [];
+        }, 5000);
+      }
+    }
+    
+    // Start live updates 3 seconds after page load
+    setTimeout(() => {
+      setInterval(addLiveFeedUpdate, 2000);
+    }, 3000);
+    
+    // Optional: Auto-refresh static data every 30 seconds
+    // setInterval(initApp, 30000);
   </script>
 </body>
 </html>
