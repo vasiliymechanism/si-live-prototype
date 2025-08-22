@@ -111,6 +111,44 @@
       margin-bottom: 8px;
     }
     
+    .searching-indicator {
+      border-radius: var(--radius-lg);
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-style: italic;
+      color: var(--muted);
+      transition: all 0.3s ease;
+    }
+    
+    .searching-icon {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    .ellipsis {
+      display: inline-block;
+    }
+    
+    .ellipsis::after {
+      content: '';
+      animation: ellipsis 1.5s infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
     .feed-content .feed-item:last-child, .queue-content .task:last-child {
       margin-bottom: 0;
     }
@@ -300,9 +338,10 @@
     // Load data when page loads
     document.addEventListener('DOMContentLoaded', initApp);
     
-    // Live feed simulation
+    // Live feed simulation with search states
     let feedData = [];
     let simulationIndex = 0;
+    let isSearching = false;
     
     // Pool of realistic scholarship updates for simulation
     const simulationUpdates = [
@@ -320,53 +359,120 @@
       {name: "Student Leadership Grant", progress: 58, isOlder: false}
     ];
     
+    function showSearchingIndicator() {
+      const feedContainer = document.getElementById('feed-content');
+      
+      // Remove any existing searching indicator
+      const existingIndicator = feedContainer.querySelector('.searching-indicator');
+      if (existingIndicator) {
+        existingIndicator.remove();
+      }
+      
+      // Create and add searching indicator to the top
+      const searchingElement = document.createElement('div');
+      searchingElement.className = 'searching-indicator';
+      searchingElement.innerHTML = `
+        <div class="searching-icon"></div>
+        <span>Searching for new scholarships<span class="ellipsis"></span></span>
+      `;
+      
+      feedContainer.insertBefore(searchingElement, feedContainer.firstChild);
+      feedContainer.scrollTop = 0;
+      isSearching = true;
+    }
+    
+    function hideSearchingIndicator() {
+      const feedContainer = document.getElementById('feed-content');
+      const searchingIndicator = feedContainer.querySelector('.searching-indicator');
+      if (searchingIndicator) {
+        searchingIndicator.style.transform = 'scale(0.95)';
+        searchingIndicator.style.opacity = '0';
+        setTimeout(() => {
+          searchingIndicator.remove();
+        }, 300);
+      }
+      isSearching = false;
+    }
+    
     function addLiveFeedUpdate() {
       if (simulationIndex < simulationUpdates.length) {
-        const newItem = {...simulationUpdates[simulationIndex]};
+        // Hide searching indicator
+        hideSearchingIndicator();
         
-        // Add some randomness to progress for realism
-        newItem.progress = Math.min(100, newItem.progress + Math.floor(Math.random() * 10));
-        
-        feedData.unshift(newItem); // Add to beginning of array
-        
-        // Mark older items as older after 6 items
-        if (feedData.length > 6) {
-          feedData.slice(6).forEach(item => item.isOlder = true);
-        }
-        
-        // Keep only last 10 items to prevent infinite growth
-        if (feedData.length > 10) {
-          feedData = feedData.slice(0, 10);
-        }
-        
-        renderFeed(feedData);
-        simulationIndex++;
-        
-        // Add visual highlight for new items and auto-scroll
-        const feedContainer = document.getElementById('feed-content');
-        const firstItem = feedContainer.querySelector('.feed-item');
-        if (firstItem) {
-          firstItem.style.transform = 'scale(1.02)';
-          firstItem.style.transition = 'transform 0.3s ease';
-          setTimeout(() => {
-            firstItem.style.transform = 'scale(1)';
-          }, 300);
+        // Add slight delay for smooth transition
+        setTimeout(() => {
+          const newItem = {...simulationUpdates[simulationIndex]};
           
-          // Auto-scroll to top to show new item
-          feedContainer.scrollTop = 0;
-        }
+          // Add some randomness to progress for realism
+          newItem.progress = Math.min(100, newItem.progress + Math.floor(Math.random() * 10));
+          
+          feedData.unshift(newItem); // Add to beginning of array
+          
+          // Mark older items as older after 6 items
+          if (feedData.length > 6) {
+            feedData.slice(6).forEach(item => item.isOlder = true);
+          }
+          
+          // Keep only last 10 items to prevent infinite growth
+          if (feedData.length > 10) {
+            feedData = feedData.slice(0, 10);
+          }
+          
+          renderFeed(feedData);
+          simulationIndex++;
+          
+          // Add visual highlight for new items and auto-scroll
+          const feedContainer = document.getElementById('feed-content');
+          const firstItem = feedContainer.querySelector('.feed-item');
+          if (firstItem) {
+            firstItem.style.transform = 'scale(1.02)';
+            firstItem.style.transition = 'transform 0.3s ease';
+            setTimeout(() => {
+              firstItem.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Auto-scroll to top to show new item
+            feedContainer.scrollTop = 0;
+          }
+          
+          // Start searching for next item after a delay
+          setTimeout(() => {
+            if (simulationIndex < simulationUpdates.length) {
+              showSearchingIndicator();
+            }
+          }, Math.random() * 2000 + 1500); // Random delay between 1.5-3.5 seconds
+          
+        }, 200);
       } else {
         // Reset simulation after all items are shown
         setTimeout(() => {
           simulationIndex = 0;
           feedData = [];
+          hideSearchingIndicator();
         }, 5000);
       }
     }
     
+    function startSearchCycle() {
+      // Show searching indicator first
+      showSearchingIndicator();
+      
+      // Find new scholarship after 2-4 seconds
+      setTimeout(() => {
+        addLiveFeedUpdate();
+      }, Math.random() * 2000 + 2000);
+    }
+    
     // Start live updates 3 seconds after page load
     setTimeout(() => {
-      setInterval(addLiveFeedUpdate, 2000);
+      startSearchCycle();
+      
+      // Continue the cycle
+      setInterval(() => {
+        if (!isSearching && simulationIndex < simulationUpdates.length) {
+          startSearchCycle();
+        }
+      }, 100); // Check frequently for smooth state management
     }, 3000);
     
     // Optional: Auto-refresh static data every 30 seconds
