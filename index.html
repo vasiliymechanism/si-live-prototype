@@ -88,7 +88,26 @@
     .feed-item:last-child,.task:last-child{margin-bottom: 0;}
     .fi-top{display:flex; justify-content:space-between; font-size:14px; font-weight:600;}
     .bar{height:8px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:4px;}
-    .bar .fill{height:100%; background:linear-gradient(90deg,var(--primary),#7aa2ff); width:var(--w,0%);}
+    .bar .fill{
+      height:100%; 
+      width:var(--w,0%);
+      border-radius:999px;
+      transition: all 0.3s ease;
+    }
+    .bar .fill.normal{background:linear-gradient(90deg,var(--primary),#7aa2ff);}
+    .bar .fill.caution{background:linear-gradient(90deg,var(--warn),#fbbf24);}
+    .bar .fill.failed{background:linear-gradient(90deg,#6b7280,#9ca3af);}
+    .bar .fill.success{background:linear-gradient(90deg,var(--good),#4ade80);}
+    
+    .status-text{
+      font-size:10px; 
+      color:var(--muted); 
+      margin-top:2px;
+      transition: color 0.3s ease;
+    }
+    .status-text.caution{color:var(--warn);}
+    .status-text.failed{color:#9ca3af;}
+    .status-text.success{color:var(--good);}
     .pill-mini{font-size:10px; padding:2px 6px; border-radius:999px; border:1px solid var(--divider);}
     .older{opacity:0.65;}
 
@@ -268,6 +287,8 @@
     }
     
     function renderFeed(feedItems) {
+      // This function is now handled by updateFeedDisplay
+      // Keeping for backwards compatibility with initial load
       const container = document.getElementById('feed-content');
       container.innerHTML = feedItems.map(item => 
         `<article class="feed-item ${item.isOlder ? 'older' : ''}">
@@ -276,8 +297,9 @@
             <div class="pill-mini">${item.progress}%</div>
           </div>
           <div class="bar">
-            <div class="fill" style="--w:${item.progress}%"></div>
+            <div class="fill normal" style="--w:${item.progress}%"></div>
           </div>
+          <div class="status-text normal">Loading...</div>
         </article>`
       ).join('');
     }
@@ -323,6 +345,9 @@
         loadFeed(),
         loadTasks()
       ]);
+      
+      // Start live simulation after initial load
+      await initLiveSimulation();
     }
     
     // Accordion functionality
@@ -342,120 +367,156 @@
     let feedData = [];
     let simulationIndex = 0;
     let isSearching = false;
+    let activeScholarships = new Map(); // Track state for each scholarship
+    let stateConfig = null;
+    
+    // Scholarship states with their properties
+    const STATES = {
+      SCANNING: { progress: 5, label: "Scanning scholarship database", type: "normal" },
+      CHECKING_DEADLINE: { progress: 15, label: "Checking application deadline", type: "normal" },
+      DEADLINE_PASSED: { progress: 15, label: "Deadline has passed", type: "failed" },
+      CHECKING_ELIGIBILITY: { progress: 30, label: "Verifying eligibility requirements", type: "normal" },
+      NOT_ELIGIBLE: { progress: 30, label: "Not eligible for this scholarship", type: "failed" },
+      MATCH_FOUND: { progress: 45, label: "Match found! Proceeding with application", type: "normal" },
+      GETTING_REQUIREMENTS: { progress: 55, label: "Gathering application requirements", type: "normal" },
+      PREPARING_MATERIALS: { progress: 65, label: "Preparing application materials", type: "normal" },
+      ACTION_REQUIRED_MATERIALS: { progress: 65, label: "Action required: Upload documents", type: "caution" },
+      GENERATING_ESSAY: { progress: 80, label: "AI generating personalized essay", type: "normal" },
+      ACTION_REQUIRED_ESSAY: { progress: 80, label: "Action required: Review essay", type: "caution" },
+      FINALIZING_APPLICATION: { progress: 95, label: "Finalizing application package", type: "normal" },
+      READY_TO_SUBMIT: { progress: 100, label: "Application ready for submission", type: "success" },
+      SUBMITTED: { progress: 100, label: "Application submitted successfully", type: "success" }
+    };
     
     // Pool of realistic scholarship updates for simulation
     const simulationUpdates = [
-      {name: "Future Leaders Engineering Grant", progress: 15, isOlder: false},
-      {name: "Women in Tech Scholarship", progress: 33, isOlder: false},
-      {name: "Community Impact Award", progress: 8, isOlder: false},
-      {name: "First Generation College Grant", progress: 67, isOlder: false},
-      {name: "Environmental Science Fellowship", progress: 42, isOlder: false},
-      {name: "Merit-Based Achievement Award", progress: 89, isOlder: false},
-      {name: "Research Excellence Grant", progress: 55, isOlder: false},
-      {name: "Local Business Scholarship", progress: 23, isOlder: false},
-      {name: "Arts & Culture Foundation Grant", progress: 76, isOlder: false},
-      {name: "Healthcare Heroes Scholarship", progress: 91, isOlder: false},
-      {name: "Innovation Challenge Award", progress: 12, isOlder: false},
-      {name: "Student Leadership Grant", progress: 58, isOlder: false}
+      {name: "Future Leaders Engineering Grant", currentState: "SCANNING"},
+      {name: "Women in Tech Scholarship", currentState: "SCANNING"},
+      {name: "Community Impact Award", currentState: "SCANNING"},
+      {name: "First Generation College Grant", currentState: "SCANNING"},
+      {name: "Environmental Science Fellowship", currentState: "SCANNING"},
+      {name: "Merit-Based Achievement Award", currentState: "SCANNING"},
+      {name: "Research Excellence Grant", currentState: "SCANNING"},
+      {name: "Local Business Scholarship", currentState: "SCANNING"},
+      {name: "Arts & Culture Foundation Grant", currentState: "SCANNING"},
+      {name: "Healthcare Heroes Scholarship", currentState: "SCANNING"},
+      {name: "Innovation Challenge Award", currentState: "SCANNING"},
+      {name: "Student Leadership Grant", currentState: "SCANNING"}
     ];
     
-    function showSearchingIndicator() {
-      const feedContainer = document.getElementById('feed-content');
-      
-      // Remove any existing searching indicator
-      const existingIndicator = feedContainer.querySelector('.searching-indicator');
-      if (existingIndicator) {
-        existingIndicator.remove();
+    // Load state configuration
+    async function loadStateConfig() {
+      try {
+        const response = await fetch(`${API_BASE}state-config.json`);
+        stateConfig = await response.json();
+      } catch (error) {
+        console.error('Error loading state config:', error);
+        // Fallback configuration
+        stateConfig = {
+          SCANNING: { CHECKING_DEADLINE: 1.0 },
+          CHECKING_DEADLINE: { CHECKING_ELIGIBILITY: 0.8, DEADLINE_PASSED: 0.2 },
+          CHECKING_ELIGIBILITY: { MATCH_FOUND: 0.7, NOT_ELIGIBLE: 0.3 },
+          MATCH_FOUND: { GETTING_REQUIREMENTS: 1.0 },
+          GETTING_REQUIREMENTS: { PREPARING_MATERIALS: 1.0 },
+          PREPARING_MATERIALS: { ACTION_REQUIRED_MATERIALS: 0.3, GENERATING_ESSAY: 0.7 },
+          ACTION_REQUIRED_MATERIALS: { GENERATING_ESSAY: 1.0 },
+          GENERATING_ESSAY: { ACTION_REQUIRED_ESSAY: 0.4, FINALIZING_APPLICATION: 0.6 },
+          ACTION_REQUIRED_ESSAY: { FINALIZING_APPLICATION: 1.0 },
+          FINALIZING_APPLICATION: { READY_TO_SUBMIT: 0.8, SUBMITTED: 0.2 },
+          READY_TO_SUBMIT: { SUBMITTED: 1.0 }
+        };
       }
-      
-      // Create and add searching indicator to the top
-      const searchingElement = document.createElement('div');
-      searchingElement.className = 'searching-indicator';
-      searchingElement.innerHTML = `
-        <div class="searching-icon"></div>
-        <span>Searching for new scholarships<span class="ellipsis"></span></span>
-      `;
-      
-      feedContainer.insertBefore(searchingElement, feedContainer.firstChild);
-      feedContainer.scrollTop = 0;
-      isSearching = true;
     }
     
-    function hideSearchingIndicator() {
-      const feedContainer = document.getElementById('feed-content');
-      const searchingIndicator = feedContainer.querySelector('.searching-indicator');
-      if (searchingIndicator) {
-        searchingIndicator.style.transform = 'scale(0.95)';
-        searchingIndicator.style.opacity = '0';
-        setTimeout(() => {
-          searchingIndicator.remove();
-        }, 300);
+    function getNextState(currentState) {
+      const transitions = stateConfig[currentState];
+      if (!transitions) return null;
+      
+      const rand = Math.random();
+      let cumulative = 0;
+      
+      for (const [nextState, probability] of Object.entries(transitions)) {
+        cumulative += probability;
+        if (rand <= cumulative) {
+          return nextState;
+        }
       }
-      isSearching = false;
+      
+      // Fallback to first state if probabilities don't add up to 1
+      return Object.keys(transitions)[0];
     }
     
-    function addLiveFeedUpdate() {
-      if (simulationIndex < simulationUpdates.length) {
-        // Hide searching indicator
-        hideSearchingIndicator();
+    function isTerminalState(state) {
+      return ['DEADLINE_PASSED', 'NOT_ELIGIBLE', 'ACTION_REQUIRED_MATERIALS', 'ACTION_REQUIRED_ESSAY', 'SUBMITTED'].includes(state);
+    }
+    
+    function progressScholarship(scholarshipId) {
+      const scholarship = activeScholarships.get(scholarshipId);
+      if (!scholarship) return;
+      
+      const nextState = getNextState(scholarship.currentState);
+      if (nextState) {
+        scholarship.currentState = nextState;
+        scholarship.lastUpdated = Date.now();
         
-        // Add slight delay for smooth transition
-        setTimeout(() => {
-          const newItem = {...simulationUpdates[simulationIndex]};
-          
-          // Add some randomness to progress for realism
-          newItem.progress = Math.min(100, newItem.progress + Math.floor(Math.random() * 10));
-          
-          feedData.unshift(newItem); // Add to beginning of array
-          
-          // Mark older items as older after 6 items
-          if (feedData.length > 6) {
-            feedData.slice(6).forEach(item => item.isOlder = true);
-          }
-          
-          // Keep only last 10 items to prevent infinite growth
-          if (feedData.length > 10) {
-            feedData = feedData.slice(0, 10);
-          }
-          
-          renderFeed(feedData);
-          simulationIndex++;
-          
-          // Add visual highlight for new items and auto-scroll
-          const feedContainer = document.getElementById('feed-content');
-          const firstItem = feedContainer.querySelector('.feed-item');
-          if (firstItem) {
-            firstItem.style.transform = 'scale(1.02)';
-            firstItem.style.transition = 'transform 0.3s ease';
-            setTimeout(() => {
-              firstItem.style.transform = 'scale(1)';
-            }, 300);
-            
-            // Auto-scroll to top to show new item
-            feedContainer.scrollTop = 0;
-          }
-          
-          // Start searching for next item after a delay
+        // Update the feed display
+        updateFeedDisplay();
+        
+        // Continue progression if not in terminal state
+        if (!isTerminalState(nextState)) {
+          setTimeout(() => {
+            progressScholarship(scholarshipId);
+          }, Math.random() * 1000 + 500); // 0.5-1.5 second delays
+        } else {
+          // Terminal state reached, start searching for next scholarship
           setTimeout(() => {
             if (simulationIndex < simulationUpdates.length) {
               showSearchingIndicator();
             }
-          }, Math.random() * 2000 + 1500); // Random delay between 1.5-3.5 seconds
-          
-        }, 200);
-      } else {
-        // Reset simulation after all items are shown
-        setTimeout(() => {
-          simulationIndex = 0;
-          feedData = [];
-          hideSearchingIndicator();
-        }, 5000);
+          }, Math.random() * 1000 + 1000); // 1-2 second delay before next search
+        }
       }
     }
     
-    function startSearchCycle() {
-      // Show searching indicator first
-      showSearchingIndicator();
+    function updateFeedDisplay() {
+      const feedContainer = document.getElementById('feed-content');
+      let html = '';
+      
+      // Add searching indicator if active
+      if (isSearching) {
+        html += `<div class="searching-indicator">
+          <div class="searching-icon"></div>
+          <span>Searching for new scholarships<span class="ellipsis"></span></span>
+        </div>`;
+      }
+      
+      // Add active scholarships
+      const sortedScholarships = Array.from(activeScholarships.values())
+        .sort((a, b) => b.lastUpdated - a.lastUpdated);
+      
+      sortedScholarships.forEach(scholarship => {
+        const state = STATES[scholarship.currentState];
+        const isOlder = sortedScholarships.indexOf(scholarship) >= 6;
+        
+        html += `<article class="feed-item ${isOlder ? 'older' : ''}">
+          <div class="fi-top">
+            <div>${scholarship.name}</div>
+            <div class="pill-mini">${state.progress}%</div>
+          </div>
+          <div class="bar">
+            <div class="fill ${state.type}" style="--w:${state.progress}%"></div>
+          </div>
+          <div class="status-text ${state.type}">${state.label}</div>
+        </article>`;
+      });
+      
+      feedContainer.innerHTML = html;
+      feedContainer.scrollTop = 0;
+    }
+    
+    function showSearchingIndicator() {
+      isSearching = true;
+      updateFeedDisplay();
       
       // Find new scholarship after 2-4 seconds
       setTimeout(() => {
@@ -463,17 +524,49 @@
       }, Math.random() * 2000 + 2000);
     }
     
-    // Start live updates 3 seconds after page load
-    setTimeout(() => {
-      startSearchCycle();
+    function addLiveFeedUpdate() {
+      if (simulationIndex < simulationUpdates.length) {
+        // Hide searching indicator
+        isSearching = false;
+        
+        // Create new scholarship
+        const newScholarship = {
+          ...simulationUpdates[simulationIndex],
+          id: `scholarship_${simulationIndex}`,
+          lastUpdated: Date.now()
+        };
+        
+        activeScholarships.set(newScholarship.id, newScholarship);
+        simulationIndex++;
+        
+        // Update display and start progression
+        updateFeedDisplay();
+        
+        // Start progressing this scholarship through states
+        setTimeout(() => {
+          progressScholarship(newScholarship.id);
+        }, 500);
+        
+      } else {
+        // Reset simulation after all items are shown
+        setTimeout(() => {
+          simulationIndex = 0;
+          activeScholarships.clear();
+          isSearching = false;
+          updateFeedDisplay();
+        }, 10000);
+      }
+    }
+    
+    // Initialize state configuration and start simulation
+    async function initLiveSimulation() {
+      await loadStateConfig();
       
-      // Continue the cycle
-      setInterval(() => {
-        if (!isSearching && simulationIndex < simulationUpdates.length) {
-          startSearchCycle();
-        }
-      }, 100); // Check frequently for smooth state management
-    }, 3000);
+      // Start live updates 3 seconds after page load
+      setTimeout(() => {
+        showSearchingIndicator();
+      }, 3000);
+    }
     
     // Optional: Auto-refresh static data every 30 seconds
     // setInterval(initApp, 30000);
