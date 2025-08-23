@@ -12,7 +12,8 @@
           "currentState": [
             "SUBMITTED", 
             "READY_TO_SUBMIT",
-            "FINALIZING_APPLICATION"
+            "FINALIZING_APPLICATION",
+            "GENERATING_ESSAY"
           ] 
         }
       }
@@ -45,7 +46,9 @@
             "GENERATING_ESSAY", 
             "FINALIZING_APPLICATION", 
             "READY_TO_SUBMIT", 
-            "SUBMITTED"
+            "SUBMITTED",
+            "ACTION_REQUIRED_MATERIALS",
+            "ACTION_REQUIRED_ESSAY"
           ] 
         }
       }

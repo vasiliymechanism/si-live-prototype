@@ -8,30 +8,38 @@
     },
     {
       "step": "queueSection",
-      "delay": 5000,
+      "delay": 0,
       "dependencies": ["feedSection"],
       "effects": [
         "showQueueSection", 
         "addHasQueueClass", 
         "addWithNavClass", 
         "showNavPlaceholder"
-      ]
+      ],
+      "conditions": {
+        "type": "scholarshipState",
+        "requirement": "minScholarshipsBeforeQueue"
+      }
     },
     {
       "step": "metricsAndNav",
-      "delay": 5000,
-      "dependencies": ["queueSection"],
+      "delay": 0,
+      "dependencies": ["feedSection"],
       "effects": [
         "showMetricsBar", 
         "showNavigation", 
         "hideNavPlaceholder", 
         "addHasMetricsClass"
-      ]
+      ],
+      "conditions": {
+        "type": "scholarshipState",
+        "requirement": "minSubmittedBeforeMetrics"
+      }
     }
   ],
   "conditions": {
-    "minScholarshipsBeforeQueue": 2,
-    "minSubmittedBeforeMetrics": 1,
+    "minScholarshipsBeforeQueue": ["ACTION_REQUIRED_MATERIALS", "ACTION_REQUIRED_ESSAY"],
+    "minSubmittedBeforeMetrics": ["FINALIZING_APPLICATION", "READY_TO_SUBMIT", "SUBMITTED"],
     "enableEarlyNavIfUserInteracts": true
   }
 }

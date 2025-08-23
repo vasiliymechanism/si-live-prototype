@@ -10,13 +10,13 @@
     "staggerDelay": 50
   },
   "simulation": {
-    "initialSearchDelay": 3000,
-    "stateTransitionMin": 500,
-    "stateTransitionMax": 1500,
-    "searchingDurationMin": 2000,
-    "searchingDurationMax": 4000,
-    "terminalStateNextSearchMin": 1000,
-    "terminalStateNextSearchMax": 2000,
+    "initialSearchDelay": 0,
+    "stateTransitionMin": 300,
+    "stateTransitionMax": 700,
+    "searchingDurationMin": 300,
+    "searchingDurationMax": 1200,
+    "terminalStateNextSearchMin": 100,
+    "terminalStateNextSearchMax": 400,
     "simulationResetDelay": 10000
   }
 }

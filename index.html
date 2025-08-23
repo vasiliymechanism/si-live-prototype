@@ -430,6 +430,7 @@
         this.isSearching = false;
         this.appInitialized = false;
         this.simulationData = [];
+        this.completedSteps = new Set();
       }
 
       async loadConfigs() {
@@ -669,20 +670,57 @@
 
       async executeUIFlow() {
         const flowConfig = this.configs['ui-flow'];
-        const completedSteps = new Set();
-        completedSteps.add('onboardingComplete');
+        this.completedSteps = new Set();
+        this.completedSteps.add('onboardingComplete');
 
+        // Process steps that don't have conditions first
         for (const step of flowConfig.revealSequence) {
-          const dependenciesMet = step.dependencies.every(dep => completedSteps.has(dep));
+          if (!step.conditions) {
+            const dependenciesMet = step.dependencies.every(dep => this.completedSteps.has(dep));
+            if (!dependenciesMet) continue;
+
+            await new Promise(resolve => setTimeout(resolve, step.delay));
+
+            for (const effect of step.effects) {
+              await this.executeEffect(effect);
+            }
+
+            this.completedSteps.add(step.step);
+          }
+        }
+      }
+
+      checkConditionalSteps() {
+        const flowConfig = this.configs['ui-flow'];
+        
+        for (const step of flowConfig.revealSequence) {
+          // Skip if already completed or no conditions
+          if (this.completedSteps.has(step.step) || !step.conditions) continue;
+
+          // Check dependencies
+          const dependenciesMet = step.dependencies.every(dep => this.completedSteps.has(dep));
           if (!dependenciesMet) continue;
 
-          await new Promise(resolve => setTimeout(resolve, step.delay));
-
-          for (const effect of step.effects) {
-            await this.executeEffect(effect);
+          // Check conditions
+          let conditionMet = false;
+          if (step.conditions.type === 'scholarshipState') {
+            const requirement = step.conditions.requirement;
+            const requiredStates = flowConfig.conditions[requirement];
+            
+            // Check if any scholarship has reached the required states
+            const scholarshipStates = Array.from(this.activeScholarships.values()).map(s => s.currentState);
+            conditionMet = requiredStates.some(state => scholarshipStates.includes(state));
           }
 
-          completedSteps.add(step.step);
+          if (conditionMet) {
+            // Execute with delay
+            setTimeout(async () => {
+              for (const effect of step.effects) {
+                await this.executeEffect(effect);
+              }
+              this.completedSteps.add(step.step);
+            }, step.delay);
+          }
         }
       }
 
@@ -755,6 +793,7 @@
 
           this.updateFeedDisplay();
           this.updateMetricsDisplay();
+          this.checkConditionalSteps();
 
           if (!this.isTerminalState(nextState)) {
             setTimeout(() => {
@@ -918,6 +957,7 @@
           this.simulationIndex++;
 
           this.updateFeedDisplay();
+          this.checkConditionalSteps();
 
           setTimeout(() => {
             this.progressScholarship(newScholarship.id);
