@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scholarship Institute</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Container */
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 430px;
+            margin: 0 auto;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        /* Landing Screen */
+        .landing-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .landing-screen h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .landing-screen ol {
+            list-style: none;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .landing-screen li {
+            color: #888;
+            margin: 12px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .landing-screen li::before {
+            content: attr(data-number);
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #222;
+            color: #fff;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 12px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Main App */
+        .main-app {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Metrics Header */
+        .metrics-header {
+            background: #0a0a0a;
+            padding: 16px;
+            border-bottom: 1px solid #222;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .metrics-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .metric-box {
+            background: #111;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #222;
+            transition: all 0.3s ease;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.updating {
+            animation: pulse 0.3s ease;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Searching State */
+        .searching-state {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 40px;
+        }
+
+        .searching-text {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #222;
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Accordion Container */
+        .accordion-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        /* Feed Section */
+        .feed-section {
+            background: #111;
+            border-radius: 16px;
+            border: 1px solid #222;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .feed-section.expanded {
+            flex: 1;
+        }
+
+        .feed-section.collapsed {
+            height: 120px;
+        }
+
+        .feed-header {
+            padding: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #222;
+        }
+
+        .feed-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feed-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .feed-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        /* Scholarship Box */
+        .scholarship-box {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .scholarship-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .scholarship-name {
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            margin-right: 12px;
+        }
+
+        .scholarship-amount {
+            background: #1a3a1a;
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .scholarship-status {
+            margin: 12px 0;
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .status-text.action-required {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .status-text.failed {
+            color: #ef4444;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .scholarship-deadline {
+            display: inline-block;
+            background: #1a1a3a;
+            color: #60a5fa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .scholarship-deadline.urgent {
+            background: #3a1a1a;
+            color: #f87171;
+        }
+
+        /* Action Box */
+        .action-box {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            animation: fadeInUp 0.4s ease-out;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .action-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-box.priority {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border-color: #3b82f6;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .action-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-left {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: transparent;
+            color: #666;
+            border: 1px solid #333;
+        }
+
+        .action-meta {
+            text-align: right;
+        }
+
+        .action-count {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .action-deadline {
+            font-size: 11px;
+            color: #f59e0b;
+        }
+
+        /* Footer */
+        .footer-menu {
+            background: #0a0a0a;
+            border-top: 1px solid #222;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .footer-btn:hover {
+            background: #2a2a2a;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 100px;
+        }
+
+        .modal-content {
+            background: #111;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #222;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Quiz Elements */
+        .quiz-progress {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+
+        .progress-dot {
+            flex: 1;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+        }
+
+        .progress-dot.active {
+            background: #3b82f6;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: #555;
+        }
+
+        .quiz-option.selected {
+            background: #1e293b;
+            border-color: #3b82f6;
+        }
+
+        .quiz-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .quiz-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quiz-checkbox input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .quiz-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-btn.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .quiz-btn.secondary {
+            background: transparent;
+            color: #666;
+            border: 1px solid #333;
+        }
+
+        .quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Paywall Modal */
+        .paywall-plans {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .plan-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .plan-card.recommended {
+            border-color: #3b82f6;
+            position: relative;
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .plan-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .plan-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .plan-period {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .plan-features li {
+            font-size: 13px;
+            color: #888;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+        }
+
+        .plan-cta {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .plan-cta:hover {
+            background: #2563eb;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .dim { opacity: 0.3; }
+
+        /* Button styling */
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Landing Screen -->
+        <div class="landing-screen" id="landingScreen">
+            <h1>Scholarship Institute</h1>
+            <ol>
+                <li data-number="1">Matches you to scholarships</li>
+                <li data-number="2">Writes your essays</li>
+                <li data-number="3">Submits applications automatically</li>
+            </ol>
+            <button class="btn" onclick="startApp()">Start Matching</button>
+        </div>
+
+        <!-- Main App -->
+        <div class="main-app" id="mainApp">
+            <!-- Metrics Header -->
+            <div class="metrics-header hidden" id="metricsHeader">
+                <div class="metrics-title">Your Stats</div>
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Metrics will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Searching State -->
+                <div class="searching-state" id="searchingState">
+                    <div class="searching-text">Searching for scholarships<span id="ellipses">...</span></div>
+                    <div class="loading-spinner"></div>
+                </div>
+
+                <!-- Accordion Container -->
+                <div class="accordion-container" id="accordionContainer">
+                    <!-- Live Feed -->
+                    <div class="feed-section expanded" id="liveFeedSection">
+                        <div class="feed-header" onclick="toggleFeed('live')">
+                            <div class="feed-title">Your Progress</div>
+                            <div class="feed-subtitle">Live feed</div>
+                        </div>
+                        <div class="feed-content" id="liveFeedContent">
+                            <!-- Scholarships will be added here -->
+                        </div>
+                    </div>
+
+                    <!-- Action Queue -->
+                    <div class="feed-section collapsed" id="actionQueueSection">
+                        <div class="feed-header" onclick="toggleFeed('action')">
+                            <div class="feed-title">Action Required</div>
+                            <div class="feed-subtitle">Unlock more scholarships</div>
+                        </div>
+                        <div class="feed-content" id="actionQueueContent">
+                            <!-- Actions will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer-menu hidden" id="footerMenu">
+                <button class="footer-btn">Home</button>
+            </div>
+        </div>
+
+        <!-- Modal Overlays -->
+        <div class="modal-overlay" id="quizModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Complete Your Profile</div>
+                    <div class="modal-description">Answer a few questions to match you with the best scholarships</div>
+                </div>
+                <div class="modal-body" id="quizBody">
+                    <!-- Quiz content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="paywallModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Submit Your Applications</div>
+                    <div class="modal-description">Start your 3-day free trial to submit applications</div>
+                </div>
+                <div class="modal-body">
+                    <div class="paywall-plans">
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <div class="plan-name">Monthly</div>
+                                <div>
+                                    <span class="plan-price">$20</span>
+                                    <span class="plan-period">/mo</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Unlimited scholarship matching</li>
+                                <li>AI-powered essay writing</li>
+                                <li>Automatic submission</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card recommended">
+                            <span class="plan-badge">BEST VALUE</span>
+                            <div class="plan-header">
+                                <div class="plan-name">Quarterly</div>
+                                <div>
+                                    <span class="plan-price">$15</span>
+                                    <span class="plan-period">/mo ($45/quarter)</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Everything in Monthly</li>
+                                <li>Priority application review</li>
+                                <li>25% savings</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <div class="plan-name">Semi-Annual</div>
+                                <div>
+                                    <span class="plan-price">$10</span>
+                                    <span class="plan-period">/mo ($60/6 months)</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Everything in Quarterly</li>
+                                <li>Dedicated support</li>
+                                <li>50% savings</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); border-color: #f59e0b;">
+                            <div class="plan-header">
+                                <div class="plan-name" style="color: #000;">VIP</div>
+                                <div>
+                                    <span class="plan-price" style="color: #000;">$69</span>
+                                    <span class="plan-period" style="color: #000;">/mo</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li style="color: #000;">Extra compute resources</li>
+                                <li style="color: #000;">Dedicated scholarship search</li>
+                                <li style="color: #000;">Premium essay generation</li>
+                                <li style="color: #000;">White-glove support</li>
+                            </ul>
+                            <button class="plan-cta" style="background: #000;">Start VIP Trial</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        const appState = {
+            isRunning: false,
+            isPaused: false,
+            scholarships: [],
+            actions: [],
+            metrics: {
+                matches: 0,
+                potentialAwards: 0,
+                applicationsStarted: 0,
+                readyToApply: 0,
+                nextDeadline: null,
+                timeSaved: 0
+            },
+            quizAnswers: {},
+            currentQuizQuestion: 0,
+            userHasFreeTrial: false,
+            config: null
+        };
+
+        // Configuration - This will be loaded from external JSON files in production
+        const config = {
+            maxVisibleScholarships: 10,
+            timings: {
+                initialDelay: 2000,
+                firstScholarshipDelay: 3000,
+                stateTransitions: {
+                    scanning: { min: 2000, max: 4000 },
+                    checkingDeadline: { min: 1500, max: 3000 },
+                    checkingEligibility: { min: 3000, max: 5000 },
+                    matchFound: { min: 1000, max: 2000 },
+                    gettingRequirements: { min: 2000, max: 4000 },
+                    preparingMaterials: { min: 4000, max: 6000 },
+                    writingEssay: { min: 5000, max: 8000 },
+                    finalizingApplication: { min: 3000, max: 5000 },
+                    readyToSubmit: { min: 1000, max: 2000 }
+                },
+                newScholarshipInterval: { min: 8000, max: 15000 },
+                paywallDelay: 30000
+            },
+            stateProgression: {
+                scanning: [
+                    { next: 'checkingDeadline', probability: 1.0 }
+                ],
+                checkingDeadline: [
+                    { next: 'deadlinePassed', probability: 0.1 },
+                    { next: 'checkingEligibility', probability: 0.9 }
+                ],
+                checkingEligibility: [
+                    { next: 'actionRequired:confirmEligibility', probability: 0.4 },
+                    { next: 'notEligible', probability: 0.1 },
+                    { next: 'matchFound', probability: 0.5 }
+                ],
+                matchFound: [
+                    { next: 'gettingRequirements', probability: 1.0 }
+                ],
+                gettingRequirements: [
+                    { next: 'preparingMaterials', probability: 1.0 }
+                ],
+                preparingMaterials: [
+                    { next: 'actionRequired:uploadDocument', probability: 0.3 },
+                    { next: 'writingEssay', probability: 0.7 }
+                ],
+                writingEssay: [
+                    { next: 'finalizingApplication', probability: 1.0 }
+                ],
+                finalizingApplication: [
+                    { next: 'actionRequired:updateProfile', probability: 0.2 },
+                    { next: 'readyToSubmit', probability: 0.8 }
+                ],
+                readyToSubmit: [
+                    { next: 'applicationSubmitted', probability: 1.0 }
+                ]
+            }
+        };
+
+        // Scholarship data
+        const scholarshipData = [
+            { name: "National Merit Scholarship", amount: 2500, deadline: 7, quizUnlock: "gpa" },
+            { name: "Gates Millennium Scholars Program", amount: 15000, deadline: 14, quizUnlock: "major" },
+            { name: "Coca-Cola Scholars Foundation", amount: 20000, deadline: 21 },
+            { name: "Dell Scholars Program", amount: 5000, deadline: 30, quizUnlock: "financialNeed" },
+            { name: "Amazon Future Engineer Scholarship", amount: 40000, deadline: 45, quizUnlock: "major" },
+            { name: "Google Lime Scholarship", amount: 10000, deadline: 10 },
+            { name: "Microsoft Disability Scholarship", amount: 5000, deadline: 18 },
+            { name: "Adobe Design Achievement Awards", amount: 8000, deadline: 25 },
+            { name: "STEM Premier Scholarship", amount: 3000, deadline: 35, quizUnlock: "major" },
+            { name: "Jack Kent Cooke Foundation", amount: 55000, deadline: 40, quizUnlock: "gpa" },
+            { name: "Elks National Foundation", amount: 4000, deadline: 12 },
+            { name: "Ron Brown Scholar Program", amount: 40000, deadline: 28, quizUnlock: "extracurriculars" },
+            { name: "Horatio Alger Scholarship", amount: 25000, deadline: 50, quizUnlock: "financialNeed" },
+            { name: "Burger King Scholars Program", amount: 1000, deadline: 8 },
+            { name: "Davidson Fellows Scholarship", amount: 50000, deadline: 60 }
+        ];
+
+        // Quiz configuration
+        const quizConfig = {
+            questions: [
+                {
+                    id: 'welcome',
+                    type: 'interstitial',
+                    title: 'Let\'s Match You With Scholarships',
+                    description: 'This quick profile will help us find the best opportunities for you.',
+                    next: 'gpa'
+                },
+                {
+                    id: 'gpa',
+                    type: 'single-select',
+                    title: 'What is your current GPA?',
+                    description: 'Select the range that best matches your cumulative GPA',
+                    options: [
+                        { value: '4.0+', label: '4.0 or above' },
+                        { value: '3.5-3.9', label: '3.5 - 3.9' },
+                        { value: '3.0-3.4', label: '3.0 - 3.4' },
+                        { value: '2.5-2.9', label: '2.5 - 2.9' },
+                        { value: '<2.5', label: 'Below 2.5' }
+                    ],
+                    next: (answers) => {
+                        if (answers.gpa === '4.0+' || answers.gpa === '3.5-3.9') {
+                            return 'honors';
+                        }
+                        return 'major';
+                    }
+                },
+                {
+                    id: 'honors',
+                    type: 'multi-select',
+                    title: 'Academic Honors & Awards',
+                    description: 'Select all that apply to you',
+                    options: [
+                        { value: 'deans', label: 'Dean\'s List' },
+                        { value: 'honor-society', label: 'Honor Society Member' },
+                        { value: 'valedictorian', label: 'Valedictorian/Salutatorian' },
+                        { value: 'ap-scholar', label: 'AP Scholar' },
+                        { value: 'none', label: 'None of the above' }
+                    ],
+                    next: 'major'
+                },
+                {
+                    id: 'major',
+                    type: 'single-select',
+                    title: 'What is your intended major?',
+                    description: 'Choose the field you plan to study',
+                    options: [
+                        { value: 'stem', label: 'STEM (Science, Technology, Engineering, Math)' },
+                        { value: 'business', label: 'Business & Economics' },
+                        { value: 'humanities', label: 'Humanities & Liberal Arts' },
+                        { value: 'health', label: 'Health & Medicine' },
+                        { value: 'arts', label: 'Arts & Design' },
+                        { value: 'undecided', label: 'Undecided' }
+                    ],
+                    next: 'year'
+                },
+                {
+                    id: 'year',
+                    type: 'single-select',
+                    title: 'Current Education Level',
+                    description: 'What year are you in?',
+                    options: [
+                        { value: 'hs-senior', label: 'High School Senior' },
+                        { value: 'hs-junior', label: 'High School Junior' },
+                        { value: 'college-freshman', label: 'College Freshman' },
+                        { value: 'college-sophomore', label: 'College Sophomore' },
+                        { value: 'college-junior', label: 'College Junior' },
+                        { value: 'graduate', label: 'Graduate Student' }
+                    ],
+                    next: 'financialNeed'
+                },
+                {
+                    id: 'financialNeed',
+                    type: 'single-select',
+                    title: 'Financial Need Assessment',
+                    description: 'What is your family\'s annual household income?',
+                    options: [
+                        { value: 'high', label: 'Under $30,000' },
+                        { value: 'medium-high', label: '$30,000 - $60,000' },
+                        { value: 'medium', label: '$60,000 - $100,000' },
+                        { value: 'low', label: 'Over $100,000' }
+                    ],
+                    next: 'extracurriculars'
+                },
+                {
+                    id: 'extracurriculars',
+                    type: 'multi-select',
+                    title: 'Extracurricular Activities',
+                    description: 'Select all areas where you\'re actively involved',
+                    options: [
+                        { value: 'sports', label: 'Varsity/Club Sports' },
+                        { value: 'leadership', label: 'Student Government/Leadership' },
+                        { value: 'volunteer', label: 'Community Service/Volunteering' },
+                        { value: 'work', label: 'Part-time Job/Internship' },
+                        { value: 'clubs', label: 'Academic Clubs/Competitions' },
+                        { value: 'arts', label: 'Music/Theater/Arts' }
+                    ],
+                    next: 'essays'
+                },
+                {
+                    id: 'essays',
+                    type: 'single-select',
+                    title: 'Essay Writing Preference',
+                    description: 'How would you like us to handle essays?',
+                    options: [
+                        { value: 'full-ai', label: 'Write them completely for me' },
+                        { value: 'ai-draft', label: 'Create drafts I can edit' },
+                        { value: 'outline', label: 'Provide outlines only' },
+                        { value: 'self', label: 'I\'ll write them myself' }
+                    ],
+                    next: 'complete'
+                },
+                {
+                    id: 'complete',
+                    type: 'interstitial',
+                    title: 'Profile Complete!',
+                    description: 'We\'re now matching you with scholarships and preparing your applications.',
+                    next: null
+                }
+            ]
+        };
+
+        // Initialize app
+        function startApp() {
+            // Clear any existing state
+            resetState();
+            
+            // Hide landing, show main app
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            
+            // Start the searching animation
+            startSearchingAnimation();
+            
+            // Begin the onboarding flow
+            setTimeout(() => {
+                createFirstScholarship();
+            }, config.timings.firstScholarshipDelay);
+        }
+
+        function resetState() {
+            appState.isRunning = true;
+            appState.isPaused = false;
+            appState.scholarships = [];
+            appState.actions = [];
+            appState.metrics = {
+                matches: 0,
+                potentialAwards: 0,
+                applicationsStarted: 0,
+                readyToApply: 0,
+                nextDeadline: null,
+                timeSaved: 0
+            };
+            appState.quizAnswers = {};
+            appState.currentQuizQuestion = 0;
+            appState.userHasFreeTrial = false;
+        }
+
+        function startSearchingAnimation() {
+            let dots = 0;
+            setInterval(() => {
+                dots = (dots + 1) % 4;
+                const ellipses = document.getElementById('ellipses');
+                if (ellipses) {
+                    ellipses.textContent = '.'.repeat(dots || 1);
+                }
+            }, 500);
+        }
+
+        function createFirstScholarship() {
+            const firstScholarship = {
+                id: Date.now(),
+                name: scholarshipData[0].name,
+                amount: scholarshipData[0].amount,
+                deadline: scholarshipData[0].deadline,
+                state: 'scanning',
+                progress: 10,
+                quizUnlock: scholarshipData[0].quizUnlock,
+                isFirst: true
+            };
+            
+            appState.scholarships.push(firstScholarship);
+            
+            // Show the first scholarship box in place of searching
+            const searchingState = document.getElementById('searchingState');
+            const scholarshipBox = createScholarshipElement(firstScholarship);
+            searchingState.innerHTML = '';
+            searchingState.appendChild(scholarshipBox);
+            
+            // Start progressing this scholarship
+            progressScholarship(firstScholarship);
+            
+            // When it hits action required, transition to full UI
+            const checkInterval = setInterval(() => {
+                if (firstScholarship.state.includes('actionRequired')) {
+                    clearInterval(checkInterval);
+                    transitionToFullUI(firstScholarship);
+                }
+            }, 100);
+        }
+
+        function transitionToFullUI(firstScholarship) {
+            // Hide searching state
+            document.getElementById('searchingState').style.display = 'none';
+            
+            // Show accordion container
+            document.getElementById('accordionContainer').style.display = 'flex';
+            
+            // Add the scholarship to the live feed
+            const liveFeedContent = document.getElementById('liveFeedContent');
+            liveFeedContent.appendChild(createScholarshipElement(firstScholarship));
+            
+            // Show metrics header
+            document.getElementById('metricsHeader').classList.remove('hidden');
+            initializeMetrics();
+            
+            // Show footer
+            document.getElementById('footerMenu').classList.remove('hidden');
+            
+            // Add the first action
+            setTimeout(() => {
+                addAction({
+                    type: 'updateProfile',
+                    title: 'Update profile to confirm matches',
+                    scholarshipCount: 1,
+                    priority: true,
+                    onclick: () => openQuiz()
+                });
+            }, 500);
+            
+            // Start adding more scholarships
+            setTimeout(() => {
+                if (!appState.isPaused) {
+                    startScholarshipGeneration();
+                }
+            }, 5000);
+        }
+
+        function createScholarshipElement(scholarship) {
+            const div = document.createElement('div');
+            div.className = 'scholarship-box';
+            div.id = `scholarship-${scholarship.id}`;
+            
+            const statusClass = scholarship.state.includes('actionRequired') ? 'action-required' :
+                               scholarship.state.includes('failed') || scholarship.state === 'notEligible' || scholarship.state === 'deadlinePassed' ? 'failed' : '';
+            
+            const deadlineClass = scholarship.deadline <= 7 ? 'urgent' : '';
+            
+            div.innerHTML = `
+                <div class="scholarship-header">
+                    <div class="scholarship-name">${scholarship.name}</div>
+                    <div class="scholarship-amount">${scholarship.amount.toLocaleString()}</div>
+                </div>
+                <div class="scholarship-status">
+                    <div class="status-text ${statusClass}">${formatState(scholarship.state)}</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${scholarship.progress}%"></div>
+                    </div>
+                </div>
+                <div class="scholarship-deadline ${deadlineClass}">Deadline in ${scholarship.deadline} days</div>
+            `;
+            
+            return div;
+        }
+
+        function formatState(state) {
+            const stateMap = {
+                'scanning': 'Scanning eligibility criteria...',
+                'checkingDeadline': 'Checking deadline...',
+                'checkingEligibility': 'Verifying eligibility...',
+                'actionRequired:confirmEligibility': '⚠️ Action required: Confirm eligibility',
+                'notEligible': '❌ Not eligible',
+                'deadlinePassed': '❌ Deadline passed',
+                'matchFound': '✅ Match found!',
+                'gettingRequirements': 'Getting requirements...',
+                'preparingMaterials': 'Preparing materials...',
+                'actionRequired:uploadDocument': '⚠️ Action required: Upload document',
+                'writingEssay': 'Writing essay...',
+                'finalizingApplication': 'Finalizing application...',
+                'actionRequired:updateProfile': '⚠️ Action required: Update profile',
+                'readyToSubmit': '✅ Ready to submit',
+                'applicationSubmitted': '✅ Application submitted!'
+            };
+            
+            return stateMap[state] || state;
+        }
+
+        function progressScholarship(scholarship) {
+            if (!appState.isRunning || appState.isPaused) return;
+            
+            // Check if blocked by action required
+            if (scholarship.state.includes('actionRequired')) {
+                // Check if quiz has unlocked this
+                if (scholarship.state === 'actionRequired:confirmEligibility' && 
+                    scholarship.quizUnlock && appState.quizAnswers[scholarship.quizUnlock]) {
+                    scholarship.state = 'matchFound';
+                    scholarship.progress = 50;
+                } else if (scholarship.state === 'actionRequired:updateProfile' && 
+                          Object.keys(appState.quizAnswers).length > 5) {
+                    scholarship.state = 'readyToSubmit';
+                    scholarship.progress = 95;
+                } else {
+                    // Still blocked
+                    return;
+                }
+            }
+            
+            // Check terminal states
+            if (['notEligible', 'deadlinePassed', 'applicationSubmitted'].includes(scholarship.state)) {
+                return;
+            }
+            
+            // Special handling for readyToSubmit
+            if (scholarship.state === 'readyToSubmit') {
+                if (appState.userHasFreeTrial) {
+                    scholarship.state = 'applicationSubmitted';
+                    scholarship.progress = 100;
+                    updateScholarshipDisplay(scholarship);
+                    updateMetrics();
+                }
+                return;
+            }
+            
+            // Progress to next state
+            const progressionOptions = config.stateProgression[scholarship.state];
+            if (!progressionOptions) return;
+            
+            // Calculate next state based on probabilities
+            const random = Math.random();
+            let cumulativeProbability = 0;
+            let nextState = null;
+            
+            for (const option of progressionOptions) {
+                cumulativeProbability += option.probability;
+                if (random <= cumulativeProbability) {
+                    nextState = option.next;
+                    break;
+                }
+            }
+            
+            if (nextState) {
+                scholarship.state = nextState;
+                
+                // Update progress
+                const progressMap = {
+                    'checkingDeadline': 20,
+                    'checkingEligibility': 30,
+                    'matchFound': 50,
+                    'gettingRequirements': 60,
+                    'preparingMaterials': 70,
+                    'writingEssay': 80,
+                    'finalizingApplication': 90,
+                    'readyToSubmit': 95,
+                    'applicationSubmitted': 100
+                };
+                
+                scholarship.progress = progressMap[nextState.replace('actionRequired:', '')] || scholarship.progress + 10;
+                
+                // Update display
+                updateScholarshipDisplay(scholarship);
+                
+                // Update metrics
+                updateMetrics();
+                
+                // Add time saved
+                const timeRange = config.timings.stateTransitions[scholarship.state.replace('actionRequired:', '')] || 
+                                 { min: 2000, max: 5000 };
+                const timeSaved = Math.floor((timeRange.min + timeRange.max) / 2 / 1000 / 60); // Convert to minutes
+                appState.metrics.timeSaved += timeSaved;
+                
+                // Handle action required states
+                if (nextState.includes('actionRequired')) {
+                    handleActionRequired(scholarship, nextState);
+                }
+                
+                // Schedule next progression
+                const delay = Math.random() * (timeRange.max - timeRange.min) + timeRange.min;
+                setTimeout(() => progressScholarship(scholarship), delay);
+            }
+        }
+
+        function updateScholarshipDisplay(scholarship) {
+            const element = document.getElementById(`scholarship-${scholarship.id}`);
+            if (!element) return;
+            
+            const newElement = createScholarshipElement(scholarship);
+            element.replaceWith(newElement);
+        }
+
+        function handleActionRequired(scholarship, actionType) {
+            const actionMap = {
+                'actionRequired:confirmEligibility': {
+                    type: 'confirmEligibility',
+                    title: `Confirm eligibility: ${scholarship.name}`,
+                    onclick: () => openQuiz()
+                },
+                'actionRequired:uploadDocument': {
+                    type: 'uploadDocument',
+                    title: 'Upload transcript',
+                    onclick: () => handleUploadAction(scholarship)
+                },
+                'actionRequired:updateProfile': {
+                    type: 'updateProfile',
+                    title: 'Complete financial information',
+                    onclick: () => openQuiz()
+                }
+            };
+            
+            const actionConfig = actionMap[actionType];
+            if (actionConfig) {
+                addAction({
+                    ...actionConfig,
+                    scholarshipId: scholarship.id,
+                    deadline: scholarship.deadline
+                });
+            }
+        }
+
+        function addAction(action) {
+            // Check if action already exists
+            const exists = appState.actions.find(a => 
+                a.type === action.type && a.scholarshipId === action.scholarshipId
+            );
+            
+            if (!exists) {
+                appState.actions.push({
+                    ...action,
+                    id: Date.now(),
+                    timestamp: Date.now()
+                });
+                
+                renderActions();
+            }
+        }
+
+        function renderActions() {
+            const actionQueue = document.getElementById('actionQueueContent');
+            actionQueue.innerHTML = '';
+            
+            // Sort actions by deadline/priority
+            const sortedActions = [...appState.actions].sort((a, b) => {
+                // Free trial action always on top
+                if (a.type === 'sendApplications') return -1;
+                if (b.type === 'sendApplications') return 1;
+                
+                // Then by deadline
+                if (a.deadline && b.deadline) {
+                    return a.deadline - b.deadline;
+                }
+                
+                // Then by timestamp
+                return a.timestamp - b.timestamp;
+            });
+            
+            sortedActions.forEach(action => {
+                const actionBox = document.createElement('div');
+                actionBox.className = `action-box ${action.priority ? 'priority' : ''}`;
+                actionBox.onclick = action.onclick;
+                
+                // Count scholarships needing this action
+                const count = appState.scholarships.filter(s => 
+                    s.state.includes(action.type)
+                ).length || 1;
+                
+                actionBox.innerHTML = `
+                    <div class="action-content">
+                        <div class="action-left">
+                            <div class="action-title">${action.title}</div>
+                            <div class="action-buttons">
+                                <button class="action-btn primary" onclick="event.stopPropagation(); ${action.onclick}">Start</button>
+                                ${action.type !== 'sendApplications' ? '<button class="action-btn secondary">Later</button>' : ''}
+                            </div>
+                        </div>
+                        <div class="action-meta">
+                            ${count > 1 ? `<div class="action-count">${count} scholarships need this</div>` : ''}
+                            ${action.deadline ? `<div class="action-deadline">Due in ${action.deadline} days</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                actionQueue.appendChild(actionBox);
+            });
+        }
+
+        function initializeMetrics() {
+            updateMetrics();
+            setInterval(updateMetrics, 1000);
+        }
+
+        function updateMetrics() {
+            // Calculate metrics
+            appState.metrics.matches = appState.scholarships.filter(s => 
+                ['matchFound', 'gettingRequirements', 'preparingMaterials', 'writingEssay', 
+                 'finalizingApplication', 'readyToSubmit', 'applicationSubmitted'].includes(s.state) ||
+                s.state.includes('actionRequired:upload') || s.state.includes('actionRequired:update')
+            ).length;
+            
+            appState.metrics.potentialAwards = appState.scholarships
+                .filter(s => !['notEligible', 'deadlinePassed'].includes(s.state))
+                .reduce((sum, s) => sum + s.amount, 0);
+            
+            appState.metrics.applicationsStarted = appState.scholarships.filter(s =>
+                ['preparingMaterials', 'writingEssay', 'finalizingApplication', 'readyToSubmit', 'applicationSubmitted'].includes(s.state) ||
+                s.state.includes('actionRequired:upload') || s.state.includes('actionRequired:update')
+            ).length;
+            
+            appState.metrics.readyToApply = appState.scholarships.filter(s => 
+                s.state === 'readyToSubmit'
+            ).length;
+            
+            // Find next deadline
+            const upcomingDeadlines = appState.scholarships
+                .filter(s => !['notEligible', 'deadlinePassed', 'applicationSubmitted'].includes(s.state))
+                .map(s => s.deadline)
+                .sort((a, b) => a - b);
+            
+            appState.metrics.nextDeadline = upcomingDeadlines[0] || null;
+            
+            // Render metrics
+            const metricsGrid = document.getElementById('metricsGrid');
+            metricsGrid.innerHTML = `
+                <div class="metric-box">
+                    <div class="metric-value">${appState.metrics.matches}</div>
+                    <div class="metric-label">Matches</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">${formatAmount(appState.metrics.potentialAwards)}</div>
+                    <div class="metric-label">Potential</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">${appState.metrics.applicationsStarted}</div>
+                    <div class="metric-label">Started</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">${appState.metrics.readyToApply}</div>
+                    <div class="metric-label">Ready</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">${appState.metrics.nextDeadline ? appState.metrics.nextDeadline + 'd' : 'N/A'}</div>
+                    <div class="metric-label">Next Due</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">${Math.floor(appState.metrics.timeSaved / 60)}h ${appState.metrics.timeSaved % 60}m</div>
+                    <div class="metric-label">Time Saved</div>
+                </div>
+            `;
+            
+            // Check if ready to show paywall
+            if (appState.metrics.readyToApply >= 3 && !appState.actions.find(a => a.type === 'sendApplications')) {
+                setTimeout(() => {
+                    addAction({
+                        type: 'sendApplications',
+                        title: `Send out ${appState.metrics.readyToApply} applications for ${formatAmount(
+                            appState.scholarships.filter(s => s.state === 'readyToSubmit')
+                                .reduce((sum, s) => sum + s.amount, 0)
+                        )}`,
+                        priority: true,
+                        onclick: () => openPaywall()
+                    });
+                }, 2000);
+            }
+        }
+
+        function formatAmount(amount) {
+            if (amount >= 1000000) {
+                return (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return (amount / 1000).toFixed(amount >= 10000 ? 0 : 1) + 'K';
+            }
+            return amount.toString();
+        }
+
+        function startScholarshipGeneration() {
+            let scholarshipIndex = 1;
+            
+            const generateScholarship = () => {
+                if (!appState.isRunning || scholarshipIndex >= scholarshipData.length) return;
+                
+                const data = scholarshipData[scholarshipIndex];
+                const scholarship = {
+                    id: Date.now() + scholarshipIndex,
+                    name: data.name,
+                    amount: data.amount,
+                    deadline: data.deadline,
+                    state: 'scanning',
+                    progress: 10,
+                    quizUnlock: data.quizUnlock
+                };
+                
+                appState.scholarships.push(scholarship);
+                
+                // Add to feed if visible
+                if (appState.scholarships.length <= config.maxVisibleScholarships) {
+                    const liveFeedContent = document.getElementById('liveFeedContent');
+                    const searchingDiv = document.createElement('div');
+                    searchingDiv.className = 'scholarship-box';
+                    searchingDiv.innerHTML = '<div class="searching-text">Searching for scholarships...</div>';
+                    liveFeedContent.insertBefore(searchingDiv, liveFeedContent.firstChild);
+                    
+                    setTimeout(() => {
+                        searchingDiv.replaceWith(createScholarshipElement(scholarship));
+                    }, 1000);
+                }
+                
+                // Start progressing
+                setTimeout(() => progressScholarship(scholarship), 2000);
+                
+                scholarshipIndex++;
+                
+                // Schedule next scholarship
+                const delay = Math.random() * 
+                    (config.timings.newScholarshipInterval.max - config.timings.newScholarshipInterval.min) + 
+                    config.timings.newScholarshipInterval.min;
+                
+                setTimeout(generateScholarship, delay);
+            };
+            
+            generateScholarship();
+        }
+
+        function toggleFeed(type) {
+            const liveSection = document.getElementById('liveFeedSection');
+            const actionSection = document.getElementById('actionQueueSection');
+            
+            if (type === 'live') {
+                if (liveSection.classList.contains('collapsed')) {
+                    liveSection.classList.remove('collapsed');
+                    liveSection.classList.add('expanded');
+                    actionSection.classList.remove('expanded');
+                    actionSection.classList.add('collapsed');
+                }
+            } else {
+                if (actionSection.classList.contains('collapsed')) {
+                    actionSection.classList.remove('collapsed');
+                    actionSection.classList.add('expanded');
+                    liveSection.classList.remove('expanded');
+                    liveSection.classList.add('collapsed');
+                }
+            }
+        }
+
+        function openQuiz() {
+            const modal = document.getElementById('quizModal');
+            modal.classList.add('active');
+            
+            // Pause new scholarships but keep existing ones progressing
+            appState.isPaused = true;
+            
+            // Load first question
+            loadQuizQuestion(0);
+        }
+
+        function loadQuizQuestion(index) {
+            const question = quizConfig.questions[index];
+            if (!question) return;
+            
+            appState.currentQuizQuestion = index;
+            const quizBody = document.getElementById('quizBody');
+            
+            // Progress indicator
+            const progress = `
+                <div class="quiz-progress">
+                    ${quizConfig.questions.map((q, i) => 
+                        `<div class="progress-dot ${i <= index ? 'active' : ''}"></div>`
+                    ).join('')}
+                </div>
+            `;
+            
+            let content = progress;
+            
+            if (question.type === 'interstitial') {
+                content += `
+                    <div class="quiz-question">
+                        <h3>${question.title}</h3>
+                        <p>${question.description}</p>
+                    </div>
+                    <div class="quiz-actions">
+                        <button class="quiz-btn primary" onclick="handleQuizAnswer()">
+                            ${question.next === null ? 'Complete' : 'Continue'}
+                        </button>
+                    </div>
+                `;
+            } else if (question.type === 'single-select') {
+                content += `
+                    <div class="quiz-question">
+                        <h3>${question.title}</h3>
+                        <p>${question.description}</p>
+                        <div class="quiz-options">
+                            ${question.options.map(opt => `
+                                <div class="quiz-option" onclick="selectOption(this, '${opt.value}', false)">
+                                    ${opt.label}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="quiz-actions">
+                        <button class="quiz-btn primary" onclick="handleQuizAnswer()" disabled>Continue</button>
+                    </div>
+                `;
+            } else if (question.type === 'multi-select') {
+                content += `
+                    <div class="quiz-question">
+                        <h3>${question.title}</h3>
+                        <p>${question.description}</p>
+                        <div class="quiz-options">
+                            ${question.options.map(opt => `
+                                <div class="quiz-option" onclick="selectOption(this, '${opt.value}', true)">
+                                    ${opt.label}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <p style="font-size: 12px; color: #666; margin-top: 12px;">Select all that apply</p>
+                    </div>
+                    <div class="quiz-actions">
+                        <button class="quiz-btn primary" onclick="handleQuizAnswer()">Continue</button>
+                    </div>
+                `;
+            }
+            
+            quizBody.innerHTML = content;
+        }
+
+        function selectOption(element, value, isMulti) {
+            const question = quizConfig.questions[appState.currentQuizQuestion];
+            
+            if (!isMulti) {
+                // Single select - clear others
+                element.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                element.classList.add('selected');
+                appState.quizAnswers[question.id] = value;
+                
+                // Enable continue button
+                document.querySelector('.quiz-btn.primary').disabled = false;
+            } else {
+                // Multi select - toggle
+                element.classList.toggle('selected');
+                
+                if (!appState.quizAnswers[question.id]) {
+                    appState.quizAnswers[question.id] = [];
+                }
+                
+                if (element.classList.contains('selected')) {
+                    appState.quizAnswers[question.id].push(value);
+                } else {
+                    const index = appState.quizAnswers[question.id].indexOf(value);
+                    if (index > -1) {
+                        appState.quizAnswers[question.id].splice(index, 1);
+                    }
+                }
+            }
+            
+            // Unblock scholarships based on answers
+            appState.scholarships.forEach(scholarship => {
+                if (scholarship.state === 'actionRequired:confirmEligibility' && 
+                    scholarship.quizUnlock === question.id) {
+                    progressScholarship(scholarship);
+                }
+            });
+        }
+
+        function handleQuizAnswer() {
+            const question = quizConfig.questions[appState.currentQuizQuestion];
+            
+            // Determine next question
+            let nextIndex;
+            if (typeof question.next === 'function') {
+                const nextId = question.next(appState.quizAnswers);
+                nextIndex = quizConfig.questions.findIndex(q => q.id === nextId);
+            } else if (question.next) {
+                nextIndex = quizConfig.questions.findIndex(q => q.id === question.next);
+            } else {
+                // Quiz complete
+                closeQuiz();
+                return;
+            }
+            
+            if (nextIndex >= 0) {
+                loadQuizQuestion(nextIndex);
+            } else {
+                closeQuiz();
+            }
+        }
+
+        function closeQuiz() {
+            const modal = document.getElementById('quizModal');
+            modal.classList.remove('active');
+            
+            // Resume scholarship generation
+            appState.isPaused = false;
+            
+            // Remove the initial profile action
+            appState.actions = appState.actions.filter(a => 
+                a.title !== 'Update profile to confirm matches'
+            );
+            renderActions();
+            
+            // Unblock waiting scholarships
+            appState.scholarships.forEach(scholarship => {
+                if (scholarship.state.includes('actionRequired')) {
+                    progressScholarship(scholarship);
+                }
+            });
+        }
+
+        function handleUploadAction(scholarship) {
+            // Simulate file upload - immediately progress the scholarship
+            scholarship.state = 'writingEssay';
+            scholarship.progress = 80;
+            updateScholarshipDisplay(scholarship);
+            
+            // Remove this action
+            appState.actions = appState.actions.filter(a => 
+                !(a.type === 'uploadDocument' && a.scholarshipId === scholarship.id)
+            );
+            renderActions();
+            
+            // Continue progression
+            setTimeout(() => progressScholarship(scholarship), 3000);
+        }
+
+        function openPaywall() {
+            const modal = document.getElementById('paywallModal');
+            modal.classList.add('active');
+        }
+
+        // Add event listener to close modals when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal && !modal.id.includes('quiz')) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Prevent actual form submission on paywall CTAs
+        document.querySelectorAll('.plan-cta').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Demo ends here - no actual subscription
+            });
+        });
+    </script>
+</body>
+</html>
