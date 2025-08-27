@@ -796,7 +796,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0);
     z-index: 1000;
     animation: fadeIn 0.3s ease;
 }
@@ -805,7 +805,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 100px;
+    padding-top: 120px;
 }
 
 .modal-content {
@@ -986,6 +986,286 @@ body {
     cursor: not-allowed;
 }
 
+#quizModal .modal-title {
+    font-size: 20px;
+    color: #c5c7ca;
+}
+
+/* ===== Quiz modal body ===== */
+#quizBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Title + optional subtitle */
+#quizBody .q-head h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+#quizBody .q-head p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #9ca3af; /* subtle gray */
+}
+
+/* Choice layout */
+#quizBody .choices {
+  /* display: grid; */
+  display: flex;
+  /* grid-template-columns: 1fr 1fr; /* Yes/No = two columns */
+  gap: 10px;
+}
+
+/* If you want vertical stack on narrow screens */
+@media (max-width: 360px) {
+  #quizBody .choices { grid-template-columns: 1fr; }
+}
+
+/* Chips (buttons) */
+#quizBody .chip {
+  appearance: none;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid #2f2f2f;
+  background: #171717;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+#quizBody .chip:hover {
+  border-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+#quizBody .chip:active {
+  transform: translateY(0);
+}
+
+/* Keyboard focus ring */
+#quizBody .chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px #3b82f6;
+}
+
+/* Selected/active state (used by multi-select, or if you toggle .active) */
+#quizBody .chip.active,
+#quizBody .chip[aria-pressed="true"] {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.25);
+  color: #fff;
+}
+
+/* Optional: a subtle divider if you add more sections later */
+#quizBody .section-divider {
+  height: 1px;
+  background: #222;
+  margin: 6px 0;
+  border-radius: 1px;
+}
+
+/* =========================
+   Quiz modal styling
+   (scoped to #quizBody)
+   ========================= */
+
+#quizBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Optional “card” feel */
+  background: #0f0f12;
+  border: 1px solid #232323;
+  /* border-radius: 16px; */
+}
+
+/* Title + subtitle */
+#quizBody .q-head h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+#quizBody .q-head p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* Field wrapper */
+#quizBody .q-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Labels, hints, errors */
+#quizBody .q-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+#quizBody .q-hint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+#quizBody .q-error {
+  font-size: 12px;
+  color: #f87171;
+}
+
+/* Text inputs (short/long) */
+#quizBody input[type="text"],
+#quizBody input[type="number"],
+#quizBody input[type="email"],
+#quizBody input[type="date"],
+#quizBody textarea {
+  width: 100%;
+  color: #e5e7eb;
+  background: #171717;
+  border: 2px solid #2f2f2f;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+#quizBody textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+#quizBody input::placeholder,
+#quizBody textarea::placeholder {
+  color: #6b7280;
+}
+
+#quizBody input:focus-visible,
+#quizBody textarea:focus-visible {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px rgba(59,130,246,.65);
+}
+
+/* Error state (toggle by adding .is-error to the input/textarea) */
+#quizBody .is-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px #1a0b0b, 0 0 0 4px rgba(239,68,68,.45) !important;
+}
+
+/* Date input: keep same look; hide ugly spinner in some browsers */
+#quizBody input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  opacity: .9;
+}
+
+/* File input (uses ::file-selector-button) */
+#quizBody input[type="file"] {
+  color: #9ca3af;               /* filename text */
+  background: #171717;
+  border: 2px solid #2f2f2f;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+}
+#quizBody input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  cursor: pointer;
+  transition: transform .12s ease, filter .2s ease;
+}
+#quizBody input[type="file"]::file-selector-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+/* Checkbox & radio (keep native for a11y, style via accent-color) */
+#quizBody input[type="checkbox"],
+#quizBody input[type="radio"] {
+  accent-color: #3b82f6;
+  transform: translateY(1px);
+}
+
+/* Choice chips (single/multi) — from earlier, kept here for completeness */
+#quizBody .choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 360px) { #quizBody .choices { grid-template-columns: 1fr; } }
+
+#quizBody .chip {
+  appearance: none;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid #2f2f2f;
+  background: #171717;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+#quizBody .chip:hover { border-color: #4b5563; transform: translateY(-1px); }
+#quizBody .chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px #3b82f6;
+}
+#quizBody .chip.active,
+#quizBody .chip[aria-pressed="true"] {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.25);
+  color: #fff;
+}
+
+/* Buttons inside quiz (matches your app buttons) */
+#quizBody .btn,
+#quizBody .btn-primary {
+  align-self: start;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: transform .1s ease, filter .2s ease, box-shadow .2s ease;
+}
+#quizBody .btn:hover,
+#quizBody .btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+#quizBody .btn:active,
+#quizBody .btn-primary:active { transform: translateY(0); }
+
+/* Spacing helpers for multi-part questions */
+#quizBody .row { display: flex; gap: 10px; }
+#quizBody .row > * { flex: 1; }
+
+/* Subtle divider you can drop between sections */
+#quizBody .section-divider {
+  height: 1px;
+  background: #222;
+  margin: 6px 0;
+  border-radius: 1px;
+}
+
+
+
 /* Paywall Modal */
 .paywall-plans {
     display: flex;
@@ -1092,6 +1372,106 @@ body {
     color: #fbbf24;
 }
 
+/* Overlay + content layout */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;                 /* toggled by .active */
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;                 /* above the dim overlay */
+}
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  width: min(820px, 92vw);
+  max-height: 88vh;              /* viewport-based height cap */
+  display: flex;
+  flex-direction: column;
+  background: #0f0f12;
+  border: 1px solid #232323;
+  border-radius: 16px;
+  overflow: auto;                /* IMPORTANT: this is the scroll container */
+}
+
+/* Sticky header at top of scroll container */
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(18,18,22,.98), rgba(18,18,22,.92));
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid #252525;
+  padding: 16px 18px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+.modal-description {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Body scrolls under the sticky header */
+.modal-body {
+  padding: 16px 18px 20px;
+  max-height: 45vmax;
+}
+
+/* Plans grid (optional polish) */
+.paywall-plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .paywall-plans { grid-template-columns: 1fr; }
+}
+
+.plan-card {
+  background: #111115;
+  border: 1px solid #222;
+  border-radius: 14px;
+  padding: 14px;
+}
+.plan-card.recommended {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.25);
+  position: relative;
+}
+.plan-badge {
+  position: absolute;
+  top: -10px; right: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0b1020;
+  background: #60a5fa;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.plan-header {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  margin-bottom: 8px;
+}
+.plan-name { font-weight: 800; }
+.plan-price { font-size: 20px; font-weight: 900; }
+.plan-period { font-size: 12px; color: #9ca3af; }
+.plan-features { margin: 8px 0 12px; padding-left: 18px; }
+.plan-cta {
+  width: 100%;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(90deg,#3b82f6,#8b5cf6);
+  border: none; border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.plan-cta.vip-cta { background: linear-gradient(90deg,#22c55e,#16a34a); }
+
+
 /* Button styling */
 .btn {
     padding: 16px 32px;
@@ -1110,6 +1490,82 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
 }
+
+/* ===== Accordion headers: one line with plain +/- on the right ===== */
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.feed-header:hover { background: rgba(255,255,255,0.03); }
+
+/* title + subtitle inline */
+.feed-title {
+  font-weight: 700;
+}
+.feed-subtitle {
+  margin-left: 8px;
+  color: #9ca3af;
+  font-size: 12px;
+  opacity: .95;
+}
+
+/* real toggle at far right, NO border/circle */
+.feed-toggle {
+  margin-left: auto;          /* pushes it to the right */
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.feed-toggle:hover { color: #e5e7eb; }
+
+/* if you had the old ::after icon, kill it */
+.feed-header::after { content: none !important; }
+
+/* ===== Content expand/collapse ===== */
+
+.feed-content {
+  overflow: hidden;           /* collapsed: hide overflow (no scroll) */
+  max-height: 0;              /* JS animates this */
+  opacity: 1;
+  transition: max-height .25s ease, opacity .2s ease;
+}
+
+/* Expanded: show fully (can scroll if it's large) */
+.feed-section.expanded .feed-content {
+  opacity: 1;
+  overflow: auto;             /* allow scroll only when expanded */
+}
+
+/* Collapsed: show a small preview height with a gentle fade */
+.feed-section.collapsed .feed-content {
+  position: relative;
+}
+.feed-section.collapsed .feed-content::after {
+  content: "";
+  position: sticky;
+  display: block;
+  height: 36px;
+  margin-top: -36px;          /* sits at bottom edge */
+  /* bottom: 0; */
+  /* background: linear-gradient(to bottom, rgba(15,15,18,0), rgba(15,15,18,0.9)); */
+  pointer-events: none;
+}
+
+/* Optional framing */
+.feed-section { border: 1px solid #202020; border-radius: 12px; background:#0f0f12; }
+.feed-section + .feed-section { margin-top: 10px; }
+
 
 /* Animations */
 @keyframes fadeIn {

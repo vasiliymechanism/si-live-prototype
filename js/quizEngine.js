@@ -7,20 +7,81 @@ import { closeModal, setSpotlight } from './ui.js';
 const $ = sel => document.querySelector(sel);
 let modal, content;
 
-export function initQuizEngine() {
-  modal = $('#quizModal');
-  content = modal?.querySelector('.content');
-  bus.on(EV.QUIZ_OPEN, openQuiz);
+function makeFieldWrap(labelText, hintText) {
+  const wrap = document.createElement('div');
+  wrap.className = 'q-field';
+
+  if (labelText) {
+    const lbl = document.createElement('div');
+    lbl.className = 'q-label';
+    lbl.textContent = labelText;
+    wrap.appendChild(lbl);
+  }
+
+  if (hintText) {
+    const hint = document.createElement('div');
+    hint.className = 'q-hint';
+    hint.textContent = hintText;
+    wrap.appendChild(hint);
+  }
+
+  return wrap;
 }
 
-function openQuiz() {
-  if (!modal || !content) return;
-  // Reset transient state
+export function initQuizEngine() {
+  modal = $('#quizModal');
+  content =
+    modal?.querySelector('#quizBody') ||      // your index.html body
+    modal?.querySelector('.modal-body') ||    // fallback to modal-body
+    modal?.querySelector('.content') ||       // old skeleton fallback
+    modal;    
+  bus.on(EV.QUIZ_OPEN, (payload) => openQuiz(payload));
+}
+
+function nextFrom(q, scope) {
+  // handles q.next being a string or JSONLogic {if: [...]}
+  if (!q.next) return null;
+  if (typeof q.next === 'string') return q.next;
+  if (typeof q.next === 'object' && 'if' in q.next) {
+    return evaluateLogic(q.next, scope);
+  }
+  return null;
+}
+
+function firstNonInterstitial(cfg, startId, scope) {
+  let id = startId;
+  while (true) {
+    const q = cfg.questions[id];
+    if (!q) return id;
+    if (q.type !== 'interstitial') return id;
+    const nxt = nextFrom(q, scope);
+    if (!nxt || !cfg.questions[nxt]) return id;
+    id = nxt;
+  }
+}
+
+function openQuiz(payload = {}) {
+  const { skipIntro = false } = payload;
+
   const cfg = store.quiz;
+  content.innerHTML = '';
+
+  // local answers object (merged into store.user on finish)
+  const answers = {};
   let currentId = cfg.start;
-  const answers = {}; // transient; copy into store.user at finish
+
+  // NEW: jump past interstitials if requested
+  if (skipIntro) currentId = firstNonInterstitial(cfg, cfg.start, { ...store.user, ...answers });
 
   render();
+  
+  // if (!modal || !content) return;
+  // // Reset transient state
+  // const cfg = store.quiz;
+  // let currentId = cfg.start;
+  // const answers = {}; // transient; copy into store.user at finish
+
+  // render();
 
   function render() {
     const q = cfg.questions[currentId];
@@ -64,16 +125,17 @@ function openQuiz() {
   }
 
   function finish() {
-    // Merge into store.user
+      // 1) Persist quiz answers into the in-memory user
     Object.assign(store.user, answers);
-    // Mark quiz completed
     store.flags.add('quizCompleted');
-    // Close modal & undim
-    modal.classList.remove('in');
-    modal.classList.add('hidden');
-    setSpotlight(false);
-    // Notify world
+
+    // 2) Properly close modal & overlay
+    closeModal(modal);          // <-- important: removes overlay when appropriate
+    setSpotlight(false);        // body-level dim off (if you use it)
+
+    // 3) Notify the rest of the app
     bus.emit(EV.QUIZ_COMPLETED, { answers });
+    console.log('[quiz] completed, answers:', answers);
   }
 
   // ——— Renderers ———
@@ -130,50 +192,136 @@ function openQuiz() {
   }
 
   function renderText(q) {
-    addTitleSub(q);
+    addTitleSub(q); // keeps the main question heading/subtitle at the top
+
+    const wrap = makeFieldWrap(q.label || null, q.hint || null);
+
     const input = document.createElement(q.type === 'long' ? 'textarea' : 'input');
+    if (q.type !== 'long') input.type = 'text';
     input.placeholder = q.placeholder || '';
     input.className = 'text';
-    content.appendChild(input);
+    wrap.appendChild(input);
+
+    content.appendChild(wrap);
+
     addNextButton('Next', () => {
-      const val = input.value?.trim();
+      const raw = input.value?.trim();
+      const val = raw === '' ? '' : (isFinite(raw) ? Number(raw) : raw);
+
       // Optional JSONLogic validation: e.g., { ">=": [ { "var":"value" }, 0 ] }
-      if (q.validate && !evaluateLogic({ 'and': [ q.validate ] }, { value: parseFloat(val) || val })) {
-        alert('Please check your input.');
-        return;
+      if (q.validate) {
+        const ok = evaluateLogic({ and: [ q.validate ] }, { value: val });
+        if (!ok) {
+          input.classList.add('is-error');
+          // Show or update an error message
+          let err = wrap.querySelector('.q-error');
+          if (!err) {
+            err = document.createElement('div');
+            err.className = 'q-error';
+            wrap.appendChild(err);
+          }
+          err.textContent = q.errorMessage || 'Please check your input.';
+          return;
+        }
       }
       gotoNext(q, val);
     });
   }
 
+
   function renderFile(q) {
     addTitleSub(q);
+
+    const wrap = makeFieldWrap(q.label || 'Upload file(s)', q.hint || null);
+
     const input = document.createElement('input');
     input.type = 'file';
     if (q.multiple) input.multiple = true;
-    content.appendChild(input);
-    addNextButton('Upload', () => {
-      // Demo: we don't actually upload; we just record a flag
-      gotoNext(q, (input.files?.length || 0));
+    if (q.accept)   input.accept   = q.accept; // e.g., ".pdf,.png,.jpg"
+    wrap.appendChild(input);
+
+    content.appendChild(wrap);
+
+    addNextButton(q.cta || 'Upload', () => {
+      // For demo: record a count; in real app you’d store files or set a flag
+      const count = input.files?.length || 0;
+      if (q.required && count === 0) {
+        input.classList.add('is-error');
+        let err = wrap.querySelector('.q-error');
+        if (!err) { err = document.createElement('div'); err.className = 'q-error'; wrap.appendChild(err); }
+        err.textContent = q.errorMessage || 'Please select at least one file.';
+        return;
+      }
+      gotoNext(q, count);
     });
   }
 
+
   function renderDate(q) {
     addTitleSub(q);
+
+    const wrap = makeFieldWrap(q.label || 'Select a date', q.hint || null);
+
     const input = document.createElement('input');
     input.type = 'date';
-    content.appendChild(input);
-    addNextButton('Next', () => gotoNext(q, input.value || null));
+    if (q.min) input.min = q.min;
+    if (q.max) input.max = q.max;
+    wrap.appendChild(input);
+
+    content.appendChild(wrap);
+
+    addNextButton('Next', () => {
+      if (q.required && !input.value) {
+        input.classList.add('is-error');
+        let err = wrap.querySelector('.q-error');
+        if (!err) { err = document.createElement('div'); err.className = 'q-error'; wrap.appendChild(err); }
+        err.textContent = q.errorMessage || 'Please choose a date.';
+        return;
+      }
+      gotoNext(q, input.value || null);
+    });
   }
+
 
   function renderCheckbox(q) {
     addTitleSub(q);
-    const wrap = document.createElement('label');
+
+    const wrap = makeFieldWrap(null, null); // label text will sit inline with the checkbox
+
+    const row = document.createElement('label');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '10px';
+
     const cb = document.createElement('input');
     cb.type = 'checkbox';
-    wrap.appendChild(cb);
-    wrap.append(' ', document.createTextNode(q.label || ''));
+
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = q.label || 'I agree';
+
+    row.appendChild(cb);
+    row.appendChild(labelSpan);
+    wrap.appendChild(row);
+
+    if (q.hint) {
+      const hint = document.createElement('div');
+      hint.className = 'q-hint';
+      hint.textContent = q.hint;
+      wrap.appendChild(hint);
+    }
+
     content.appendChild(wrap);
-    addNextButton('Next', () => gotoNext(q, cb.checked));
+
+    addNextButton('Next', () => {
+      if (q.required && !cb.checked) {
+        cb.classList.add('is-error');
+        let err = wrap.querySelector('.q-error');
+        if (!err) { err = document.createElement('div'); err.className = 'q-error'; wrap.appendChild(err); }
+        err.textContent = q.errorMessage || 'Please check the box to continue.';
+        return;
+      }
+      gotoNext(q, cb.checked);
+    });
   }
+
 }

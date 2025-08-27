@@ -9,7 +9,12 @@ const actionQueue = new Map(); // key: type, value: item
 
 function emitAQ() {
   const list = Array.from(actionQueue.values())
-    .sort((a,b) => (b.sticky?1:0) - (a.sticky?1:0));
+    .sort((a, b) => {
+      // sticky first, then priority (lower = higher)
+      if (!!b.sticky - !!a.sticky) return (!!b.sticky - !!a.sticky);
+      const ap = a.priority ?? 999, bp = b.priority ?? 999;
+      return ap - bp;
+    });
   bus.emit(EV.ACTIONQ_UPDATED, list);
 }
 
@@ -155,6 +160,15 @@ export function initScholarships() {
       }
     });
   });
+}
+
+// expose adding/removing actions so other modules can use the same queue
+export function addAction(type, { sticky = undefined, schId = null, overrides = {} } = {}) {
+  upsertAction({ type, sticky, schId, overrides });
+}
+
+export function removeAction(type) {
+  removeActionType(type);
 }
 
 function spawnNext() {

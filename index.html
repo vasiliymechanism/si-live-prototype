@@ -73,11 +73,14 @@
         <div class="dim-overlay" id="dimOverlay"></div>
 
         <!-- Quiz Modal -->
-        <div class="modal-overlay" id="quizModal">
+        <div class="modal-overlay" id="quizModal"
+                data-dismissible="false"
+                data-esc="false"
+                data-hide-close="true">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div class="modal-title">Complete Your Profile</div>
-                    <div class="modal-description">Answer a few questions to match you with the best scholarships</div>
+                    <div class="modal-title">Help us find the right matches</div>
+                    <div class="modal-description">We'll fill out applications in the meantime</div>
                 </div>
                 <div class="modal-body" id="quizBody">
                     <!-- Quiz content will be inserted here -->
@@ -99,7 +102,9 @@
         </div>
 
         <!-- Paywall Modal -->
-        <div class="modal-overlay" id="paywallModal">
+        <div class="modal-overlay" id="paywallModal"
+                data-dismissible="true"
+                data-esc="true">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="modal-title">Submit Your Applications</div>

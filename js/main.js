@@ -22,6 +22,26 @@ window.app = {
   showPaywall: () => bus.emit(EV.PAYWALL_SHOW)
 };
 
+let paywallListenerAttached = false;
+
+function attachPaywallTriggersOnce() {
+  if (paywallListenerAttached) return;
+
+  const onQuizCompleted = () => {
+    console.log('[paywall] Quiz completed event received.');
+    renderMetrics();
+
+    const mode = store.app.paywallTrigger?.mode || 'afterQuiz';
+    if (mode === 'afterQuiz') {
+      Scholarships.addAction('paywallCTA', { sticky: true });
+      console.info('[paywall] Enqueued sticky paywall CTA (afterQuiz).');
+    }
+  };
+
+  bus.on(EV.QUIZ_COMPLETED, onQuizCompleted);
+  paywallListenerAttached = true;
+}
+
 async function boot() {
   initUI();
   initQuizEngine();
@@ -39,6 +59,8 @@ async function boot() {
 
   Object.assign(store, { app, sm, actions, paywall, quiz, catalog, schSpawnIndex: 0 });
   store.rng = makeRNG(app.seed || 1);
+
+  attachPaywallTriggersOnce();
 
   // Phase: welcome
   store.phase = 'welcome';
@@ -59,7 +81,7 @@ async function boot() {
       downAt = null;
     }
   });
-
+  
   // Start handler
   bindStart(() => {
     // Phase change
@@ -75,10 +97,19 @@ async function boot() {
 
     // Default paywall trigger: after quiz completion
     bus.on(EV.QUIZ_COMPLETED, () => {
+      console.log('[paywall] Quiz completed event received.');
       renderMetrics();
-      if ((store.app.paywallTrigger?.mode || 'afterQuiz') === 'afterQuiz') {
-        bus.emit(EV.PAYWALL_SHOW);
+
+      const mode = store.app.paywallTrigger?.mode || 'afterQuiz';
+
+      if (mode === 'afterQuiz') {
+        // Instead of opening the modal now, add a sticky Action Queue item.
+        // upsertAction is idempotent by type, so this won’t duplicate.
+        Scholarships.addAction('paywallCTA', { sticky: true });
+        console.info('[paywall] Enqueued sticky paywall CTA (afterQuiz).');
       }
+
+      // (You can add other modes here later: afterNMatches, afterMs, etc.)
     });
   });
 
@@ -199,6 +230,32 @@ async function boot() {
       };
       store.scholarships.push(s);
       UI.addScholarshipCard(s);
+    }, 
+
+    openQuizNow(opts = {}) {
+      // Make sure dashboard is visible
+      store.phase = 'steady';
+      UI.showDashboard();
+      document.querySelectorAll('.main-app').forEach(el => { el.style.display = 'flex'; });
+      document.querySelectorAll('.accordion-container').forEach(el => { el.style.display = 'flex'; });
+      document.querySelectorAll('.searching-state').forEach(el => { el.style.display = 'none'; });
+
+      // optional: clear completed flag so blockers behave
+      store.flags.delete('quizCompleted');
+
+      // Ensure a sticky action is visible (optional, purely visual)
+      if (opts.ensureSticky !== false && !document.querySelector('.aq-item[data-type="updateProfileViaQuiz"]')) {
+        UI.renderActionQueue([{ type: 'updateProfileViaQuiz', sticky: true, count: 1 }]);
+      }
+
+      // Fire event WITH skipIntro so the first actual question renders at once
+      bus.emit(EV.QUIZ_OPEN, { source: 'debug', skipIntro: true });
+
+      // Open modal + dim overlay (your CSS uses `.active`)
+      const modal = document.querySelector('#quizModal');
+      UI.openModal(modal);
+
+      console.info('[debug] Quiz modal opened (skipIntro=true).');
     }
   };
 
