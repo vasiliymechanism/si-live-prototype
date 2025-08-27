@@ -22,5 +22,7 @@ export const EV = Object.freeze({
   QUIZ_OPEN: 'QUIZ.OPEN',
   QUIZ_COMPLETED: 'QUIZ.COMPLETED',
 
-  PAYWALL_SHOW: 'PAYWALL.SHOW'
+  PAYWALL_SHOW: 'PAYWALL.SHOW',
+
+  ACTION_COMPLETED: 'ACTION.COMPLETED' // { type: 'uploadTranscript' }
 });

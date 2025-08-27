@@ -1,28 +1,10 @@
 {
   "types": {
-    "updateProfileViaQuiz": {
-      "label": "Confirm eligibility to unlock matches",
-      "cta": "Start",
-      "modal": "quiz",
-      "sticky": true, 
-      "priority": 10 
-    },
-    "uploadTranscript": {
-      "label": "Upload your transcript",
-      "cta": "Upload PDF",
-      "sets": ["transcriptUploaded"]
-    },
-    "uploadEssay": {
-      "label": "Upload your essay",
-      "cta": "Upload file",
-      "sets": ["essayUploaded"]
-    },
-    "paywallCTA": {
-      "label": "Finish applications (Free trial)",
-      "cta": "Start Free Trial",
-      "modal": "paywall",
-      "sticky": true,
-      "priority": 20 
-    }
+    "updateProfileViaQuiz": { "label": "Confirm eligibility to unlock matches", "cta": "Start", "modal": "quiz", "sticky": true, "priority": 10 },
+    "uploadTranscript":     { "label": "Upload your transcript", "cta": "Upload PDF" },
+    "uploadEssay":          { "label": "Upload your essay", "cta": "Upload file" },
+    "uploadHeadshot":       { "label": "Upload a headshot", "cta": "Upload image" },
+    "uploadRecommendation": { "label": "Upload recommendation letter", "cta": "Upload PDF" },
+    "paywallCTA":           { "label": "Finish applications (Free trial)", "cta": "Start Free Trial", "modal": "paywall", "sticky": true, "priority": 20 }
   }
 }

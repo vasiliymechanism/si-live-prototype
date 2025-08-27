@@ -1,39 +1,76 @@
 {
-  "//": "Scholarship lifecycle defaults. Scholarships can override per-state.",
+  // Global state machine (random/default path)
+  "version": 1,
   "start": "scanning",
   "states": {
     "scanning": {
-      "durationMs": [600, 1200], "advanceProb": 1.0, "next": "analyzing"
+      "label": "Searching sources…",
+      "durationMs": [800, 1500],
+      "progress": [0, 15],
+      "next": "analyzing"
     },
+
     "analyzing": {
-      "durationMs": [700, 1300], "advanceProb": 0.95, "next": "matched"
+      "label": "Reviewing eligibility…",
+      "durationMs": [1200, 1800],
+      "progress": [15, 35],
+      // 90% proceed to matched, 10% end as no match
+      "next": [
+        { "to": "matched", "weight": 0.9 },
+        { "to": "noMatch", "weight": 0.1 }
+      ]
     },
+
     "matched": {
-      "durationMs": [400, 800], "advanceProb": 1.0, "next": "confirmEligibility"
+      "label": "Found a match",
+      "durationMs": [900, 1400],
+      "progress": [35, 55],
+      "next": "confirmEligibility"
     },
+
     "confirmEligibility": {
-      "durationMs": [1200, 2200],
-      "advanceProb": 0.85,
-      "next": "collectDocuments",
-      "blockers": [
-        // D.10: our special “updateProfile” blocker that triggers quiz
-        { "type": "custom", "id": "updateProfileViaQuiz", "requires": ["quizCompleted"] },
-        // D.11: unblock if GPA exists
-        { "type": "userField", "field": "gpa" }
-      ]
+      "label": "Confirm eligibility",
+      "durationMs": [1000, 1600],
+      "progress": [55, 70],
+
+      // RANDOM/BY-DEFAULT: choose a subset of blockers from this pool.
+      // We’ll pick 1–2 unsatisfied blockers, weighted by "weight".
+      // Each chosen blocker pauses the item; ALL chosen must be satisfied to resume.
+      "blockers": {
+        "mode": "subset",
+        "pick": { "min": 1, "max": 2 },          // choose 1–2 blockers
+        // If you prefer independent probabilities instead of "pick", you can use:
+        // "includeProb": true and set "prob" on each pool item (engine supports both).
+        "pool": [
+          { "id": "updateProfileViaQuiz",   "type": "custom", "weight": 1.0, "actionType": "updateProfileViaQuiz" },
+          { "id": "transcriptUploaded",     "type": "flag",   "weight": 0.9, "actionType": "uploadTranscript" },
+          { "id": "headshotUploaded",       "type": "flag",   "weight": 0.35, "actionType": "uploadHeadshot" },
+          { "id": "recommendationUploaded", "type": "flag",   "weight": 0.45, "actionType": "uploadRecommendation" }
+        ]
+      },
+
+      "next": "readyToSubmit"
     },
-    "collectDocuments": {
-      "durationMs": [1000, 2000], "advanceProb": 0.9, "next": "readyToSubmit",
-      "blockers": [
-        { "type": "scholarshipField", "field": "transcriptRequired", "value": true, "requires": ["transcriptUploaded"] },
-        { "type": "scholarshipField", "field": "essayRequired", "value": true, "requires": ["essayUploaded"] }
-      ]
-    },
+
     "readyToSubmit": {
-      "durationMs": [800, 1500], "advanceProb": 0.95, "next": "submitted"
+      "label": "Ready to submit",
+      "durationMs": [800, 1200],
+      "progress": [70, 95],
+      "next": "submitted"
     },
+
     "submitted": {
-      "durationMs": [0, 0], "advanceProb": 1.0, "next": null
+      "label": "Application submitted",
+      "durationMs": [0, 0],
+      "progress": [100, 100],
+      "terminal": true
+    },
+
+    "noMatch": {
+      "label": "Not a fit",
+      "durationMs": [0, 0],
+      "progress": [100, 100],
+      "terminal": true
     }
   }
 }

@@ -85,13 +85,19 @@ export function addScholarshipCard(s) {
 }
 
 export function updateScholarshipCardState(id, state, progressPct = null) {
-  const card = dom.liveFeed?.querySelector(`.sch-card[data-id="${id}"]`);
+  const card = document.querySelector(`.sch-card[data-id="${id}"]`);
   if (!card) return;
   card.dataset.state = state;
   const stateEl = card.querySelector('.sch-state');
-  if (stateEl) stateEl.textContent = state;
+  if (stateEl) {
+    const pretty = store.sm?.states?.[state]?.label || state;
+    stateEl.textContent = pretty;
+  }
   const bar = card.querySelector('.bar');
-  if (bar && progressPct != null) bar.style.width = `${progressPct}%`;
+  if (bar && progressPct != null) {
+    bar.style.width = `${progressPct}%`;
+    bar.classList.remove('animating'); void bar.offsetWidth; bar.classList.add('animating');
+  }
 }
 
 
@@ -110,9 +116,19 @@ export function renderActionQueue(items) {
       <button class="aq-cta">${item.cta || 'Open'}</button>
     `;
     li.querySelector('.aq-cta').addEventListener('click', () => {
-      if (item.modal === 'quiz') bus.emit(EV.QUIZ_OPEN, { source: 'action-queue' });
-      else if (item.modal === 'paywall') bus.emit(EV.PAYWALL_SHOW);
-      else alert(`TODO: ${item.type}`);
+      if (item.modal === 'quiz') {
+        bus.emit(EV.QUIZ_OPEN, { source: 'action-queue' });
+      } else if (item.modal === 'paywall') {
+        bus.emit(EV.PAYWALL_SHOW);
+      } else if (item.type === 'uploadTranscript') {
+        store.flags.add('transcriptUploaded');
+        bus.emit(EV.ACTION_COMPLETED, { type: 'uploadTranscript' });
+      } else if (item.type === 'uploadEssay') {
+        store.flags.add('essayUploaded');
+        bus.emit(EV.ACTION_COMPLETED, { type: 'uploadEssay' });
+      } else {
+        alert(`TODO: ${item.type}`);
+      }
     });
     dom.actionQueue.appendChild(li);
   });
