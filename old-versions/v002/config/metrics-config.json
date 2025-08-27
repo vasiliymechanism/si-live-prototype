@@ -1,0 +1,75 @@
+{
+  "metrics": [
+    {
+      "id": "matches",
+      "label": "Matches",
+      "calculation": "countScholarshipsInStates",
+      "includedStates": [
+        "matchFound",
+        "gettingRequirements",
+        "preparingMaterials",
+        "writingEssay",
+        "finalizingApplication",
+        "readyToSubmit",
+        "applicationSubmitted",
+        "actionRequired:uploadDocument",
+        "actionRequired:updateProfile"
+      ]
+    },
+    {
+      "id": "potentialAwards",
+      "label": "Potential",
+      "calculation": "sumAmounts",
+      "excludedStates": [
+        "notEligible",
+        "deadlinePassed"
+      ],
+      "format": "currency"
+    },
+    {
+      "id": "applicationsStarted",
+      "label": "Started",
+      "calculation": "countScholarshipsInStates",
+      "includedStates": [
+        "preparingMaterials",
+        "writingEssay",
+        "finalizingApplication",
+        "readyToSubmit",
+        "applicationSubmitted",
+        "actionRequired:uploadDocument",
+        "actionRequired:updateProfile"
+      ]
+    },
+    {
+      "id": "readyToApply",
+      "label": "Ready",
+      "calculation": "countScholarshipsInStates",
+      "includedStates": [
+        "readyToSubmit"
+      ]
+    },
+    {
+      "id": "nextDeadline",
+      "label": "Next Due",
+      "calculation": "nearestDeadline",
+      "excludedStates": [
+        "notEligible",
+        "deadlinePassed",
+        "applicationSubmitted"
+      ],
+      "format": "days"
+    },
+    {
+      "id": "timeSaved",
+      "label": "Time Saved",
+      "calculation": "sumTimeSaved",
+      "format": "time"
+    }
+  ],
+  "updateInterval": 1000,
+  "paywallTrigger": {
+    "metric": "readyToApply",
+    "threshold": 3,
+    "delay": 2000
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "types": {
+    "updateProfileViaQuiz": {
+      "label": "Confirm eligibility to unlock matches",
+      "cta": "Start",
+      "modal": "quiz",
+      "sticky": true
+    },
+    "uploadTranscript": {
+      "label": "Upload your transcript",
+      "cta": "Upload PDF",
+      "sets": ["transcriptUploaded"]
+    },
+    "uploadEssay": {
+      "label": "Upload your essay",
+      "cta": "Upload file",
+      "sets": ["essayUploaded"]
+    },
+    "paywallCTA": {
+      "label": "Finish applications (Free trial)",
+      "cta": "Start Free Trial",
+      "modal": "paywall",
+      "sticky": true
+    }
+  }
+}

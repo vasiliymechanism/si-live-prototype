@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Scholarship Tracker — Mobile Mockup (2025)</title>
+  <style>
+    :root{
+      --bg: #0b0d12; --surface: #11141b; --surface-2:#151924; --text:#e9ecf5;
+      --muted:#9aa3b2; --primary:#4c82ff; --good:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+      --divider:rgba(255,255,255,0.07); --shadow:0 8px 28px rgba(0,0,0,0.35);
+      --radius-xl:16px; --radius-lg:12px;
+    }
+    body{margin:0; font-family:ui-sans-serif,system-ui; background:var(--bg); color:var(--text); overflow:hidden;}
+    
+    /* Onboarding styles */
+    .onboarding {
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .start-button {
+      background: linear-gradient(135deg, var(--primary), #7aa2ff);
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      min-width: 280px;
+    }
+    
+    .start-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(76, 130, 255, 0.3);
+    }
+    
+    .start-button:active {
+      transform: translateY(0);
+    }
+    
+    .onboarding-text {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    
+    .onboarding-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 300px;
+      line-height: 1.4;
+    }
+    
+    /* App container - hidden initially, no bottom padding until nav appears */
+    .app{
+      height:100dvh;
+      max-width:420px; 
+      margin:0 auto; 
+      padding:calc(8px + env(safe-area-inset-top)) 12px 8px; 
+      display:flex; 
+      flex-direction:column; 
+      gap:10px;
+      overflow:hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+    
+    .app.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .app.with-nav {
+      height: calc(100dvh - 74px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      transition: height 0.6s ease;
+    }
+    
+    /* Navigation - hidden initially with pointer-events disabled */
+    .nav{
+      position:fixed; 
+      bottom:calc(10px + env(safe-area-inset-bottom)); 
+      left:50%; 
+      transform:translateX(-50%) translateY(100px); 
+      width:min(420px,92%); 
+      display:flex; 
+      justify-content:space-around; 
+      background:var(--surface); 
+      border:1px solid var(--divider); 
+      border-radius:14px; 
+      box-shadow:var(--shadow); 
+      padding:8px;
+      opacity: 0;
+      transition: all 0.6s ease 0.3s;
+      pointer-events: none; /* Prevent clicks when hidden */
+    }
+    
+    .nav.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto; /* Re-enable clicks when visible */
+    }
+    
+    /* Tab placeholder - same styling but not interactive */
+    .nav-placeholder {
+      position: fixed;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(420px, 92%);
+      height: 58px; /* Same height as real nav */
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      border-radius: 14px;
+      opacity: 0.3;
+      display: none;
+    }
+    
+    .nav-placeholder.visible {
+      display: block;
+    }
+
+    .accordion{
+      border-radius:var(--radius-xl); 
+      background:var(--surface); 
+      border:1px solid var(--divider); 
+      box-shadow:var(--shadow); 
+      overflow:hidden; 
+      cursor:pointer;
+      transition: all 0.35s ease;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .accordion[data-open="false"] {
+      flex: 0 0 auto; /* Don't grow, don't shrink, auto height */
+    }
+    
+    .accordion[data-open="true"] {
+      flex: 1 1 0; /* Grow to fill space, but respect max constraints */
+      max-height: none; /* Remove fixed constraint initially */
+      transition: all 0.6s ease;
+    }
+    
+    /* Dynamic height constraints based on visible sections */
+    .app.has-queue .accordion[data-open="true"] {
+      max-height: calc(100% - 60px); /* Reserve space for one collapsed section */
+    }
+    
+    .app.has-metrics .accordion[data-open="true"] {
+      max-height: calc(100% - 140px); /* Reserve space for metrics bar + one collapsed section */
+    }
+    
+    .acc-toggle{
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      padding:12px; 
+      user-select:none;
+      flex-shrink: 0;
+    }
+    
+    .acc-body{
+      overflow: hidden; 
+      transition: all .35s ease; 
+      border-top: 1px solid var(--divider);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1 1 0; /* Take remaining space but don't exceed parent */
+    }
+    
+    .accordion[data-open="false"] .acc-body{
+      max-height: 0;
+      border-top: none;
+      flex: 0 0 0;
+    }
+    
+    .accordion[data-open="true"] .acc-body{
+      flex: 1 1 0;
+      overflow: hidden;
+      height: 0; /* Force content to be constrained by flex */
+    }
+    
+    .acc-toggle .title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .acc-toggle .right{font-weight:700; font-size:16px;}
+
+    /* Fixed metrics bar at top */
+    .metrics-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.6s ease;
+    }
+    
+    .metrics-bar.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .metrics-header {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .metrics-grid {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .metric-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      min-height: 44px;
+      text-align: center;
+    }
+    
+    .metric-box .value {
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    
+    .metric-box .label {
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .feed-item,.task{border-radius:var(--radius-lg); background:var(--surface-2); border:1px solid var(--divider); padding:10px; margin-bottom: 8px;}
+    .feed-item:last-child,.task:last-child{margin-bottom: 0;}
+    .fi-top{display:flex; justify-content:space-between; font-size:14px; font-weight:600;}
+    .bar{height:8px; border-radius:999px; background:rgba(255,255,255,0.08); margin-top:4px;}
+    .bar .fill{
+      height:100%; 
+      width:var(--w,0%);
+      border-radius:999px;
+      transition: all 0.3s ease;
+    }
+    .bar .fill.normal{background:linear-gradient(90deg,var(--primary),#7aa2ff);}
+    .bar .fill.caution{background:linear-gradient(90deg,var(--warn),#fbbf24);}
+    .bar .fill.failed{background:linear-gradient(90deg,#6b7280,#9ca3af);}
+    .bar .fill.success{background:linear-gradient(90deg,var(--good),#4ade80);}
+    
+    .status-text{
+      font-size:10px; 
+      color:var(--muted); 
+      margin-top:2px;
+      transition: color 0.3s ease;
+    }
+    .status-text.caution{color:var(--warn);}
+    .status-text.failed{color:#9ca3af;}
+    .status-text.success{color:var(--good);}
+    .pill-mini{font-size:10px; padding:2px 6px; border-radius:999px; border:1px solid var(--divider);}
+    .older{opacity:0.65;}
+
+    .btn{border:1px solid var(--divider); background:transparent; color:var(--text); border-radius:10px; padding:6px 10px; font-size:12px;}
+    .btn.primary{background:var(--primary); border-color:transparent; color:#fff;}
+    .actions{display:flex; gap:8px; margin-top:6px;}
+
+    .nav{position:fixed; bottom:calc(10px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:min(420px,92%); display:flex; justify-content:space-around; background:var(--surface); border:1px solid var(--divider); border-radius:14px; box-shadow:var(--shadow); padding:8px;}
+    .nav a{flex:1; text-align:center; text-decoration:none; color:var(--muted); font-size:11px; padding:6px 0; border-radius:10px;}
+    .nav a.active{color:var(--text); background:var(--surface-2); border:1px solid var(--divider);}
+
+    /* Content containers with proper scrolling */
+    .feed-content, .queue-content {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    
+    .feed-content .feed-item, .queue-content .task {
+      margin-bottom: 8px;
+    }
+    
+    .searching-indicator {
+      border-radius: var(--radius-lg);
+      background: var(--surface-2);
+      border: 1px solid var(--divider);
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-style: italic;
+      color: var(--muted);
+      transition: all 0.3s ease;
+    }
+    
+    .searching-icon {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    .ellipsis {
+      display: inline-block;
+    }
+    
+    .ellipsis::after {
+      content: '';
+      animation: ellipsis 1.5s infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    @keyframes ellipsis {
+      0% { content: ''; }
+      33% { content: '.'; }
+      66% { content: '..'; }
+      100% { content: '...'; }
+    }
+    
+    .feed-content .feed-item:last-child, .queue-content .task:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding" id="onboarding">
+    <div class="onboarding-text">Find Your Perfect Scholarships</div>
+    <div class="onboarding-subtitle">Our AI will scan thousands of scholarships and automatically match you with the best opportunities</div>
+    <button class="start-button" onclick="startApp()">Start matching me to scholarships</button>
+  </div>
+
+  <div class="app" id="app">
+
+    <!-- Fixed Metrics Bar -->
+    <div class="metrics-bar" id="metrics-bar" style="display: none;">
+      <div class="metrics-header">Your Stats</div>
+      <div class="metrics-grid" id="metrics-grid">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Live Feed Accordion (default open) -->
+    <section class="accordion" id="feed" data-open="true">
+      <div class="acc-toggle">
+        <div>
+          <span class="title">Your Progress</span><br>
+          <span class="subtitle">Live feed</span>
+        </div>
+        <span class="right">−</span>
+      </div>
+      <div class="acc-body">
+        <div class="feed-content" id="feed-content">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Required Accordion -->
+    <section class="accordion" id="queue" data-open="false" style="display: none;">
+      <div class="acc-toggle">
+        <div>
+          <span class="title">Action Required</span><br>
+          <span class="subtitle">Unlock more scholarships</span>
+        </div>
+        <span class="right">+</span>
+      </div>
+      <div class="acc-body">
+        <div class="queue-content" id="queue-content">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+  </div>
+  
+  <!-- Tab placeholder for visual layout -->
+  <div class="nav-placeholder" id="nav-placeholder"></div>
+  
+  <!-- Actual navigation -->
+  <nav class="nav" id="nav">
+    <a class="active" href="#">Home</a>
+    <a href="#">To-Do</a>
+    <a href="#">Stats</a>
+    <a href="#">Account</a>
+  </nav>
+
+  <script>
+    class ConfigurableScholarshipApp {
+      constructor() {
+        this.configs = {};
+        this.activeScholarships = new Map();
+        this.simulationIndex = 0;
+        this.isSearching = false;
+        this.appInitialized = false;
+        this.simulationData = [];
+        this.completedSteps = new Set();
+      }
+
+      async loadConfigs() {
+        const configFiles = [
+          'timing-config.json',
+          'scholarship-states-config.json', 
+          'metrics-config.json',
+          'ui-flow-config.json'
+        ];
+
+        for (const file of configFiles) {
+          try {
+            const response = await fetch(`./config/${file}`);
+            const configName = file.replace('-config.json', '').replace('.json', '');
+            this.configs[configName] = await response.json();
+          } catch (error) {
+            console.warn(`Failed to load ${file}, using defaults:`, error);
+            this.loadDefaultConfig(file);
+          }
+        }
+      }
+
+      loadDefaultConfig(filename) {
+        const defaults = {
+          'timing-config.json': {
+            onboarding: { fadeOutDuration: 400, appRevealDelay: 600, feedSectionDelay: 600 },
+            uiReveal: { queueSectionDelay: 5600, metricsAndNavDelay: 10600, staggerDelay: 50 },
+            simulation: { 
+              initialSearchDelay: 3000, 
+              stateTransitionMin: 500, 
+              stateTransitionMax: 1500, 
+              searchingDurationMin: 2000, 
+              searchingDurationMax: 4000,
+              terminalStateNextSearchMin: 1000,
+              terminalStateNextSearchMax: 2000,
+              simulationResetDelay: 10000
+            }
+          },
+          'scholarship-states-config.json': {
+            states: {
+              SCANNING: { progress: 5, label: "Scanning scholarship database", type: "normal" },
+              CHECKING_DEADLINE: { progress: 15, label: "Checking application deadline", type: "normal" },
+              CHECKING_ELIGIBILITY: { progress: 35, label: "Verifying eligibility requirements", type: "normal" },
+              MATCH_FOUND: { progress: 55, label: "Match found! Proceeding with application", type: "success" },
+              GETTING_REQUIREMENTS: { progress: 65, label: "Gathering application requirements", type: "normal" },
+              PREPARING_MATERIALS: { progress: 75, label: "Preparing application materials", type: "normal" },
+              GENERATING_ESSAY: { progress: 85, label: "AI generating personalized essay", type: "normal" },
+              FINALIZING_APPLICATION: { progress: 95, label: "Finalizing application package", type: "normal" },
+              READY_TO_SUBMIT: { progress: 100, label: "Application ready for submission", type: "success" },
+              SUBMITTED: { progress: 100, label: "Application submitted successfully", type: "success" },
+              DEADLINE_PASSED: { progress: 15, label: "Deadline has passed", type: "failed" },
+              NOT_ELIGIBLE: { progress: 35, label: "Not eligible for this scholarship", type: "failed" },
+              ACTION_REQUIRED_MATERIALS: { progress: 75, label: "Action required: Upload documents", type: "caution" },
+              ACTION_REQUIRED_ESSAY: { progress: 85, label: "Action required: Review essay", type: "caution" }
+            },
+            transitions: {
+              SCANNING: { CHECKING_DEADLINE: 1.0 },
+              CHECKING_DEADLINE: { CHECKING_ELIGIBILITY: 0.75, DEADLINE_PASSED: 0.25 },
+              CHECKING_ELIGIBILITY: { MATCH_FOUND: 0.65, NOT_ELIGIBLE: 0.35 },
+              MATCH_FOUND: { GETTING_REQUIREMENTS: 1.0 },
+              GETTING_REQUIREMENTS: { PREPARING_MATERIALS: 1.0 },
+              PREPARING_MATERIALS: { ACTION_REQUIRED_MATERIALS: 0.3, GENERATING_ESSAY: 0.7 },
+              ACTION_REQUIRED_MATERIALS: { GENERATING_ESSAY: 1.0 },
+              GENERATING_ESSAY: { ACTION_REQUIRED_ESSAY: 0.4, FINALIZING_APPLICATION: 0.6 },
+              ACTION_REQUIRED_ESSAY: { FINALIZING_APPLICATION: 1.0 },
+              FINALIZING_APPLICATION: { READY_TO_SUBMIT: 0.6, SUBMITTED: 0.4 },
+              READY_TO_SUBMIT: { SUBMITTED: 1.0 }
+            },
+            terminalStates: ["DEADLINE_PASSED", "NOT_ELIGIBLE", "ACTION_REQUIRED_MATERIALS", "ACTION_REQUIRED_ESSAY", "SUBMITTED"]
+          },
+          'metrics-config.json': {
+            metrics: [
+              { 
+                key: "timeSaved", 
+                label: "saved", 
+                format: "duration", 
+                calculation: { 
+                  type: "sum", 
+                  source: "scholarships", 
+                  field: "estimatedTimeToComplete",
+                  filter: { currentState: ["SUBMITTED", "READY_TO_SUBMIT"] }
+                } 
+              },
+              { 
+                key: "totalApplied", 
+                label: "applied", 
+                format: "currency", 
+                calculation: { 
+                  type: "sum", 
+                  source: "scholarships", 
+                  field: "amount",
+                  filter: { currentState: ["SUBMITTED"] }
+                } 
+              },
+              { 
+                key: "matchesFound", 
+                label: "matches", 
+                format: "number", 
+                calculation: { 
+                  type: "count", 
+                  source: "scholarships",
+                  filter: { currentState: ["MATCH_FOUND", "GETTING_REQUIREMENTS", "PREPARING_MATERIALS", "GENERATING_ESSAY", "FINALIZING_APPLICATION", "READY_TO_SUBMIT", "SUBMITTED"] }
+                } 
+              },
+              { 
+                key: "submitted", 
+                label: "submitted", 
+                format: "number", 
+                calculation: { 
+                  type: "count", 
+                  source: "scholarships",
+                  filter: { currentState: ["SUBMITTED"] }
+                } 
+              },
+              { 
+                key: "actionRequired", 
+                label: "blocked", 
+                format: "number", 
+                calculation: { 
+                  type: "count", 
+                  source: "scholarships",
+                  filter: { currentState: ["ACTION_REQUIRED_MATERIALS", "ACTION_REQUIRED_ESSAY"] }
+                } 
+              }
+            ]
+          },
+          'ui-flow-config.json': {
+            revealSequence: [
+              { step: "feedSection", delay: 0, dependencies: ["onboardingComplete"], effects: ["showFeedSection", "startSimulation"] },
+              { step: "queueSection", delay: 5000, dependencies: ["feedSection"], effects: ["showQueueSection", "addHasQueueClass", "addWithNavClass", "showNavPlaceholder"] },
+              { step: "metricsAndNav", delay: 5000, dependencies: ["queueSection"], effects: ["showMetricsBar", "showNavigation", "hideNavPlaceholder", "addHasMetricsClass"] }
+            ]
+          }
+        };
+        
+        const configName = filename.replace('-config.json', '').replace('.json', '');
+        this.configs[configName] = defaults[filename] || {};
+      }
+
+      getRandomDelay(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      getStateTransitionDelay() {
+        const config = this.configs.timing.simulation;
+        return this.getRandomDelay(config.stateTransitionMin, config.stateTransitionMax);
+      }
+
+      getSearchingDuration() {
+        const config = this.configs.timing.simulation;
+        return this.getRandomDelay(config.searchingDurationMin, config.searchingDurationMax);
+      }
+
+      getNextState(currentState) {
+        const transitions = this.configs['scholarship-states'].transitions[currentState];
+        if (!transitions) return null;
+
+        const rand = Math.random();
+        let cumulative = 0;
+
+        for (const [nextState, probability] of Object.entries(transitions)) {
+          cumulative += probability;
+          if (rand <= cumulative) {
+            return nextState;
+          }
+        }
+
+        return Object.keys(transitions)[0];
+      }
+
+      isTerminalState(state) {
+        return this.configs['scholarship-states'].terminalStates.includes(state);
+      }
+
+      calculateMetrics() {
+        const scholarshipData = Array.from(this.activeScholarships.values());
+        const calculatedMetrics = [];
+
+        for (const metricConfig of this.configs.metrics.metrics) {
+          let value = 0;
+
+          switch (metricConfig.calculation.type) {
+            case 'count':
+              value = this.filterScholarships(scholarshipData, metricConfig.calculation.filter).length;
+              break;
+            case 'sum':
+              const filteredData = this.filterScholarships(scholarshipData, metricConfig.calculation.filter);
+              value = filteredData.reduce((sum, item) => sum + (item[metricConfig.calculation.field] || 0), 0);
+              break;
+            case 'average':
+              const avgData = this.filterScholarships(scholarshipData, metricConfig.calculation.filter);
+              if (avgData.length > 0) {
+                const total = avgData.reduce((sum, item) => sum + (item[metricConfig.calculation.field] || 0), 0);
+                value = Math.round(total / avgData.length);
+              }
+              break;
+          }
+
+          calculatedMetrics.push({
+            key: this.formatValue(value, metricConfig.format),
+            label: metricConfig.label
+          });
+        }
+
+        return calculatedMetrics;
+      }
+
+      filterScholarships(data, filter) {
+        if (!filter) return data;
+        
+        return data.filter(scholarship => {
+          for (const [field, criteria] of Object.entries(filter)) {
+            if (Array.isArray(criteria)) {
+              if (!criteria.includes(scholarship[field])) return false;
+            } else {
+              if (scholarship[field] !== criteria) return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      formatValue(value, format) {
+        switch (format) {
+          case 'currency':
+            return `${Math.round(value).toLocaleString()}`;
+          case 'duration':
+            const totalMinutes = Math.round(value);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            return `${hours}h ${minutes}m`;
+          case 'number':
+          default:
+            return Math.round(value).toString();
+        }
+      }
+
+      async executeUIFlow() {
+        const flowConfig = this.configs['ui-flow'];
+        this.completedSteps = new Set();
+        this.completedSteps.add('onboardingComplete');
+
+        // Process steps that don't have conditions first
+        for (const step of flowConfig.revealSequence) {
+          if (!step.conditions) {
+            const dependenciesMet = step.dependencies.every(dep => this.completedSteps.has(dep));
+            if (!dependenciesMet) continue;
+
+            await new Promise(resolve => setTimeout(resolve, step.delay));
+
+            for (const effect of step.effects) {
+              await this.executeEffect(effect);
+            }
+
+            this.completedSteps.add(step.step);
+          }
+        }
+      }
+
+      checkConditionalSteps() {
+        const flowConfig = this.configs['ui-flow'];
+        
+        for (const step of flowConfig.revealSequence) {
+          // Skip if already completed or no conditions
+          if (this.completedSteps.has(step.step) || !step.conditions) continue;
+
+          // Check dependencies
+          const dependenciesMet = step.dependencies.every(dep => this.completedSteps.has(dep));
+          if (!dependenciesMet) continue;
+
+          // Check conditions
+          let conditionMet = false;
+          if (step.conditions.type === 'scholarshipState') {
+            const requirement = step.conditions.requirement;
+            const requiredStates = flowConfig.conditions[requirement];
+            
+            // Check if any scholarship has reached the required states
+            const scholarshipStates = Array.from(this.activeScholarships.values()).map(s => s.currentState);
+            conditionMet = requiredStates.some(state => scholarshipStates.includes(state));
+          }
+
+          if (conditionMet) {
+            // Execute with delay
+            setTimeout(async () => {
+              for (const effect of step.effects) {
+                await this.executeEffect(effect);
+              }
+              this.completedSteps.add(step.step);
+            }, step.delay);
+          }
+        }
+      }
+
+      async executeEffect(effect) {
+        const elements = {
+          app: document.getElementById('app'),
+          feedSection: document.getElementById('feed'),
+          queueSection: document.getElementById('queue'),
+          metricsBar: document.getElementById('metrics-bar'),
+          nav: document.getElementById('nav'),
+          navPlaceholder: document.getElementById('nav-placeholder')
+        };
+
+        switch (effect) {
+          case 'showFeedSection':
+            elements.feedSection.classList.add('visible');
+            break;
+          case 'startSimulation':
+            setTimeout(() => this.showSearchingIndicator(), this.configs.timing.simulation.initialSearchDelay);
+            break;
+          case 'showQueueSection':
+            elements.queueSection.style.display = 'flex';
+            setTimeout(() => elements.queueSection.classList.add('visible'), 50);
+            break;
+          case 'addHasQueueClass':
+            elements.app.classList.add('has-queue');
+            break;
+          case 'addWithNavClass':
+            elements.app.classList.add('with-nav');
+            break;
+          case 'showNavPlaceholder':
+            elements.navPlaceholder.classList.add('visible');
+            break;
+          case 'showMetricsBar':
+            elements.metricsBar.style.display = 'flex';
+            setTimeout(() => elements.metricsBar.classList.add('visible'), 50);
+            break;
+          case 'showNavigation':
+            elements.navPlaceholder.classList.remove('visible');
+            elements.nav.classList.add('visible');
+            break;
+          case 'hideNavPlaceholder':
+            elements.navPlaceholder.classList.remove('visible');
+            break;
+          case 'addHasMetricsClass':
+            elements.app.classList.add('has-metrics');
+            break;
+        }
+      }
+
+      progressScholarship(scholarshipId) {
+        const scholarship = this.activeScholarships.get(scholarshipId);
+        if (!scholarship) return;
+
+        const nextState = this.getNextState(scholarship.currentState);
+        if (nextState) {
+          scholarship.currentState = nextState;
+          scholarship.lastUpdated = Date.now();
+
+          // Don't overwrite the estimatedTimeToComplete from JSON data
+          // The stateConfig.duration is for transition timing, not the scholarship's time value
+          const stateConfig = this.configs['scholarship-states'].states[nextState];
+          // Remove this logic that was overwriting the JSON data:
+          // if (stateConfig && stateConfig.duration) {
+          //   scholarship.estimatedTimeToComplete = this.getRandomDelay(
+          //     stateConfig.duration.min, 
+          //     stateConfig.duration.max
+          //   );
+          // }
+
+          this.updateFeedDisplay();
+          this.updateMetricsDisplay();
+          this.checkConditionalSteps();
+
+          if (!this.isTerminalState(nextState)) {
+            setTimeout(() => {
+              this.progressScholarship(scholarshipId);
+            }, this.getStateTransitionDelay());
+          } else {
+            const config = this.configs.timing.simulation;
+            setTimeout(() => {
+              if (this.simulationIndex < this.simulationData.length) {
+                this.showSearchingIndicator();
+              }
+            }, this.getRandomDelay(config.terminalStateNextSearchMin, config.terminalStateNextSearchMax));
+          }
+        }
+      }
+
+      updateFeedDisplay() {
+        const feedContainer = document.getElementById('feed-content');
+        let html = '';
+
+        if (this.isSearching) {
+          html += `<div class="searching-indicator">
+            <div class="searching-icon"></div>
+            <span>Searching for new scholarships<span class="ellipsis"></span></span>
+          </div>`;
+        }
+
+        const sortedScholarships = Array.from(this.activeScholarships.values())
+          .sort((a, b) => b.lastUpdated - a.lastUpdated);
+
+        sortedScholarships.forEach(scholarship => {
+          const stateConfig = this.configs['scholarship-states'].states[scholarship.currentState];
+          const isOlder = sortedScholarships.indexOf(scholarship) >= 6;
+
+          html += `<article class="feed-item ${isOlder ? 'older' : ''}">
+            <div class="fi-top">
+              <div>${stateConfig.icon || ''} ${scholarship.name}</div>
+              <div class="pill-mini">${stateConfig.progress}%</div>
+            </div>
+            <div class="bar">
+              <div class="fill ${stateConfig.type}" style="--w:${stateConfig.progress}%"></div>
+            </div>
+            <div class="status-text ${stateConfig.type}">${stateConfig.label}</div>
+          </article>`;
+        });
+
+        feedContainer.innerHTML = html;
+        feedContainer.scrollTop = 0;
+      }
+
+      updateMetricsDisplay() {
+        const metrics = this.calculateMetrics();
+        const metricsGrid = document.getElementById('metrics-grid');
+        
+        metricsGrid.innerHTML = metrics.map(m => 
+          `<div class="metric-box">
+            <div class="value">${m.key}</div>
+            <div class="label">${m.label}</div>
+          </div>`
+        ).join('');
+      }
+
+      showSearchingIndicator() {
+        this.isSearching = true;
+        this.updateFeedDisplay();
+
+        setTimeout(() => {
+          this.addLiveFeedUpdate();
+        }, this.getSearchingDuration());
+      }
+
+      async startApp() {
+        if (this.appInitialized) return;
+        this.appInitialized = true;
+
+        await this.loadConfigs();
+        await this.loadSimulationData();
+        await this.loadTasks();
+
+        const onboarding = document.getElementById('onboarding');
+        const app = document.getElementById('app');
+
+        const timingConfig = this.configs.timing.onboarding;
+        
+        onboarding.style.opacity = '0';
+        onboarding.style.transform = 'translateY(-20px)';
+
+        setTimeout(() => {
+          onboarding.style.display = 'none';
+          app.classList.add('visible');
+          
+          setTimeout(() => {
+            this.executeUIFlow();
+          }, timingConfig.feedSectionDelay);
+          
+        }, timingConfig.fadeOutDuration);
+      }
+
+      async loadSimulationData() {
+        try {
+          const response = await fetch('./data/feed.json');
+          this.simulationData = await response.json();
+        } catch (error) {
+          console.warn('Failed to load simulation data, using fallback:', error);
+          this.simulationData = [
+            {name: "Future Leaders Engineering Grant", amount: 5000, estimatedTimeToComplete: 120},
+            {name: "Women in Tech Scholarship", amount: 3000, estimatedTimeToComplete: 90},
+            {name: "Community Impact Award", amount: 2500, estimatedTimeToComplete: 60},
+            {name: "First Generation College Grant", amount: 4000, estimatedTimeToComplete: 100},
+            {name: "Environmental Science Fellowship", amount: 8000, estimatedTimeToComplete: 200},
+            {name: "Academic Excellence Award", amount: 4500, estimatedTimeToComplete: 110}
+          ];
+        }
+      }
+
+      async loadTasks() {
+        try {
+          const response = await fetch('./data/tasks.json');
+          const tasks = await response.json();
+          this.renderTasks(tasks);
+        } catch (error) {
+          console.warn('Failed to load tasks, using fallback:', error);
+          const fallbackTasks = [
+            {name: "Upload transcript (PDF)", time: "5 min", primaryAction: "Start", secondaryAction: "Later"},
+            {name: "Polish leadership essay", time: "20 min", primaryAction: "Resume", secondaryAction: "Skip"},
+            {name: "Request recommendation letter", time: "2 min", primaryAction: "Start", secondaryAction: "Later"},
+            {name: "Complete financial aid form", time: "15 min", primaryAction: "Start", secondaryAction: "Later"}
+          ];
+          this.renderTasks(fallbackTasks);
+        }
+      }
+
+      renderTasks(tasks) {
+        const container = document.getElementById('queue-content');
+        container.innerHTML = tasks.map(task => 
+          `<article class="task">
+            <div class="fi-top">
+              <div>${task.name}</div>
+              <div class="pill-mini">${task.time}</div>
+            </div>
+            <div class="actions">
+              <button class="btn primary">${task.primaryAction}</button>
+              <button class="btn">${task.secondaryAction}</button>
+            </div>
+          </article>`
+        ).join('');
+      }
+
+      addLiveFeedUpdate() {
+        if (this.simulationIndex < this.simulationData.length) {
+          this.isSearching = false;
+
+          const newScholarship = {
+            ...this.simulationData[this.simulationIndex],
+            id: `scholarship_${this.simulationIndex}`,
+            currentState: 'SCANNING',
+            lastUpdated: Date.now()
+          };
+
+          this.activeScholarships.set(newScholarship.id, newScholarship);
+          this.simulationIndex++;
+
+          this.updateFeedDisplay();
+          this.checkConditionalSteps();
+
+          setTimeout(() => {
+            this.progressScholarship(newScholarship.id);
+          }, 500);
+        } else {
+          // Reset simulation after all items are processed
+          setTimeout(() => {
+            this.simulationIndex = 0;
+            this.activeScholarships.clear();
+            this.isSearching = false;
+            this.updateFeedDisplay();
+            this.updateMetricsDisplay();
+            // Restart the simulation after a delay
+            setTimeout(() => this.showSearchingIndicator(), 5000);
+          }, this.configs.timing?.simulation?.simulationResetDelay || 10000);
+        }
+      }
+    }
+
+    // Initialize the app
+    const scholarshipApp = new ConfigurableScholarshipApp();
+
+    function startApp() {
+      scholarshipApp.startApp();
+    }
+
+    // Initialize accordion functionality
+    document.querySelectorAll('.accordion').forEach(acc => {
+      acc.addEventListener('click', e => {
+        const open = acc.getAttribute('data-open') === 'true';
+        document.querySelectorAll('.accordion').forEach(a => {
+          a.setAttribute('data-open', 'false');
+          a.querySelector('.right').textContent = '+';
+          a.querySelector('.acc-body').setAttribute('aria-hidden', 'true');
+        });
+        if (!open) {
+          acc.setAttribute('data-open', 'true');
+          acc.querySelector('.right').textContent = '−';
+          acc.querySelector('.acc-body').setAttribute('aria-hidden', 'false');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

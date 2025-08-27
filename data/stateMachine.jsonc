@@ -1,0 +1,39 @@
+{
+  "//": "Scholarship lifecycle defaults. Scholarships can override per-state.",
+  "start": "scanning",
+  "states": {
+    "scanning": {
+      "durationMs": [600, 1200], "advanceProb": 1.0, "next": "analyzing"
+    },
+    "analyzing": {
+      "durationMs": [700, 1300], "advanceProb": 0.95, "next": "matched"
+    },
+    "matched": {
+      "durationMs": [400, 800], "advanceProb": 1.0, "next": "confirmEligibility"
+    },
+    "confirmEligibility": {
+      "durationMs": [1200, 2200],
+      "advanceProb": 0.85,
+      "next": "collectDocuments",
+      "blockers": [
+        // D.10: our special “updateProfile” blocker that triggers quiz
+        { "type": "custom", "id": "updateProfileViaQuiz", "requires": ["quizCompleted"] },
+        // D.11: unblock if GPA exists
+        { "type": "userField", "field": "gpa" }
+      ]
+    },
+    "collectDocuments": {
+      "durationMs": [1000, 2000], "advanceProb": 0.9, "next": "readyToSubmit",
+      "blockers": [
+        { "type": "scholarshipField", "field": "transcriptRequired", "value": true, "requires": ["transcriptUploaded"] },
+        { "type": "scholarshipField", "field": "essayRequired", "value": true, "requires": ["essayUploaded"] }
+      ]
+    },
+    "readyToSubmit": {
+      "durationMs": [800, 1500], "advanceProb": 0.95, "next": "submitted"
+    },
+    "submitted": {
+      "durationMs": [0, 0], "advanceProb": 1.0, "next": null
+    }
+  }
+}

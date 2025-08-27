@@ -1,0 +1,184 @@
+{
+  "features": {
+    "enableSpotlight": true,
+    "enableDimming": true,
+    "pauseNewScholarshipsOnAction": false,
+    "pauseAllProgressOnAction": false,
+    "maxVisibleScholarships": 10,
+    "autoExpandActionQueue": false,
+    "showSearchingBetweenScholarships": true
+  },
+  "animations": {
+    "fadeInDuration": 400,
+    "slideUpDuration": 300,
+    "pulseInterval": 300,
+    "glowInterval": 2000,
+    "spinSpeed": 1000,
+    "scholarshipAppearDelay": 1000,
+    "metricUpdateAnimation": true,
+    "progressBar": {
+            "duration": 500,
+            "easing": "ease-out",
+            "showNumbers": true,
+            "numberDuration": 2000,
+            "shimmerEffect": true
+    },
+    "statusTransitions": {
+        "fadeTime": 200,
+        "preserveElement": true
+    },
+    "milestones": {
+        "enabled": true,
+        "thresholds": [50, 90, 100],
+        "effects": {
+            "50": "milestoneBounce",
+            "90": "nearCompletion",
+            "100": "completionGlow"
+        }
+    },
+    "urgency": {
+        "enabled": true,
+        "flashCount": 2,
+        "pulseAnimation": "urgencyPulse"
+    }
+  },
+  "onboarding": {
+    "steps": [
+      {
+        "id": "landing",
+        "type": "screen",
+        "content": {
+          "title": "Scholarship Institute",
+          "points": [
+            "Matches you to scholarships",
+            "Writes your essays",
+            "Submits applications automatically"
+          ],
+          "cta": "Start Matching"
+        }
+      },
+      {
+        "id": "searching",
+        "type": "animation",
+        "duration": 3000,
+        "text": "Searching for scholarships..."
+      },
+      {
+        "id": "firstScholarship",
+        "type": "scholarship",
+        "forcedStates": [
+          "scanning",
+          "checkingDeadline",
+          "checkingEligibility",
+          "actionRequired:confirmEligibility"
+        ]
+      },
+      {
+        "id": "transitionToFull",
+        "type": "transition",
+        "elements": [
+          "metricsHeader",
+          "liveFeed",
+          "actionQueue",
+          "footer"
+        ],
+        "spotlight": {
+          "enabled": true,
+          "target": "updateProfileAction",
+          "delay": 500
+        }
+      }
+    ]
+  },
+  "accordion": {
+    "defaultExpanded": "live",
+    "mutuallyExclusive": true,
+    "collapsedHeight": 120,
+    "expandOnClick": true
+  },
+  "feed": {
+    "chronologicalOrder": true,
+    "newestFirst": true,
+    "searchingAnimation": true,
+    "gradualDarkening": true,
+    "darkeningStart": 7,
+    "minOpacity": 0.3
+  },
+  "actionQueue": {
+    "sorting": "deadline",
+    "stickyActions": ["sendApplications"],
+    "highlightPriority": true,
+    "glowEffect": true
+  },
+  "modals": {
+    "backdrop": {
+      "opacity": 0.8,
+      "closeable": true,
+      "exceptions": ["quizModal"]
+    },
+    "position": {
+      "top": 100,
+      "maxHeight": "70vh"
+    },
+    "animations": {
+      "entrance": "slideUp",
+      "exit": "fadeOut"
+    }
+  },
+  "paywall": {
+    "triggerThreshold": 3,
+    "triggerMetric": "readyToApply",
+    "triggerDelay": 2000,
+    "plans": [
+      {
+        "id": "monthly",
+        "name": "Monthly",
+        "price": 20,
+        "period": "mo",
+        "features": [
+          "Unlimited scholarship matching",
+          "AI-powered essay writing",
+          "Automatic submission"
+        ]
+      },
+      {
+        "id": "quarterly",
+        "name": "Quarterly",
+        "price": 15,
+        "period": "mo",
+        "total": 45,
+        "recommended": true,
+        "features": [
+          "Everything in Monthly",
+          "Priority application review",
+          "25% savings"
+        ]
+      },
+      {
+        "id": "semiannual",
+        "name": "Semi-Annual",
+        "price": 10,
+        "period": "mo",
+        "total": 60,
+        "features": [
+          "Everything in Quarterly",
+          "Dedicated support",
+          "50% savings"
+        ]
+      },
+      {
+        "id": "vip",
+        "name": "VIP",
+        "price": 69,
+        "period": "mo",
+        "style": "premium",
+        "features": [
+          "Extra compute resources dedicated to your scholarship search",
+          "Dedicated scholarship search",
+          "Premium essay generation",
+          "White-glove support"
+        ]
+      }
+    ]
+  }
+}

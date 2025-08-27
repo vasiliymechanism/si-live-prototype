@@ -1,0 +1,25 @@
+[
+  {
+    "id": "s1",
+    "name": "Future Leaders Scholarship",
+    "award": 2500,
+    "deadline": "2025-10-15",
+    "essayRequired": true,
+    "transcriptRequired": false,
+    "scriptPath": null
+  },
+  {
+    "id": "s2",
+    "name": "STEM Excellence Grant",
+    "award": 5000,
+    "deadline": "2025-11-01",
+    "essayRequired": false,
+    "transcriptRequired": true,
+    "scriptPath": [
+      { "state": "scanning" },
+      { "state": "analyzing" },
+      { "state": "matched" },
+      { "state": "confirmEligibility", "pauseFor": "gpa" } // D.12 scripted pause
+    ]
+  }
+]

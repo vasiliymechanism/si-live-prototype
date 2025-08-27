@@ -1,0 +1,93 @@
+{
+  "actionTypes": {
+    "updateProfile": {
+      "title": "Update Profile",
+      "modalType": "quiz",
+      "subtypes": [
+        {
+          "id": "basic-info",
+          "title": "Complete basic information",
+          "description": "Add your name, contact details, and address"
+        },
+        {
+          "id": "academic-history",
+          "title": "Add academic history",
+          "description": "Include your GPA, coursework, and achievements"
+        },
+        {
+          "id": "financial-info",
+          "title": "Update financial information",
+          "description": "Add family income and financial aid details"
+        },
+        {
+          "id": "extracurriculars",
+          "title": "Add extracurricular activities",
+          "description": "List your clubs, sports, and volunteer work"
+        }
+      ]
+    },
+    "uploadDocument": {
+      "title": "Upload Document",
+      "modalType": "input",
+      "subtypes": [
+        {
+          "id": "transcript-unofficial",
+          "title": "Upload transcript (unofficial)",
+          "description": "Upload an unofficial copy of your academic transcript"
+        },
+        {
+          "id": "transcript-official",
+          "title": "Upload transcript (official)",
+          "description": "Upload an official sealed transcript"
+        },
+        {
+          "id": "recommendation",
+          "title": "Upload recommendation letter",
+          "description": "Upload a letter of recommendation"
+        },
+        {
+          "id": "financial-aid",
+          "title": "Upload financial aid form",
+          "description": "Upload FAFSA or other financial aid documentation"
+        },
+        {
+          "id": "enrollment-proof",
+          "title": "Upload proof of enrollment",
+          "description": "Upload verification of current enrollment status"
+        }
+      ]
+    },
+    "confirmEligibility": {
+      "title": "Confirm Eligibility",
+      "modalType": "quiz",
+      "subtypes": [
+        {
+          "id": "gpa-requirement",
+          "title": "Confirm GPA requirement",
+          "description": "Verify you meet the minimum GPA requirement"
+        },
+        {
+          "id": "enrollment-status",
+          "title": "Verify enrollment status",
+          "description": "Confirm your current enrollment status"
+        },
+        {
+          "id": "major-field",
+          "title": "Confirm major/field of study",
+          "description": "Verify your intended major matches requirements"
+        },
+        {
+          "id": "citizenship",
+          "title": "Verify citizenship status",
+          "description": "Confirm citizenship or residency requirements"
+        }
+      ]
+    },
+    "sendApplications": {
+      "title": "Send Applications",
+      "modalType": "paywall",
+      "priority": true,
+      "sticky": true
+    }
+  }
+}

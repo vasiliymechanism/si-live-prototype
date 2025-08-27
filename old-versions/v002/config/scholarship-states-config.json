@@ -1,0 +1,89 @@
+{
+  "stateProgression": {
+    "scanning": [
+      {
+        "next": "checkingDeadline",
+        "probability": 1.0
+      }
+    ],
+    "checkingDeadline": [
+      {
+        "next": "deadlinePassed",
+        "probability": 0.1
+      },
+      {
+        "next": "checkingEligibility",
+        "probability": 0.9
+      }
+    ],
+    "checkingEligibility": [
+      {
+        "next": "actionRequired:confirmEligibility",
+        "probability": 0.4
+      },
+      {
+        "next": "notEligible",
+        "probability": 0.1
+      },
+      {
+        "next": "matchFound",
+        "probability": 0.5
+      }
+    ],
+    "matchFound": [
+      {
+        "next": "gettingRequirements",
+        "probability": 1.0
+      }
+    ],
+    "gettingRequirements": [
+      {
+        "next": "preparingMaterials",
+        "probability": 1.0
+      }
+    ],
+    "preparingMaterials": [
+      {
+        "next": "actionRequired:uploadDocument",
+        "probability": 0.3
+      },
+      {
+        "next": "writingEssay",
+        "probability": 0.7
+      }
+    ],
+    "writingEssay": [
+      {
+        "next": "finalizingApplication",
+        "probability": 1.0
+      }
+    ],
+    "finalizingApplication": [
+      {
+        "next": "actionRequired:updateProfile",
+        "probability": 0.2
+      },
+      {
+        "next": "readyToSubmit",
+        "probability": 0.8
+      }
+    ],
+    "readyToSubmit": [
+      {
+        "next": "applicationSubmitted",
+        "probability": 1.0,
+        "condition": "userHasFreeTrial"
+      }
+    ]
+  },
+  "terminalStates": [
+    "notEligible",
+    "deadlinePassed",
+    "applicationSubmitted"
+  ],
+  "actionRequiredStates": [
+    "actionRequired:confirmEligibility",
+    "actionRequired:uploadDocument",
+    "actionRequired:updateProfile"
+  ]
+}
