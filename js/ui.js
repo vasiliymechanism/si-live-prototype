@@ -22,12 +22,35 @@ function renderInputModal({ actionType, onSubmit, overrides = {} }) {
     qCfg = window.app.store.quiz.questions[ACTION_TO_QUIZ_QUESTION[actionType]];
   }
 
+  // Find userField info from state machine config if available
+  let userField = null;
+  if (window.app?.store?.sm?.states) {
+    const sm = window.app.store.sm.states;
+    for (const state of Object.values(sm)) {
+      if (state.blockers && state.blockers.pool) {
+        const found = state.blockers.pool.find(b => b.actionType === actionType && b.type === 'userField');
+        if (found && found.field) { userField = found.field; break; }
+      }
+    }
+  }
+
+  // Wrap onSubmit to set userField and emit event if needed
+  const wrappedOnSubmit = (val) => {
+    if (userField) {
+      window.app.store.user[userField] = val;
+      if (window.app.bus && window.app.EV) {
+        window.app.bus.emit(window.app.EV.USER_FIELD_UPDATED, { field: userField, value: val });
+      }
+    }
+    onSubmit?.(val);
+  };
+
   // If quiz config exists, use quiz-style renderer
   if (qCfg) {
-    renderQuizStyleInput(qCfg, content, onSubmit, overrides);
+    renderQuizStyleInput(qCfg, content, wrappedOnSubmit, overrides);
   } else {
     // Otherwise, render a generic file or text input based on actionType
-    renderCustomInput(actionType, content, onSubmit, overrides);
+    renderCustomInput(actionType, content, wrappedOnSubmit, overrides);
   }
 
   openModal(modal);
@@ -148,7 +171,13 @@ function renderCustomInput(actionType, content, onSubmit, overrides) {
   btn.className = 'btn';
   btn.textContent = 'Submit';
   btn.onclick = () => {
-    let val = inputType === 'file' ? (input.files && input.files[0]) : input.value;
+    let val;
+    if (inputType === 'file') {
+      // If multiple files are allowed, use input.files.length; otherwise, 1 if a file is present, 0 if not
+      val = input.files ? input.files.length : 0;
+    } else {
+      val = input.value;  
+    }
     if (!val) return;
     onSubmit?.(val);
     closeModal(inputModal());

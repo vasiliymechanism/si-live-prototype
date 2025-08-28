@@ -112,7 +112,14 @@ function openQuiz(payload = {}) {
       answers[q.var] = value;
       store.user[q.var] = value; // update user immediately
     }
-    
+
+    // Emit a special event for file upload questions to allow blockers to clear immediately
+    // Only emit if a file was actually uploaded (value > 0)
+    if (q && q.type === 'file' && q.var && value && value > 0) {
+      bus.emit(EV.QUIZ_FILE_UPLOADED, { var: q.var, value });
+      console.log('[quiz] emitted QUIZ_FILE_UPLOADED', { var: q.var, value });
+    }
+
     if (q && q.var) {
       bus.emit(EV.QUIZ_QUESTION_ANSWERED, { var: q.var, value });
       console.log('[quiz] emitted QUIZ_QUESTION_ANSWERED', { var: q.var, value });

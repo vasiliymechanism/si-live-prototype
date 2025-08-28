@@ -43,7 +43,7 @@
         "state": "confirmEligibility",
         "blockers": [
           { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
-          { "id": "transcriptUploaded",   "type": "flag",   "actionType": "uploadTranscript" }
+          { "id": "transcriptUploaded",   "type": "userField",   "actionType": "uploadTranscript", "field": "transcript"}
         ]
       },
       { "state": "readyToSubmit" },
@@ -74,7 +74,7 @@
       {
         "state": "confirmEligibility",
         "blockers": [
-          { "id": "transcriptUploaded", "type": "flag", "actionType": "uploadTranscript" }
+          { "id": "transcriptUploaded", "type": "userField", "actionType": "uploadTranscript", "field": "transcript" }
         ]
       },
       { "state": "readyToSubmit" },
@@ -166,7 +166,7 @@
       {
         "state": "confirmEligibility",
         "blockers": [
-          { "id": "recommendationUploaded", "type": "flag", "actionType": "uploadRecommendation" }
+          { "id": "recommendationUploaded", "type": "userField", "actionType": "uploadRecommendation", "field": "recommendation" }
         ]
       },
       { "state": "readyToSubmit" },
@@ -198,7 +198,8 @@
         "state": "confirmEligibility",
         "blockers": [
           { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
-          { "id": "essayUploaded",       "type": "flag",   "actionType": "uploadEssay" }
+          { "id": "inputGPA", "type": "userField", "actionType": "inputGPA", "field": "gpa" }
+          // { "id": "essayUploaded",       "type": "userField",   "actionType": "uploadEssay", "field": "essay" }
         ]
       },
       { "state": "readyToSubmit" },
