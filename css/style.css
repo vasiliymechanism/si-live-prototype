@@ -90,7 +90,7 @@ body {
     background: #0a0a0a;
     padding: 12px;
     border-bottom: 1px solid #222;
-    animation: slideDown 0.4s ease-out;
+    /* animation: slideDown 0.4s ease-out; */
 }
 
 .metrics-title {
@@ -316,6 +316,11 @@ body {
   box-shadow:0 2px 12px rgba(0,0,0,.35);
   animation:fadeInUp .25s ease-out;
 }
+
+/* Disable for the hero + any cards during onboarding */
+.onboarding-active .sch-card { animation: none !important; }
+/* …and make sure the hero never runs fadeInUp */
+.sch-card.intro-card { animation: none !important; }
 
 .sch-card .sch-head{
   display:flex;
@@ -1015,7 +1020,7 @@ body {
 #quizBody .choices {
   /* display: grid; */
   display: flex;
-  /* grid-template-columns: 1fr 1fr; /* Yes/No = two columns */
+  /* grid-template-columns: 1fr 1fr; */ /* Yes/No = two columns */
   gap: 10px;
 }
 
@@ -1422,11 +1427,11 @@ body {
 }
 
 /* Plans grid (optional polish) */
-.paywall-plans {
+/* .paywall-plans {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 12px;
-}
+} */
 @media (max-width: 640px) {
   .paywall-plans { grid-template-columns: 1fr; }
 }
@@ -1536,7 +1541,7 @@ body {
 
 .feed-content {
   overflow: hidden;           /* collapsed: hide overflow (no scroll) */
-  max-height: 0;              /* JS animates this */
+  /* max-height: 0; */ /*             JS animates this */
   opacity: 1;
   transition: max-height .25s ease, opacity .2s ease;
 }
@@ -1549,6 +1554,7 @@ body {
 
 /* Collapsed: show a small preview height with a gentle fade */
 .feed-section.collapsed .feed-content {
+  /* max-height: 160px;          show a bit of content */
   position: relative;
 }
 .feed-section.collapsed .feed-content::after {
@@ -1566,6 +1572,123 @@ body {
 .feed-section { border: 1px solid #202020; border-radius: 12px; background:#0f0f12; }
 .feed-section + .feed-section { margin-top: 10px; }
 
+
+/* ===== Onboarding: centered "Searching..." ===== */
+#searchIntroOverlay {
+  position: fixed;
+  inset: 0;
+  display: none;           /* toggled with .active */
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  background: radial-gradient(1200px 800px at 50% 40%, rgba(25,25,30,.35), rgba(15,15,18,.9));
+}
+#searchIntroOverlay.active { display: flex; }
+
+.search-intro-text {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+.search-intro-ellipses {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 2px;
+}
+.search-intro-ellipses span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #cbd5e1;
+  opacity: 0;
+  animation: dotPulse 900ms ease-in-out infinite;
+}
+.search-intro-ellipses span:nth-child(2) { animation-delay: 150ms; }
+.search-intro-ellipses span:nth-child(3) { animation-delay: 300ms; }
+@keyframes dotPulse {
+  0%, 100% { opacity: .15; }
+  50%      { opacity: 1;   }
+}
+
+/* ===== Onboarding: hide everything but the hero card ===== */
+.onboarding-active .main-app { opacity: 1; } /* ensure dashboard is visible */
+/* fade everything except the live feed section */
+/* Fade everything except the content-area on the main-app row */
+.onboarding-active .main-app > :not(.content-area) { opacity: 0; }
+
+/* Inside content-area, fade everything except the accordion */
+.onboarding-active .content-area > :not(#accordionContainer) { opacity: 0; }
+
+/* Keep the live feed visible within the accordion */
+.onboarding-active #accordionContainer > :not(#liveFeedSection) { opacity: 0; }
+.onboarding-active #liveFeedSection .feed-content > :not(.sch-card.intro-card) { opacity: 0; }
+.onboarding-active #liveFeedSection .sch-card * > :not(.sch-card.intro-card *) { opacity: 0; }
+
+/* Ensure the hero and its children are visible */
+/* .onboarding-active .sch-card.intro-card, */
+/* .onboarding-active .sch-card.intro-card * { opacity: 1 !important; } */
+
+/* Also keep the feed container visible so layout is stable */
+.onboarding-active #liveFeedSection,
+.onboarding-active #liveFeedHeader,
+.onboarding-active #liveFeedContent { opacity: 1; }
+
+/* ===== Hero/intro card positioning & animation ===== */
+.sch-card.intro-card {
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  transition: transform .45s ease;
+  z-index: 500; /* above dashboard, below search overlay */
+  position: relative; /* transforms relative to flow */
+}
+
+.onboarding-active .main-app > :not(.metrics-header):not(.content-area) { opacity: 0; }
+
+/* During onboarding, never clip the hero card while it's centered */
+/* .onboarding-active #liveFeedContent { overflow: visible !important; } */
+
+/* Hide the Live Feed header during onboarding */
+.onboarding-active #liveFeedHeader {
+  opacity: 0 !important;
+  pointer-events: none;            /* avoid hover cursor on invisible header */
+}
+
+/* Strip the live feed section chrome so only the hero card draws attention */
+.onboarding-active #liveFeedSection {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;    /* avoid clipping the centered card */
+}
+
+/* Remove inner padding so you don't see a "ghost" inset around the hero */
+.onboarding-active #liveFeedContent {
+  padding: 0 !important;
+  overflow: visible !important;    /* let centered card spill out cleanly */
+}
+
+/* Keep only the hero scholarship card visible in the live feed */
+.onboarding-active #liveFeedSection .feed-content > :not(.sch-card.intro-card) {
+  opacity: 0;
+}
+
+/* Only the hero card is allowed to be visible during onboarding, but we
+   explicitly gate that visibility via .intro-visible so JS can stage it. */
+.onboarding-active .sch-card.intro-card * { opacity: 0; transition: opacity .25s ease; }
+.onboarding-active .sch-card.intro-card.intro-visible,
+.onboarding-active .sch-card.intro-card.intro-visible * { opacity: 1; }
+
+/* Keep metrics header visible during onboarding */
+.onboarding-active .main-app > :not(.metrics-header):not(.content-area) { opacity: 0; }
+
+
+/* Ensure the hero card and its children are fully visible */
+/* .onboarding-active .sch-card.intro-card,
+.onboarding-active .sch-card.intro-card * {
+  opacity: 1 !important;
+  z-index: 1050;
+} */
 
 /* Animations */
 @keyframes fadeIn {
@@ -1623,3 +1746,11 @@ body {
 /* Utility Classes */
 .hidden { display: none !important; }
 .dim { opacity: 0.3; }
+
+
+/* Debug: keep the hero visible and non-animating before the center transform */
+.onboarding-active .sch-card.intro-card.intro-freeze {
+  opacity: 1 !important;
+  transition: none !important;
+  animation: none !important;
+}

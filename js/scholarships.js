@@ -11,6 +11,21 @@ import { addScholarshipCard, updateScholarshipCardState } from './ui.js';
 import { evaluateLogic } from './jsonlogic.js';
 import { resolveAction } from './actionResolver.js';
 
+let spawningPaused = false; 
+
+// Call from onboarding / debug
+export function setSpawningPaused(b) {
+  spawningPaused = !!b;
+}
+
+// Spawn one item now (even if paused) and render; return instance
+export function spawnNextNow({ ignorePause = false } = {}) {
+  if (spawningPaused && !ignorePause) return null;
+  const inst = spawnNext();          // your internal creator (from prior code)
+  if (inst) addScholarshipCard(inst); // your existing UI adder
+  return inst;
+}
+
 // -------- Action Queue management (unchanged API) --------
 const actionQueue = new Map();
 function emitAQ() {
@@ -213,20 +228,35 @@ export function initScholarships() {
   const restRange  = store.app.searchTiming?.subsequentMs || [800, 1600];
 
   // First
-  setTimeout(() => {
-    const s = spawnNext();
-    if (s) addScholarshipCard(s);
-  }, randRange(Math.random, firstRange));
+  // setTimeout(() => {
+  //   const s = spawnNext();
+  //   if (s) addScholarshipCard(s);
+  // }, randRange(Math.random, firstRange));
 
   // The loop
   let idx = 1;
   (function scheduleNext() {
     if (idx >= store.catalog.length) return;
+
     const delay = randRange(Math.random, restRange);
     setTimeout(() => {
-      const s = spawnNext();
-      if (s) addScholarshipCard(s);
-      idx++;
+      // If spawning is paused, do NOT consume an index; just try again shortly.
+      if (spawningPaused) {
+        setTimeout(scheduleNext, 300);
+        return;
+      }
+
+      // Try to spawn the next scholarship
+      const s = spawnNext();          // returns null if none or if you gate internally
+      if (!s) {
+        // Nothing spawned (end-of-catalog or guard) → stop or retry as you prefer
+        if (idx >= store.catalog.length) return; // hard stop when truly out
+        setTimeout(scheduleNext, 300);           // soft retry if you want
+        return;
+      }
+
+      addScholarshipCard(s);
+      idx++;                           // <-- increment ONLY on success
       scheduleNext();
     }, delay);
   })();

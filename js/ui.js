@@ -6,24 +6,73 @@ import { resolveAction } from './actionResolver.js';
 // Cache DOM nodes once
 const $ = sel => document.querySelector(sel);
 const $$ = sel => document.querySelectorAll(sel);
+const pick = (...sels) => sels.map(s => (s ? $(s) : null)).find(Boolean) || null;
 
-const dom = {};
-function cacheDom() {
-  dom.startBtn        = $('#startButton');
-  dom.landingScreen   = $('#landingScreen');
-  dom.mainApp         = $('#mainApp');
 
-  dom.metricsHeader   = $('#metricsHeader');
-  dom.metricsGrid     = $('#metricsGrid');
+export const dom = {};
+export function cacheDom() {
+  // Landing / main
+  dom.landing       = pick('#landingScreen', '#welcome', '.welcome');
+  dom.mainApp       = pick('#mainApp', '.main-app');
+  dom.accordion     = pick('#accordionContainer', '.accordion-container');
 
-  dom.contentArea     = $('#contentArea');
-  dom.liveFeed        = $('#liveFeedContent');
-  dom.actionQueue     = $('#actionQueueContent');
+  // Start button
+  dom.startBtn      = pick('#startButton', '#startBtn', '[data-role="start"]', '.start-button');
 
-  dom.quizModal       = $('#quizModal');
-  dom.paywallModal    = $('#paywallModal');
+  // Metrics
+  dom.metricsHeader = pick('#metricsHeader', '.metrics-header');
+  dom.metricsGrid   = pick('#metricsGrid',  '.metrics-grid');
 
-  // dom.dimOverlay      = $('#dimOverlay');
+  // Feeds
+  dom.liveFeed      = pick('#liveFeedContent',  '#liveFeedSection .feed-content');
+  dom.actionQueue   = pick('#actionQueueContent','#actionQueueSection .feed-content');
+
+  // Modals / overlays
+  dom.quizModal     = pick('#quizModal');
+  dom.paywallModal  = pick('#paywallModal');
+  dom.dimOverlay    = pick('#dimOverlay', '.dim-overlay');
+
+  // Optional placeholder section
+  dom.searchingState = pick('.searching-state');
+}
+
+const FOCUSABLE_SEL = [
+  'button', '[href]', 'input', 'select', 'textarea',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
+function focusFirst(el) {
+  if (!el) return;
+  const t = el.querySelector(FOCUSABLE_SEL) || el;
+  // Ensure element can receive focus
+  const hadTabIndex = t.hasAttribute('tabindex');
+  if (!hadTabIndex) t.setAttribute('tabindex', '-1');
+  t.focus({ preventScroll: true });
+  if (!hadTabIndex) t.removeAttribute('tabindex');
+}
+
+function getContent(sectionEl) {
+  return sectionEl?.querySelector('.feed-content');
+}
+
+export function hideSectionAccessibly(el, focusTarget = null) {
+  if (!el) return;
+  // If focus is inside el, move it out first
+  if (el.contains(document.activeElement)) {
+    if (focusTarget) focusFirst(focusTarget);
+    else { document.activeElement?.blur?.(); focusFirst(document.body); }
+  }
+  // Prefer inert; no need for aria-hidden when inert is present
+  el.setAttribute('inert', '');
+  el.classList.add('hidden');
+  el.style.display = 'none';
+}
+
+export function showSectionAccessibly(el) {
+  if (!el) return;
+  el.removeAttribute('inert');
+  el.classList.remove('hidden');
+  el.style.display = '';
 }
 
 // ——— Render helpers ———
@@ -33,15 +82,32 @@ export function showWelcome() {
 }
 
 export function showDashboard() {
-  dom.landingScreen?.classList.add('hidden');
-  dom.mainApp?.classList.remove('hidden');
-  dom.metricsHeader?.classList.remove('hidden'); // reveal metrics area
+    cacheDom();
+
+  // Hide landing safely; move focus into the main app before inert’ing landing
+  if (dom.landing) hideSectionAccessibly(dom.landing, dom.mainApp || document.body);
+
+  // Show main UI
+  if (dom.mainApp) showSectionAccessibly(dom.mainApp), (dom.mainApp.style.display = 'flex');
+  if (dom.accordion) dom.accordion.style.display = 'flex';
+
+  document.querySelectorAll('.searching-state').forEach(el => el.style.display = 'none');
+
+  try { initAccordion?.(); } catch {}
 }
+
+// Fallback you can call anywhere
+export function forceDashboardVisible() {
+  document.querySelectorAll('.main-app').forEach(el => el.style.display = 'flex');
+  document.querySelector('#accordionContainer')?.style.setProperty('display','flex');
+}
+
 
 
 export function renderMetrics() {
   const m = store.metrics;
   const next = m.nextDeadline ? new Date(m.nextDeadline).toLocaleDateString() : '—';
+  const header = $('#metricsHeader') || $('.metrics-header');
 
   const tiles = [
     { key: 'matches',           label: 'Matches found',        value: m.matches },
@@ -59,6 +125,8 @@ export function renderMetrics() {
       <div class="metric-label">${t.label}</div>
     </div>
   `).join('');
+
+  ensureVisible(header);
 }
 
 export function addScholarshipCard(s) {
@@ -82,6 +150,8 @@ export function addScholarshipCard(s) {
   `;
   dom.liveFeed.prepend(card);
   animateIn(card);
+  const live = document.getElementById('liveFeedSection');
+  bumpExpandedHeight(live);
 }
 
 export function updateScholarshipCardState(id, state, progressPct = null) {
@@ -140,32 +210,47 @@ export function setSpotlight(active) {
 }
 
 const overlayEl = () => document.querySelector('#dimOverlay');
+let lastFocus = null;
 // Any modal element that uses `.active` to show:
 const ACTIVE_MODAL_SELECTOR = '.modal.active, .modal-overlay.active';
 
 const isDismissible = (modal) => String(modal?.dataset?.dismissible ?? 'true') === 'true';
 const allowEscClose = (modal) => String(modal?.dataset?.esc ?? 'true') === 'true';
 
+function setSiblingsInert(el, on) {
+  const rootKids = Array.from(document.body.children);
+  rootKids.forEach(k => {
+    if (k === el || k.id === 'dimOverlay') return;
+    if (on) k.setAttribute('inert', '');
+    else k.removeAttribute('inert');
+  });
+}
+
 export function openModal(el) {
-  if (!el) return;
+    if (!el) return;
+  lastFocus = document.activeElement;
+  setSiblingsInert(el, true);
   el.classList.remove('hidden');
   el.classList.add('active','in');
-
-  // Optional: hide a close button if present
-  if (el.dataset.hideClose === 'true') {
-    el.querySelectorAll('.modal-close,.x,.close').forEach(btn => btn.classList.add('hidden'));
-  }
-
-  overlayEl()?.classList.add('active');
+  document.querySelector('#dimOverlay')?.classList.add('active');
+  // focus first focusable inside modal
+  const first = el.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), .modal-content');
+  if (first) focusFirst(first);
 }
 
 export function closeModal(el) {
   if (!el) return;
   el.classList.remove('in','active');
   el.classList.add('hidden');
-  // turn off dim only if no other modal is open
+
+  // If no other modals are open, clear dim + uninert page
   if (!document.querySelector(ACTIVE_MODAL_SELECTOR)) {
-    overlayEl()?.classList.remove('active');
+    document.querySelector('#dimOverlay')?.classList.remove('active');
+    setSiblingsInert(el, false);
+    // restore focus to the control that opened the modal, if still in DOM
+    if (lastFocus && document.contains(lastFocus)) {
+      focusFirst(lastFocus);
+    }
   }
 }
 
@@ -220,15 +305,23 @@ export function initUI() {
 
   // Existing bus listeners…
   bus.on(EV.ACTIONQ_UPDATED, items => renderActionQueue(items));
-  bus.on(EV.QUIZ_OPEN, () => { setSpotlight(true); openModal(dom.quizModal); });
-  bus.on(EV.PAYWALL_SHOW, () => { setSpotlight(true); openModal(dom.paywallModal); });
+  bus.on(EV.QUIZ_OPEN, () => { setSpotlight(false); openModal(dom.quizModal); });
+  bus.on(EV.PAYWALL_SHOW, () => { setSpotlight(false); openModal(dom.paywallModal); });
 
   // Initialize the accordion once the DOM is ready
   initAccordion();
 }
 
-export function bindStart(onStart) {
-  dom.startBtn?.addEventListener('click', onStart);
+export function bindStart(handler) {
+  cacheDom();
+  if (!dom.startBtn) {
+    console.warn('[ui] Start button not found. Check #startButton/#startBtn selectors.');
+    return;
+  }
+  dom.startBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    handler();
+  }, { once: true });
 }
 
 // Accordion stuff
@@ -415,4 +508,47 @@ export function initAccordion() {
   const ro = new ResizeObserver(refreshExpandedHeights);
   if (live?.querySelector('.feed-content')) ro.observe(live.querySelector('.feed-content'));
   if (queue?.querySelector('.feed-content')) ro.observe(queue.querySelector('.feed-content'));
+}
+
+export function forceLiveFeedOpen() {
+  const live = document.getElementById('liveFeedSection');
+  const queue = document.getElementById('actionQueueSection');
+  if (!live) return;
+
+  // Collapse the queue for mutual exclusivity
+  if (queue) collapseSection(queue, 140); // keep a 140px preview if you want
+
+  // Expand the live feed and clear any stale inline max-height
+  expandSection(live);
+
+  // If an old inline max-height (like 12px) is present and no transition is running,
+  // stamp it out immediately:
+  const content = live.querySelector('.feed-content');
+  if (content && getComputedStyle(content).transitionProperty.indexOf('max-height') === -1) {
+    content.style.maxHeight = '';     // remove the stale inline value
+  }
+}
+
+export function ensureVisible(el, displayIfNone = '') {
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.removeAttribute('inert');
+  const cs = getComputedStyle(el);
+  if (cs.display === 'none') el.style.display = displayIfNone; // e.g. "grid" for grid
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+export function bumpExpandedHeight(sectionEl) {
+  const content = getContent(sectionEl);
+  if (!content) return;
+  if (!sectionEl.classList.contains('expanded')) return;
+  // Only bump if we’re still using a numeric height (transitioning)
+  const mh = content.style.maxHeight;
+  if (mh && mh !== '' && mh !== 'none') {
+    content.style.maxHeight = `${content.scrollHeight}px`;
+  }
 }

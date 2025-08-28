@@ -12,6 +12,8 @@ import * as Scholarships from './scholarships.js';
 import * as Quiz from './quizEngine.js';
 // import { bus, EV } from './eventBus.js';
 // import { store } from './store.js';
+import { runOnboarding } from './onboarding.js';
+
 
 window.app = {
   store, UI, Scholarships, Quiz, bus, EV,
@@ -83,17 +85,30 @@ async function boot() {
   });
   
   // Start handler
-  bindStart(() => {
-    // Phase change
+  bindStart(async () => {
+    // ensure no stale overlays
+    document.querySelector('#dimOverlay')?.classList.remove('active');
+
     store.phase = 'onboarding';
-    showDashboard();
     bus.emit(EV.PHASE_CHANGED, { phase: store.phase });
 
-    // Respect blockMode + spotlight during quiz moments later
-    setSpotlight(false);
 
-    // Begin scholarship arrivals/advances
+    // 🔒 Pause BEFORE starting the engine
+    Scholarships.setSpawningPaused(true);
+
+    console.log('[app] Start button clicked, onboarding phase begins.');
+    showDashboard();        // uses inert-based hide now
+    UI.renderMetrics?.();                  // ensure metrics appear
+    console.log('[app] Dashboard shown.');
+
     initScholarships();
+    console.log('[app] Scholarship engine initialized.');
+    await runOnboarding();
+    console.log('[app] Onboarding flow completed.');
+
+    store.phase = 'steady';
+    bus.emit(EV.PHASE_CHANGED, { phase: store.phase });
+
 
     // Default paywall trigger: after quiz completion
     bus.on(EV.QUIZ_COMPLETED, () => {
