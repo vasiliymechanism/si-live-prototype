@@ -346,6 +346,7 @@ export function initScholarships() {
   // Resume on quiz & action completion
   bus.on(EV.QUIZ_COMPLETED, tryResumeAll);
   bus.on(EV.ACTION_COMPLETED, tryResumeAll);
+  bus.on(EV.QUIZ_QUESTION_ANSWERED, tryResumeAll);
 }
 
 // create instance and enter first state

@@ -42,10 +42,11 @@
         // If you prefer independent probabilities instead of "pick", you can use:
         // "includeProb": true and set "prob" on each pool item (engine supports both).
         "pool": [
-          { "id": "updateProfileViaQuiz",   "type": "custom", "weight": 1.0, "actionType": "updateProfileViaQuiz" },
-          { "id": "transcriptUploaded",     "type": "flag",   "weight": 0.9, "actionType": "uploadTranscript" },
-          { "id": "headshotUploaded",       "type": "flag",   "weight": 0.35, "actionType": "uploadHeadshot" },
-          { "id": "recommendationUploaded", "type": "flag",   "weight": 0.45, "actionType": "uploadRecommendation" }
+          { "id": "updateProfileViaQuiz",   "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" },
+          { "id": "gpaEntered",             "type": "userField",  "weight": 0.8, "actionType": "inputGPA", "field": "gpa" },
+          { "id": "transcriptUploaded",     "type": "flag",       "weight": 0.9, "actionType": "uploadTranscript" },
+          { "id": "headshotUploaded",       "type": "flag",       "weight": 0.35, "actionType": "uploadHeadshot" },
+          { "id": "recommendationUploaded", "type": "flag",       "weight": 0.45, "actionType": "uploadRecommendation" }
         ]
       },
 

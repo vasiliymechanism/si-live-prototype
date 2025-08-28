@@ -28,5 +28,8 @@ export const EV = Object.freeze({
 
   PAYWALL_SHOW: 'PAYWALL.SHOW',
 
-  ACTION_COMPLETED: 'ACTION.COMPLETED' // { type: 'uploadTranscript' }
+  ACTION_COMPLETED: 'ACTION.COMPLETED', // { type: 'uploadTranscript' }
+
+  // New: fired when a quiz question is answered (for cross-unblock)
+  QUIZ_QUESTION_ANSWERED: 'QUIZ.QUESTION_ANSWERED'
 });

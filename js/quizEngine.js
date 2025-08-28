@@ -108,7 +108,15 @@ function openQuiz(payload = {}) {
   }
 
   function gotoNext(q, value) {
-    if (q.var) answers[q.var] = value;
+    if (q.var) {
+      answers[q.var] = value;
+      store.user[q.var] = value; // update user immediately
+    }
+    
+    if (q && q.var) {
+      bus.emit(EV.QUIZ_QUESTION_ANSWERED, { var: q.var, value });
+      console.log('[quiz] emitted QUIZ_QUESTION_ANSWERED', { var: q.var, value });
+    }
 
     // Compute next
     let next = q.next;

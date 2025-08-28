@@ -1,3 +1,165 @@
+// ——— Input Modal (Action Queue) ———
+const inputModal = () => document.querySelector('#inputModal');
+
+// Map actionType to quiz question id if applicable
+const ACTION_TO_QUIZ_QUESTION = {
+  uploadTranscript: 'q_transcript',
+  inputCurrentSchoolLevel: 'q_schoolLevel', // Example, update as needed
+  // Add more mappings as needed
+};
+
+// Renderers for each input type (reuse quizEngine logic where possible)
+function renderInputModal({ actionType, onSubmit, overrides = {} }) {
+  const modal = inputModal();
+  if (!modal) return;
+  const content = modal.querySelector('.modal-content');
+  if (!content) return;
+  content.innerHTML = '';
+
+  // Try to find a matching quiz question config
+  let qCfg = null;
+  if (window.app?.store?.quiz && ACTION_TO_QUIZ_QUESTION[actionType]) {
+    qCfg = window.app.store.quiz.questions[ACTION_TO_QUIZ_QUESTION[actionType]];
+  }
+
+  // If quiz config exists, use quiz-style renderer
+  if (qCfg) {
+    renderQuizStyleInput(qCfg, content, onSubmit, overrides);
+  } else {
+    // Otherwise, render a generic file or text input based on actionType
+    renderCustomInput(actionType, content, onSubmit, overrides);
+  }
+
+  openModal(modal);
+}
+
+// Render input using quiz question config (reuse quizEngine logic)
+function renderQuizStyleInput(q, content, onSubmit, overrides) {
+  // Minimal: support 'file', 'short', 'date', 'single', 'multi', 'checkbox', 'interstitial'
+  // For now, only implement 'file' and 'short' as examples
+  if (q.type === 'file') {
+    const label = document.createElement('div');
+    label.className = 'q-label';
+    label.textContent = q.title || 'Upload file';
+    content.appendChild(label);
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    if (q.accept) input.accept = q.accept;
+    content.appendChild(input);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = 'Submit';
+    btn.onclick = () => {
+      if (!input.files || !input.files[0]) return;
+      onSubmit?.(input.files[0]);
+      closeModal(inputModal());
+    };
+    content.appendChild(btn);
+  } else if (q.type === 'short') {
+    const label = document.createElement('div');
+    label.className = 'q-label';
+    label.textContent = q.title || 'Enter value';
+    content.appendChild(label);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = q.placeholder || '';
+    content.appendChild(input);
+
+    const error = document.createElement('div');
+    error.className = 'q-error';
+    error.style.color = 'red';
+    error.style.display = 'none';
+    content.appendChild(error);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = 'Submit';
+    btn.onclick = () => {
+      const val = input.value;
+      // Validation logic from quiz config
+      let valid = true;
+      let errMsg = '';
+      if (q.validate) {
+        try {
+          // Use the same minimal JSONLogic evaluator as quizEngine
+          const logic = window.app?.jsonlogic || window.jsonlogic || null;
+          const evaluateLogic = logic ? logic.evaluateLogic : window.evaluateLogic;
+          if (evaluateLogic) {
+            valid = evaluateLogic(q.validate, { value: parseFloat(val) });
+            if (!valid) errMsg = 'Invalid value.';
+          }
+        } catch (e) { valid = false; errMsg = 'Invalid value.'; }
+      }
+      if (!val || !valid) {
+        error.textContent = errMsg || 'Please enter a valid value.';
+        error.style.display = '';
+        return;
+      }
+      error.style.display = 'none';
+      onSubmit?.(val);
+      closeModal(inputModal());
+    };
+    content.appendChild(btn);
+  } else {
+    // Fallback: just show label
+    const label = document.createElement('div');
+    label.className = 'q-label';
+    label.textContent = q.title || 'Input';
+    content.appendChild(label);
+    // Add more types as needed
+  }
+}
+
+// Render custom input for actions not in quiz
+function renderCustomInput(actionType, content, onSubmit, overrides) {
+  // Example: uploadEssay = file, uploadHeadshot = file (image), etc.
+  let label = 'Provide input';
+  let inputType = 'text';
+  let accept = '';
+  if (actionType === 'uploadEssay') {
+    label = 'Upload your essay';
+    inputType = 'file';
+    accept = '.pdf,.doc,.docx';
+  } else if (actionType === 'uploadHeadshot') {
+    label = 'Upload a headshot';
+    inputType = 'file';
+    accept = '.jpg,.jpeg,.png';
+  } else if (actionType === 'uploadRecommendation') {
+    label = 'Upload recommendation letter';
+    inputType = 'file';
+    accept = '.pdf';
+  }
+  // Add more as needed
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'q-label';
+  labelEl.textContent = label;
+  content.appendChild(labelEl);
+
+  const input = document.createElement('input');
+  input.type = inputType;
+  if (accept) input.accept = accept;
+  content.appendChild(input);
+
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = 'Submit';
+  btn.onclick = () => {
+    let val = inputType === 'file' ? (input.files && input.files[0]) : input.value;
+    if (!val) return;
+    onSubmit?.(val);
+    closeModal(inputModal());
+  };
+  content.appendChild(btn);
+}
+
+// Public API
+export function openInputModalForAction(actionType, onSubmit, overrides = {}) {
+  renderInputModal({ actionType, onSubmit, overrides });
+}
 import { store } from './store.js';
 import { bus, EV } from './eventBus.js';
 import { animateIn, toggleDim } from './animations.js';
@@ -301,14 +463,23 @@ export function renderActionQueue(items) {
         bus.emit(EV.QUIZ_OPEN, { source: 'action-queue' });
       } else if (item.modal === 'paywall') {
         bus.emit(EV.PAYWALL_SHOW);
-      } else if (item.type === 'uploadTranscript') {
-        store.flags.add('transcriptUploaded');
-        bus.emit(EV.ACTION_COMPLETED, { type: 'uploadTranscript' });
-      } else if (item.type === 'uploadEssay') {
-        store.flags.add('essayUploaded');
-        bus.emit(EV.ACTION_COMPLETED, { type: 'uploadEssay' });
       } else {
-        alert(`TODO: ${item.type}`);
+        // Use input modal for all other action types
+        openInputModalForAction(item.type, (val) => {
+          // Set the appropriate flag and emit ACTION_COMPLETED
+          if (item.type === 'uploadTranscript') {
+            store.flags.add('transcriptUploaded');
+          } else if (item.type === 'uploadEssay') {
+            store.flags.add('essayUploaded');
+          } else if (item.type === 'uploadHeadshot') {
+            store.flags.add('headshotUploaded');
+          } else if (item.type === 'uploadRecommendation') {
+            store.flags.add('recommendationUploaded');
+          } else if (item.type === 'inputCurrentSchoolLevel') {
+            store.flags.add('schoolLevelInput');
+          }
+          bus.emit(EV.ACTION_COMPLETED, { type: item.type, value: val });
+        });
       }
     });
     dom.actionQueue.appendChild(li);
