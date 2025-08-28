@@ -439,6 +439,8 @@ const FLAG_TO_ACTION = {
 };
 
 function actionTypeForBlocker(b) {
+  // Prevent action for trialStarted blocker
+  if (b.id === 'trialStarted' && b.type === 'custom') return null;
   if (b.actionType) return b.actionType;
   if (b.type === 'custom' && b.id === 'updateProfileViaQuiz') return 'updateProfileViaQuiz';
   if (b.type === 'flag') return FLAG_TO_ACTION[b.id] || null;
