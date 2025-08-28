@@ -1,5 +1,15 @@
 /* css/style.css - Scholarship Institute Styles */
 
+:root{
+  --onb-hero-fade: 1s;
+  --onb-hero-move: 2s;
+  --onb-reveal-rest: 1s;
+
+  --onb-ease-fade: ease;
+  --onb-ease-move: ease;
+  --onb-ease-reveal: ease;
+}
+
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -182,7 +192,7 @@ body {
     background: #111;
     border-radius: 16px;
     border: 1px solid #222;
-    transition: all 0.3s ease;
+    /* transition: all 0.3s ease; */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1675,12 +1685,30 @@ body {
 
 /* Only the hero card is allowed to be visible during onboarding, but we
    explicitly gate that visibility via .intro-visible so JS can stage it. */
-.onboarding-active .sch-card.intro-card * { opacity: 0; transition: opacity .25s ease; }
+/* Hero card transitions during onboarding */
+.onboarding-active .sch-card.intro-card,
+.onboarding-active .sch-card.intro-card * {
+  opacity: 0;
+  transition:
+    opacity var(--onb-hero-fade) var(--onb-ease-fade),
+    transform var(--onb-hero-move) var(--onb-ease-move);
+}
+
+/* Disable transitions only while staging (you already add/remove this class) */
+.onboarding-active .sch-card.intro-card.intro-prep{
+  transition: none !important;
+}
+
 .onboarding-active .sch-card.intro-card.intro-visible,
 .onboarding-active .sch-card.intro-card.intro-visible * { opacity: 1; }
 
 /* Keep metrics header visible during onboarding */
 .onboarding-active .main-app > :not(.metrics-header):not(.content-area) { opacity: 0; }
+/* only when we are actively revealing */
+.onboarding-revealing .main-app *{
+  transition: opacity var(--onb-reveal-rest) var(--onb-ease-reveal);
+}
+
 
 
 /* Ensure the hero card and its children are fully visible */

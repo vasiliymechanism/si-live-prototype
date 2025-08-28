@@ -41,6 +41,15 @@ function once(el, event) {
   });
 }
 
+// helper: read a CSS time var ('350ms' | '.35s' | '350')
+function msFromCSSVar(name, fallback = 350){
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  if (!v) return fallback;
+  if (v.endsWith('ms')) return parseFloat(v);
+  if (v.endsWith('s'))  return parseFloat(v) * 1000;
+  const n = parseFloat(v); return Number.isFinite(n) ? n : fallback;
+}
+
 export async function runOnboarding() {
   const cfg = store.app?.onboarding || {};
   const introMs = Math.max(0, cfg.searchIntroMs ?? 1400);
@@ -148,7 +157,11 @@ export async function runOnboarding() {
   await once(card, 'transitionend');
 
   // reveal the rest of the dashboard
-  document.body.classList.remove('onboarding-active');
+  const revealMs = msFromCSSVar('--onb-reveal-rest', 350);
+  document.body.classList.add('onboarding-revealing');  // enables transition
+  document.body.classList.remove('onboarding-active');  // opacity rules lift → fade happens
+  await new Promise(r => setTimeout(r, revealMs));
+  document.body.classList.remove('onboarding-revealing');
   card.classList.remove('intro-visible'); // hero now behaves like a normal card
 
   // make sure metrics are rendered/populated post-intro

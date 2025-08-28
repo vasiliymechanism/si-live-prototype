@@ -54,7 +54,7 @@
 
     "readyToSubmit": {
       "label": "Ready to submit",
-      "durationMs": [800, 1200],
+      "durationMs": [1800, 3200],
       "progress": [70, 95],
       "next": "submitted"
     },
