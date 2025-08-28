@@ -11,6 +11,30 @@ import { addScholarshipCard, updateScholarshipCardState } from './ui.js';
 import { evaluateLogic } from './jsonlogic.js';
 import { resolveAction } from './actionResolver.js';
 
+
+// optional shared helper: build instance from raw config
+function buildInstance(raw) {
+  const script = raw.script ? { steps: normalizeScript(raw.script), index: 0 } : null;
+
+  return {
+    ...raw,
+    state: store.sm?.start || 'scanning',
+    script,
+
+    // runtime fields
+    _timer: null,
+    _tween: null,
+    _stateStartedAt: null,
+    _remainingMs: null,
+    _pendingScriptAdvance: false,
+
+    // metrics helpers (avoid double counting)
+    _visited: new Set(),         // states entered at least once
+    _minutesPerState: {},        // cached random per-state minutes
+    _timeCredited: new Set()     // which states already credited to timeSavedMin
+  };
+}
+
 let spawningPaused = false; 
 
 // Call from onboarding / debug
@@ -109,6 +133,7 @@ function startTween(inst, fromPct, toPct, ms) {
   };
   inst._tween = { raf: requestAnimationFrame(barStep), fromPct, toPct, ms, startedAt: start };
 }
+
 function stopTween(inst) {
   if (inst._tween) {
     cancelAnimationFrame(inst._tween.raf);
@@ -142,6 +167,7 @@ function resumeAdvance(inst) {
   // figure current pct from the card if you want; simplest is animate remaining
   startTween(inst, fromPct, toPct, ms);
   scheduleAdvance(inst, ms);
+  // advanceState(inst.id, stateName, { auto: true }); // notify, even if same state
 }
 
 // -------- Enter a state (handles scripted vs random paths) --------
@@ -159,23 +185,34 @@ function enterState(inst, stateName) {
   const assigned = assignBlockersForState(inst, stCfg, step);
   inst._assignedBlockers = assigned; // store for resume checks
 
+  // Always animate progress to toPct, regardless of blockers
+  const ms = durationMsFor(stCfg);
+  const [fromPct, toPct] = progressRangeFor(stCfg);
+  startTween(inst, fromPct, toPct, ms);
+
   if (assigned.length) {
     // Create/merge action items per assigned blocker
     assigned.forEach(b => {
       const actionType = actionTypeForBlocker(b);
       if (actionType) upsertAction({ type: actionType, schId: inst.id });
     });
-    // Pause timers + tween
-    pauseAdvance(inst);
+    // Pause only the timer, not the tween
+    if (inst._timer) {
+      clearTimeout(inst._timer);
+      inst._timer = null;
+    }
+    // compute remaining time
+    if (inst._stateStartedAt && inst._remainingMs != null) {
+      const elapsed = Date.now() - inst._stateStartedAt;
+      inst._remainingMs = Math.max(0, inst._remainingMs - elapsed);
+    }
     bus.emit(EV.SCH_BLOCKED, { id: inst.id, state: inst.state, blockers: assigned.map(b => b.id) });
     return;
   }
 
-  // No blockers → animate and schedule advance
-  const ms = durationMsFor(stCfg);
-  const [fromPct, toPct] = progressRangeFor(stCfg);
-  startTween(inst, fromPct, toPct, ms);
+  // No blockers → schedule advance
   scheduleAdvance(inst, ms);
+  advanceState(inst.id, stateName, { auto: true }); // notify, even if same state
 }
 
 
@@ -194,8 +231,13 @@ function advance(inst) {
     if (!nextStep) {
       // end of script: if state has next, continue; else mark terminal
       const next = pickNext(cfg.next, { user: store.user, s: inst });
-      if (next) enterState(inst, next);
-      else updateScholarshipCardState(inst.id, inst.state, (progressRangeFor(cfg)[1] || 100));
+      if (next) {
+        const from = inst.state;
+        enterState(inst, next);
+        bus.emit(EV.SCH_ADVANCED, { id: inst.id, from, to: next });
+      } else {
+        updateScholarshipCardState(inst.id, inst.state, (progressRangeFor(cfg)[1] || 100));
+      }
       return;
     }
     // move to scripted next state and respect blockUntil (flags)
@@ -210,7 +252,9 @@ function advance(inst) {
       inst._pendingScriptAdvance = true;
       return;
     }
+    const from = inst.state;
     enterState(inst, nextStep.state);
+    bus.emit(EV.SCH_ADVANCED, { id: inst.id, from, to: nextStep.state });
     return;
   }
 
@@ -327,18 +371,55 @@ function spawnNext() {
 
   store.scholarships.push(inst);
 
-  // Metrics: basic bumps
-  store.metrics.matches += 1;
-  store.metrics.potentialAwards += Number(inst.award) || 0;
-  if (!store.metrics.nextDeadline || new Date(inst.deadline) < new Date(store.metrics.nextDeadline)) {
-    store.metrics.nextDeadline = inst.deadline;
+  // // Metrics: basic bumps
+  // store.metrics.matches += 1;
+  // store.metrics.potentialAwards += Number(inst.award) || 0;
+  // if (!store.metrics.nextDeadline || new Date(inst.deadline) < new Date(store.metrics.nextDeadline)) {
+  //   store.metrics.nextDeadline = inst.deadline;
+  // }
+
+  // Use this whenever you add a scholarship into the app
+function attachAndEnter(inst) {
+  // Push to store
+  store.scholarships.push(inst);
+
+  // Render card
+  UI.addScholarshipCard(inst);
+  // bumpExpandedHeight?.(document.getElementById('liveFeedSection')); // optional
+
+  // If the script wants a different first state, adopt it before we "enter"
+  const scriptedFirst = inst.script?.steps?.[0]?.state;
+  if (scriptedFirst && scriptedFirst !== inst.state) {
+    inst.state = scriptedFirst;
   }
+
+  // Mark initial visited and emit an "enter" so metrics can credit minutes for first state
+  // NOTE: make sure your enterState (or advanceState) emits EV.SCH_ADVANCED({id, from, to})
+  enterState(inst, inst.state);
+
+  // Announce the match so metrics.js can bump Matches/PotentialAwards/NextDeadline
+  bus.emit(EV.SCH_SPAWNED, {
+    id: inst.id,
+    award: Number(inst.award) || 0,
+    deadline: inst.deadline || null
+  });
+
+  return inst;
+}
 
   // Enter start (script may immediately change it)
   if (inst.script && inst.script.steps[0]?.state && inst.script.steps[0].state !== inst.state) {
     inst.state = inst.script.steps[0].state;
   }
   enterState(inst, inst.state);
+
+  // NEW: announce a match
+  bus.emit(EV.SCH_SPAWNED, {
+    id: inst.id,
+    award: Number(inst.award) || 0,
+    deadline: inst.deadline || null
+  });
+
   return inst;
 }
 
@@ -346,7 +427,7 @@ function spawnNext() {
 function normalizeScript(script) {
   if (Array.isArray(script)) return script;
   if (script && Array.isArray(script.states)) return script.states;
-  return [];
+  return script ? [script] : [];
 }
 
 // Which action item should appear for a given blocker?
@@ -402,58 +483,103 @@ function weightedSampleWithoutReplacement(pool, k) {
 }
 
 function assignBlockersForState(inst, stCfg, scriptStep) {
-  // Scripted: ALL blockers (after filtering satisfied)
-  if (scriptStep && Array.isArray(scriptStep.blockers) && scriptStep.blockers.length) {
-    const remaining = scriptStep.blockers.filter(b => !blockerSatisfied(inst, b));
-    return remaining;
+  // --- helpers ---
+  const getPool = (blk) => {
+    if (!blk) return [];
+    if (Array.isArray(blk)) return blk;
+    if (Array.isArray(blk.list)) return blk.list;
+    if (Array.isArray(blk.pool)) return blk.pool;
+    return [];
+  };
+  const withWeights = (arr) => arr.map(b => ({ ...b, weight: b.weight ?? 1 }));
+  const unsatisfied = (arr) => arr.filter(b => !blockerSatisfied(inst, b));
+
+  function pickSubset(pool, blk) {
+    const P = unsatisfied(pool);
+    if (P.length === 0) return [];
+
+    // includeProb mode: Bernoulli per item (use item.prob OR blk.includeProb OR 0.5)
+    if (blk && blk.includeProb != null) {
+      const pDefault = Number(blk.includeProb);
+      const chosen = P.filter(b => {
+        const p = (b.prob != null) ? Number(b.prob) : (Number.isFinite(pDefault) ? pDefault : 0.5);
+        return Math.random() < Math.max(0, Math.min(1, p));
+      });
+      if (chosen.length > 0) return chosen;
+      // ensure at least 1 if nothing chosen
+      return weightedSampleWithoutReplacement(withWeights(P), 1);
+    }
+
+    // pick exact or min/max
+    let k = 1;
+    if (blk) {
+      if (typeof blk.pick === 'number') {
+        k = blk.pick;
+      } else if (blk.pick && (blk.pick.min != null || blk.pick.max != null)) {
+        const min = Math.max(1, Math.floor(blk.pick.min ?? 1));
+        const max = Math.max(min, Math.floor(blk.pick.max ?? P.length));
+        const hi = Math.min(max, P.length);
+        const lo = Math.min(min, hi);
+        const span = hi - lo + 1;
+        k = lo + Math.floor(Math.random() * span);
+      }
+    }
+    k = Math.max(1, Math.min(k, P.length));
+    return weightedSampleWithoutReplacement(withWeights(P), k);
   }
 
-  // Global machine modes
+  // --- 1) Scripted step overrides (accept array OR object with mode/list/pool) ---
+  if (scriptStep && scriptStep.blockers) {
+    const blk = scriptStep.blockers;
+    // If array: "all remaining" is usually what scripts intend
+    if (Array.isArray(blk)) return unsatisfied(blk);
+
+    // If object: honor mode like global
+    const pool = getPool(blk);
+    if (pool.length) {
+      if (blk.mode === 'all') return unsatisfied(pool);
+      if (blk.mode === 'any') return weightedSampleWithoutReplacement(withWeights(unsatisfied(pool)), 1);
+      if (blk.mode === 'subset') return pickSubset(pool, blk);
+      // default (no mode): pick 1
+      return weightedSampleWithoutReplacement(withWeights(unsatisfied(pool)), 1);
+    }
+    return [];
+  }
+
+  // --- 2) Global state machine config ---
   const blk = stCfg?.blockers;
   if (!blk) return [];
 
-  // Back-compat: array → treat as pool with pick=1
+  // Back-compat: plain array → treat as pool pick 1
   if (Array.isArray(blk)) {
-    const pool = blk.map(x => ({ ...x, weight: x.weight ?? 1 }));
-    const chosen = weightedSampleWithoutReplacement(pool, 1);
-    return chosen.filter(b => !blockerSatisfied(inst, b));
+    const P = unsatisfied(blk);
+    if (P.length === 0) return [];
+    return weightedSampleWithoutReplacement(withWeights(P), 1);
   }
 
-  // Subset mode: pick a subset from the pool
-  if (blk.mode === 'subset' && Array.isArray(blk.pool) && blk.pool.length) {
-    // First, filter out those already satisfied
-    const unsatisfiedPool = blk.pool.filter(b => !blockerSatisfied(inst, b));
-    if (unsatisfiedPool.length === 0) return [];
+  // Object form with mode + list/pool
+  const pool = getPool(blk);
+  if (pool.length === 0) return [];
 
-    // includeProb mode (Bernoulli each)
-    if (blk.includeProb) {
-      const chosen = unsatisfiedPool.filter(b => Math.random() < (b.prob ?? 0.5));
-      // If none picked, fall back to 1 by weight
-      if (chosen.length === 0) {
-        const pick1 = weightedSampleWithoutReplacement(unsatisfiedPool, 1);
-        return pick1;
-      }
-      return chosen;
+  switch (blk.mode) {
+    case 'all':
+      return unsatisfied(pool);
+    case 'any': {
+      const P = unsatisfied(pool);
+      if (P.length === 0) return [];
+      return weightedSampleWithoutReplacement(withWeights(P), 1);
     }
-
-    // pick exact / min-max
-    let k = 1;
-    if (typeof blk.pick === 'number') k = blk.pick;
-    else if (blk.pick && (blk.pick.min != null || blk.pick.max != null)) {
-      const min = blk.pick.min ?? 1;
-      const max = blk.pick.max ?? Math.max(1, unsatisfiedPool.length);
-      const lo = Math.max(1, Math.min(min, unsatisfiedPool.length));
-      const hi = Math.max(lo, Math.min(max, unsatisfiedPool.length));
-      // uniform integer between lo..hi
-      const span = hi - lo + 1;
-      k = lo + Math.floor(Math.random() * span);
+    case 'subset':
+      return pickSubset(pool, blk);
+    default: {
+      // no mode → default to pick 1 unsatisfied
+      const P = unsatisfied(pool);
+      if (P.length === 0) return [];
+      return weightedSampleWithoutReplacement(withWeights(P), 1);
     }
-    k = Math.min(k, unsatisfiedPool.length);
-    return weightedSampleWithoutReplacement(unsatisfiedPool, k);
   }
-
-  return [];
 }
+
 
 function removeScholarFromAction(type, schId) {
   const item = actionQueue.get(type);
@@ -472,9 +598,46 @@ function allAssignedBlockersSatisfied(inst) {
 
 // expose adding/removing actions so other modules can use the same queue
 export function addAction(type, { sticky = undefined, schId = null, overrides = {} } = {}) {
+  const queue = document.getElementById('actionQueueSection');
+  if (type == 'paywallCTA') {
+    // add delay if showing paywall right after quiz completion
+    setTimeout(() => {
+      upsertAction({ type, sticky, schId, overrides });
+    }, 2000);
+    return;
+  }
   upsertAction({ type, sticky, schId, overrides });
 }
 
 export function removeAction(type) {
   removeActionType(type);
+}
+
+export function advanceState(id, to, opts = {}) {
+  const s = store.scholarships.find(x => x.id === id);
+  if (!s) return false;
+
+  const from = s.state;
+  if (from === to) {
+    // still fire blocked notice if provided
+    if (opts.blockers?.length) {
+      bus.emit(EV.SCH_BLOCKED, { id: s.id, state: to, blockers: opts.blockers });
+    }
+    return true;
+  }
+
+  s.state = to;
+  s.progress = PROGRESS[to] ?? s.progress ?? 0;
+
+  // Update the card
+  UI.updateScholarshipCard?.(s, { from, to, blockers: opts.blockers });
+
+  // Notify metrics & anyone else
+  bus.emit(EV.SCH_ADVANCED, { id: s.id, from, to });
+
+  // If entering a blocked state, announce it
+  if (opts.blockers?.length) {
+    bus.emit(EV.SCH_BLOCKED, { id: s.id, state: to, blockers: opts.blockers });
+  }
+  return true;
 }

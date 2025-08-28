@@ -32,7 +32,8 @@
 
     // When to start the “settle into dashboard” animation for the first card
     // Option A: when the card reaches a state…
-    "finishOn": { "type": "stateReached", "state": "confirmEligibility" },
+    // "finishOn": { "type": "stateReached", "state": "confirmEligibility" },
+    "finishOn": { "type": "stateReached", "state": "analyzing" },
     // Option B (alternative): after a fixed time
     // "finishOn": { "type": "afterMs", "ms": 2500 }
 

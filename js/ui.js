@@ -104,29 +104,140 @@ export function forceDashboardVisible() {
 
 
 
-export function renderMetrics() {
-  const m = store.metrics;
-  const next = m.nextDeadline ? new Date(m.nextDeadline).toLocaleDateString() : '—';
+function ensureMetricGrid() {
   const header = $('#metricsHeader') || $('.metrics-header');
+  let grid = $('#metricsGrid') || $('.metrics-grid');
 
-  const tiles = [
-    { key: 'matches',           label: 'Matches found',        value: m.matches },
-    { key: 'potentialAwards',   label: 'Potential awards',     value: `$${(m.potentialAwards||0).toLocaleString()}` },
-    { key: 'started',           label: 'Applications started', value: m.started },
-    { key: 'readyNow',          label: 'Ready to apply now',   value: m.readyNow },
-    { key: 'nextDeadline',      label: 'Next deadline',        value: next },
-    { key: 'timeSavedMin',      label: 'Time saved',           value: `${(m.timeSavedMin||0).toFixed(1)} min` }
-  ];
+  if (!grid) {
+    // If your header doesn't already contain the grid, create it
+    if (header) {
+      header.insertAdjacentHTML('beforeend', `<div class="metrics-grid" id="metricsGrid"></div>`);
+      grid = $('#metricsGrid');
+    }
+  }
 
-  if (!dom.metricsGrid) return;
-  dom.metricsGrid.innerHTML = tiles.map(t => `
-    <div class="metric-card" data-metric="${t.key}">
-      <div class="metric-value">${t.value}</div>
-      <div class="metric-label">${t.label}</div>
-    </div>
-  `).join('');
+  if (!grid) return { header, grid: null };
 
+  // If the grid has no cards yet, inject them once
+  if (!grid.querySelector('[data-metric]')) {
+    grid.innerHTML = [
+      { key: 'matches',         label: 'Matches found',        val: '0' },
+      { key: 'potentialAwards', label: 'Potential awards',     val: '$0' },
+      { key: 'started',         label: 'Applications started', val: '0' },
+      { key: 'readyNow',        label: 'Ready to apply now',   val: '0' },
+      { key: 'nextDeadline',    label: 'Next deadline',        val: '—' },
+      { key: 'timeSavedMin',    label: 'Time saved',           val: '0m' }
+    ].map(t => `
+      <div class="metric-card" data-metric="${t.key}">
+        <div class="metric-value">${t.val}</div>
+        <div class="metric-label">${t.label}</div>
+      </div>
+    `).join('');
+  }
+
+  return { header, grid };
+}
+
+
+function animateNumber(el, to, fmt, duration = 400) {
+  // Read previous numeric value from dataset or parsed text
+  const from = parseFloat(el.dataset.val ?? el.textContent.replace(/[^\d.]/g, '')) || 0;
+  const start = performance.now();
+
+  const tick = (t) => {
+    const p = Math.min(1, (t - start) / duration);
+    const v = from + (to - from) * p;
+    el.textContent = fmt(v);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.dataset.val = String(to);
+  };
+  requestAnimationFrame(tick);
+}
+
+// tiny helpers
+function cell(key) {
+  return document.querySelector(`[data-metric="${key}"] .metric-value`);
+}
+const money = (v) => `$${Math.round(Number(v || 0)).toLocaleString()}`;
+
+function pulse(el, ms = 280) {
+  if (!el) return;
+  el.classList.remove('updating');  // restart if already animating
+  // force reflow to retrigger CSS animation
+  void el.offsetWidth;
+  el.classList.add('updating');
+  setTimeout(() => el.classList.remove('updating'), ms);
+}
+
+export function renderMetrics({ animateKeys = ['matches','potentialAwards','started','readyNow','timeSavedMin'] } = {}) {
+  const { header, grid } = ensureMetricGrid();
   ensureVisible(header);
+  ensureVisible(grid, 'grid');
+
+  const m = store.metrics || {};
+  const money = v => `$${Math.round(Number(v || 0)).toLocaleString()}`;
+
+  // Map desired outputs
+  const targets = {
+    matches:        { to: Number(m.matches || 0),            fmt: v => String(Math.round(v)) },
+    potentialAwards:{ to: Number(m.potentialAwards || 0),    fmt: money },
+    started:        { to: Number(m.started || 0),            fmt: v => String(Math.round(v)) },
+    readyNow:       { to: Number(m.readyNow || 0),           fmt: v => String(Math.round(v)) },
+    timeSavedMin:   { to: Number(m.timeSavedMin || 0),    fmt: v => formatTimeSaved(v) },
+  };
+
+  const DURATION = 400;
+
+  for (const [key, cfg] of Object.entries(targets)) {
+    const el = cell(key);
+    if (!el) continue;
+
+    // read previous numeric value from a dedicated dataset (no string parsing)
+    const prevNum = el.dataset.num != null ? Number(el.dataset.num) : null;
+    const nextNum = Number(cfg.to) || 0;
+    const changed = prevNum === null ? true : (nextNum !== prevNum); // first render counts as change
+
+    // ticker only if caller asked to animate AND the value changed
+    const shouldAnim = animateKeys.includes(key) && changed;
+
+    if (shouldAnim) {
+      pulse(el);
+      const start = performance.now();
+      const from = prevNum == null ? 0 : prevNum; // animate from prior, or 0 on first
+      const to = nextNum;
+
+      const step = (t) => {
+        const p = Math.min(1, (t - start) / DURATION);
+        const v = from + (to - from) * p;
+        el.textContent = cfg.fmt(v);
+        if (p < 1) requestAnimationFrame(step);
+        else {
+          el.dataset.num = String(to);   // commit baseline for next tick
+          el.textContent = cfg.fmt(to);
+        }
+      };
+      requestAnimationFrame(step);
+    } else if (changed) {
+      // no ticker requested, but value changed — update instantly and pulse
+      el.textContent = cfg.fmt(nextNum);
+      el.dataset.num = String(nextNum);
+      pulse(el);
+    } else {
+      // unchanged — leave as-is
+    }
+  }
+
+  // Next deadline (text-only, pulse on change)
+  const ndEl = cell('nextDeadline');
+  if (ndEl) {
+    const nextText = formatRelativeDeadline(m.nextDeadline);
+    const prevText = ndEl.dataset.text ?? ndEl.textContent;
+    if (nextText !== prevText) {
+      ndEl.textContent = nextText;
+      ndEl.dataset.text = nextText;
+      pulse(ndEl);
+    }
+  }
 }
 
 export function addScholarshipCard(s) {
@@ -331,7 +442,7 @@ let accordionInited = false;
 // Set preview heights per-section (tweak to taste)
 const PREVIEW_HEIGHTS = {
   liveFeedSection: 220,      // enough to show ~1 card (maybe 1.5)
-  actionQueueSection: 140    // enough to show a couple of queue items
+  actionQueueSection: 240    // enough to show a couple of queue items
 };
 
 function sectionParts(sectionEl) {
@@ -346,7 +457,7 @@ function sectionParts(sectionEl) {
 
 function collapsedHeightFor(sectionEl) {
   const id = sectionEl?.id || '';
-  return PREVIEW_HEIGHTS[id] ?? 160;  // fallback
+  return PREVIEW_HEIGHTS[id] ?? 240;  // fallback
 }
 
 function ensureToggle(headerEl, sectionEl, containerEl) {
@@ -409,8 +520,8 @@ function toggleSection(sectionEl, containerEl) {
       expandSection(sectionEl);
     }
   } else {
-    // Collapse all, then expand the clicked one
-    sections.forEach(s => collapseSection(s));
+    // Expand this one, collapse the rest
+    sections.forEach(s => {if(s!==sectionEl) {collapseSection(s)}});
     expandSection(sectionEl);
   }
 
@@ -516,7 +627,7 @@ export function forceLiveFeedOpen() {
   if (!live) return;
 
   // Collapse the queue for mutual exclusivity
-  if (queue) collapseSection(queue, 140); // keep a 140px preview if you want
+  if (queue) collapseSection(queue, 240); // keep a 140px preview if you want
 
   // Expand the live feed and clear any stale inline max-height
   expandSection(live);
@@ -551,4 +662,57 @@ export function bumpExpandedHeight(sectionEl) {
   if (mh && mh !== '' && mh !== 'none') {
     content.style.maxHeight = `${content.scrollHeight}px`;
   }
+}
+
+
+// ui.js (top or near other helpers)
+
+function plural(n, one, many) { return n === 1 ? one : many; }
+
+// Next-deadline: "in D days" / "in W weeks" / "in M months"
+export function formatRelativeDeadline(deadlineISO) {
+  if (!deadlineISO) return '—';
+  const now = new Date();
+  const dl  = new Date(deadlineISO);
+  const ms  = dl - now;
+
+  // past or today
+  if (ms <= 0) return 'today';
+
+  const days = Math.floor(ms / 86400000); // 86_400_000 ms in a day
+
+  if (days < 1) return 'today'; // later today edge case
+  if (days < 14) {
+    return `in ${days} ${plural(days, 'day', 'days')}`;
+  }
+  if (days < 31) {
+    const weeks = Math.floor(days / 7);
+    return `in ${weeks} ${plural(weeks, 'week', 'weeks')}`;
+  }
+  const months = Math.floor(days / 30); // approximate months
+  return `in ${months} ${plural(months, 'month', 'months')}`;
+}
+
+// Time-saved: 0–59min; 1h0m–9h59m; 10hr–999hr; 1k hours+
+export function formatTimeSaved(totalMinutes) {
+  const min = Math.max(0, Math.floor(Number(totalMinutes || 0)));
+  if (min < 60) return `${min}min`;
+
+  const hours = min / 60;
+
+  if (hours < 10) {
+    const h = Math.floor(hours);
+    const m = Math.floor(min - h * 60);
+    return `${h}h${m.toString().padStart(1, '0')}m`;
+  }
+
+  if (hours < 1000) {
+    const h = Math.floor(hours);
+    return `${h}hr`;
+  }
+
+  // 1000h and up → "1k hours", "1.2k hours", "12k hours"
+  const k = hours / 1000;
+  const label = k < 10 ? `${k.toFixed(1)}k` : `${Math.round(k)}k`;
+  return `${label} hours`;
 }

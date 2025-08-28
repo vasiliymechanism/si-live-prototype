@@ -3,11 +3,13 @@
 :root{
   --onb-hero-fade: 1s;
   --onb-hero-move: 2s;
-  --onb-reveal-rest: 1s;
+  --onb-reveal-rest: 2.2s;
 
   --onb-ease-fade: ease;
   --onb-ease-move: ease;
   --onb-ease-reveal: ease;
+
+  --feed-transition: none; /* "all 0.3s ease" or "none" during onboarding */
 }
 
 /* Reset and Base Styles */
@@ -134,8 +136,9 @@ body {
 }
 
 .metric-value.updating {
-    animation: pulse 0.3s ease;
+  animation: pulse 0.3s ease;
 }
+
 
 .metric-label {
     font-size: 8px;
@@ -160,7 +163,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100%;
-    padding: 40px;
+    /* padding: 40px; */
+    background-color: #000;
 }
 
 .searching-text {
@@ -192,10 +196,14 @@ body {
     background: #111;
     border-radius: 16px;
     border: 1px solid #222;
-    /* transition: all 0.3s ease; */
+    transition: var(--feed-transition);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+.feed-section #onboardingActive {
+    transition: none;
 }
 
 .feed-section.expanded {
@@ -203,7 +211,7 @@ body {
 }
 
 .feed-section.collapsed {
-    height: 160px;
+    height: 180px;
 }
 
 .feed-header {
@@ -227,6 +235,52 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 6px;
+}
+
+/* Keep width stable when scrollbars appear */
+#liveFeedSection .feed-content,
+#actionQueueSection .feed-content {
+  /* Reserve a gutter so the content width never changes */
+  scrollbar-gutter: stable;
+  /* If you want even more safety: */
+  /* scrollbar-gutter: stable both-edges; */
+  overscroll-behavior: contain; /* no scroll chain/bounce */
+}
+
+/* WebKit (Chrome, Edge, Safari) — make scrollbar subtle */
+#liveFeedSection .feed-content::-webkit-scrollbar,
+#actionQueueSection .feed-content::-webkit-scrollbar {
+  width: 8px;               /* thin */
+}
+
+#liveFeedSection .feed-content::-webkit-scrollbar-track,
+#actionQueueSection .feed-content::-webkit-scrollbar-track {
+  background: transparent;   /* almost invisible track */
+}
+
+#liveFeedSection .feed-content::-webkit-scrollbar-thumb,
+#actionQueueSection .feed-content::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.10);   /* low-opacity thumb */
+  border-radius: 8px;
+  border: 2px solid transparent;        /* inset the thumb */
+  background-clip: padding-box;
+}
+
+#liveFeedSection .feed-content::-webkit-scrollbar-thumb:hover,
+#actionQueueSection .feed-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+#liveFeedSection .feed-content::-webkit-scrollbar-thumb:active,
+#actionQueueSection .feed-content::-webkit-scrollbar-thumb:active {
+  background: rgba(255,255,255,0.26);
+}
+
+/* Firefox — thin, low-contrast */
+#liveFeedSection .feed-content,
+#actionQueueSection .feed-content {
+  scrollbar-width: thin;                         /* thin track */
+  scrollbar-color: rgba(255,255,255,0.18) transparent;
 }
 
 /* Scholarship Box */
@@ -1782,3 +1836,5 @@ body {
   transition: none !important;
   animation: none !important;
 }
+
+

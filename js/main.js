@@ -13,7 +13,8 @@ import * as Quiz from './quizEngine.js';
 // import { bus, EV } from './eventBus.js';
 // import { store } from './store.js';
 import { runOnboarding } from './onboarding.js';
-
+import './metrics.js';
+import { baselineFromStore } from './metrics.js';
 
 window.app = {
   store, UI, Scholarships, Quiz, bus, EV,
@@ -104,6 +105,7 @@ async function boot() {
     initScholarships();
     console.log('[app] Scholarship engine initialized.');
     await runOnboarding();
+    baselineFromStore({ animate: false });
     console.log('[app] Onboarding flow completed.');
 
     store.phase = 'steady';

@@ -56,7 +56,14 @@
       "label": "Ready to submit",
       "durationMs": [1800, 3200],
       "progress": [70, 95],
-      "next": "submitted"
+      "next": "submitted",
+      "blockers": {
+        "mode": "all",   // ALL required blockers must be satisfied to proceed
+        "list": [
+          // Requires a trial for all users
+          { "id": "trialStarted",      "type": "custom", "actionType": "startTrial",      "condition": { "trialStarted": true } }
+        ]
+      }
     },
 
     "submitted": {
@@ -72,5 +79,13 @@
       "progress": [100, 100],
       "terminal": true
     }
+  },
+  "timeSavedMinRangeByState": {
+    "scanning": [120,120],
+    "analyzing": [120,120],
+    "matched": [120,120],
+    "confirmEligibility": [120,120],
+    "readyToSubmit": [100, 180],
+    "submitted": [120,120]
   }
 }

@@ -106,6 +106,8 @@ export async function runOnboarding() {
   // now allow it to be seen (still centered, so no “snap”)
   card.classList.add('intro-visible');
 
+  document.documentElement.style.setProperty('--feed-transition', 'all 0.3s ease');
+
   // --- wait for finish condition robustly ---
   await new Promise(resolve => {
     if (finishCond.type === 'afterMs') {

@@ -17,6 +17,10 @@ export const EV = Object.freeze({
   SCH_BLOCKED: 'SCHOLARSHIP.BLOCKED',
   SCH_UNBLOCKED: 'SCHOLARSHIP.UNBLOCKED',
 
+  // new
+  SCH_SPAWNED: 'sch_spawned',       // a new match is added to the feed
+  METRICS_CHANGED: 'metrics_changed', // overall metrics changed (matches, potentialAwards, etc)
+
   ACTIONQ_UPDATED: 'ACTIONQUEUE.UPDATED',
 
   QUIZ_OPEN: 'QUIZ.OPEN',

@@ -18,7 +18,14 @@
       },
       { "state": "readyToSubmit" },
       { "state": "submitted" }
-    ]
+    ],
+    "minutesByState": {
+      "scanning": 2,
+      "analyzing": 4,
+      "confirmEligibility": 3,
+      "readyToSubmit": 6,
+      "submitted": 3
+    }
   },
 
   {
@@ -180,7 +187,7 @@
     "id": "s014",
     "name": "Robotics Innovators",
     "award": 5000,
-    "deadline": "2025-12-10",
+    "deadline": "2025-09-10",
     "essayRequired": true,
     "transcriptRequired": true,
     // Scripted: quiz + essay (ALL)
