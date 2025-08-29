@@ -1,17 +1,10 @@
 /* =========================
    Metrics Section (Unified)
    ========================= */
-/* Metrics header always at the top */
 .metrics-header {
    background: var(--metrics-bg, #0a0a0a);
    padding: 12px;
    border-bottom: 1px solid var(--metrics-border, #222);
-   position: fixed;
-   top: 0;
-   left: 0;
-   right: 0;
-   z-index: 1000;
-   width: 100%;
    /* animation: slideDown 0.4s ease-out; */
 }
 .metrics-title {

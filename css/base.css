@@ -80,8 +80,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   background: #000;
   color: #fff;
-  height: 100vh;
-  overflow: hidden;
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -140,12 +141,10 @@ body {
   font-size: 12px;
   flex-shrink: 0;
 }
-/* Add top padding to main-app to prevent metrics bar overlap */
 .main-app {
   display: none;
   flex-direction: column;
   height: 100vh;
-  padding-top: 56px; /* Adjust if metrics-header height changes */
 }
 .content-area {
   flex: 1;
