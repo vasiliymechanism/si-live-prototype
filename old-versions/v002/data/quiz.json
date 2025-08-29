@@ -1,0 +1,162 @@
+{
+  "questions": [
+    {
+      "id": "welcome",
+      "type": "interstitial",
+      "title": "Let's Match You With Scholarships",
+      "description": "This quick profile will help us find the best opportunities for you.",
+      "next": "gpa"
+    },
+    {
+      "id": "gpa",
+      "type": "single-select",
+      "title": "What is your current GPA?",
+      "description": "Select the range that best matches your cumulative GPA",
+      "options": [
+        { "value": "4.0+", "label": "4.0 or above" },
+        { "value": "3.5-3.9", "label": "3.5 - 3.9" },
+        { "value": "3.0-3.4", "label": "3.0 - 3.4" },
+        { "value": "2.5-2.9", "label": "2.5 - 2.9" },
+        { "value": "<2.5", "label": "Below 2.5" }
+      ],
+      "next": "conditional",
+      "conditionalNext": {
+        "condition": "gpa",
+        "branches": {
+          "4.0+": "honors",
+          "3.5-3.9": "honors",
+          "default": "major"
+        }
+      }
+    },
+    {
+      "id": "honors",
+      "type": "multi-select",
+      "title": "Academic Honors & Awards",
+      "description": "Select all that apply to you",
+      "options": [
+        { "value": "deans", "label": "Dean's List" },
+        { "value": "honor-society", "label": "Honor Society Member" },
+        { "value": "valedictorian", "label": "Valedictorian/Salutatorian" },
+        { "value": "ap-scholar", "label": "AP Scholar" },
+        { "value": "none", "label": "None of the above" }
+      ],
+      "next": "major"
+    },
+    {
+      "id": "major",
+      "type": "single-select",
+      "title": "What is your intended major?",
+      "description": "Choose the field you plan to study",
+      "options": [
+        { "value": "stem", "label": "STEM (Science, Technology, Engineering, Math)" },
+        { "value": "business", "label": "Business & Economics" },
+        { "value": "humanities", "label": "Humanities & Liberal Arts" },
+        { "value": "health", "label": "Health & Medicine" },
+        { "value": "arts", "label": "Arts & Design" },
+        { "value": "undecided", "label": "Undecided" }
+      ],
+      "next": "year"
+    },
+    {
+      "id": "year",
+      "type": "single-select",
+      "title": "Current Education Level",
+      "description": "What year are you in?",
+      "options": [
+        { "value": "hs-senior", "label": "High School Senior" },
+        { "value": "hs-junior", "label": "High School Junior" },
+        { "value": "college-freshman", "label": "College Freshman" },
+        { "value": "college-sophomore", "label": "College Sophomore" },
+        { "value": "college-junior", "label": "College Junior" },
+        { "value": "graduate", "label": "Graduate Student" }
+      ],
+      "next": "financialNeed"
+    },
+    {
+      "id": "financialNeed",
+      "type": "single-select",
+      "title": "Financial Need Assessment",
+      "description": "What is your family's annual household income?",
+      "options": [
+        { "value": "high", "label": "Under $30,000" },
+        { "value": "medium-high", "label": "$30,000 - $60,000" },
+        { "value": "medium", "label": "$60,000 - $100,000" },
+        { "value": "low", "label": "Over $100,000" }
+      ],
+      "next": "extracurriculars"
+    },
+    {
+      "id": "extracurriculars",
+      "type": "multi-select",
+      "title": "Extracurricular Activities",
+      "description": "Select all areas where you're actively involved",
+      "options": [
+        { "value": "sports", "label": "Varsity/Club Sports" },
+        { "value": "leadership", "label": "Student Government/Leadership" },
+        { "value": "volunteer", "label": "Community Service/Volunteering" },
+        { "value": "work", "label": "Part-time Job/Internship" },
+        { "value": "clubs", "label": "Academic Clubs/Competitions" },
+        { "value": "arts", "label": "Music/Theater/Arts" }
+      ],
+      "next": "personalInfo"
+    },
+    {
+      "id": "personalInfo",
+      "type": "text-input",
+      "title": "Personal Statement",
+      "description": "Tell us briefly about your goals (optional)",
+      "placeholder": "Your educational and career goals...",
+      "skippable": true,
+      "skipText": "Skip for now",
+      "next": "birthdate"
+    },
+    {
+      "id": "birthdate",
+      "type": "date-selector",
+      "title": "Date of Birth",
+      "description": "This helps us match age-specific scholarships",
+      "next": "documents"
+    },
+    {
+      "id": "documents",
+      "type": "file-upload",
+      "title": "Upload Transcript (Optional)",
+      "description": "You can upload your transcript now or later",
+      "skippable": true,
+      "skipText": "I'll upload later",
+      "multiple": false,
+      "acceptedTypes": [".pdf", ".doc", ".docx", ".jpg", ".png"],
+      "next": "terms"
+    },
+    {
+      "id": "terms",
+      "type": "checkbox",
+      "title": "Terms and Conditions",
+      "description": "Please review and accept our terms",
+      "checkboxText": "I agree to the Terms of Service and Privacy Policy",
+      "required": true,
+      "next": "essays"
+    },
+    {
+      "id": "essays",
+      "type": "single-select",
+      "title": "Essay Writing Preference",
+      "description": "How would you like us to handle essays?",
+      "options": [
+        { "value": "full-ai", "label": "Write them completely for me" },
+        { "value": "ai-draft", "label": "Create drafts I can edit" },
+        { "value": "outline", "label": "Provide outlines only" },
+        { "value": "self", "label": "I'll write them myself" }
+      ],
+      "next": "complete"
+    },
+    {
+      "id": "complete",
+      "type": "interstitial",
+      "title": "Profile Complete!",
+      "description": "We're now matching you with scholarships and preparing your applications.",
+      "next": null
+    }
+  ]
+}

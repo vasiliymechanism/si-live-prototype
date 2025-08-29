@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scholarship Institute</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Landing Screen -->
+        <div class="landing-screen" id="landingScreen">
+            <h1>Scholarship Institute</h1>
+            <ol>
+                <li data-number="1">Matches you to scholarships</li>
+                <li data-number="2">Writes your essays</li>
+                <li data-number="3">Submits applications automatically</li>
+            </ol>
+            <button class="btn" id="startButton">Start Matching</button>
+        </div>
+
+        <!-- Main App -->
+        <div class="main-app" id="mainApp">
+            <!-- Metrics Header -->
+            <div class="metrics-header hidden" id="metricsHeader">
+                <div class="metrics-title">Your Stats</div>
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Metrics will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Searching State -->
+                <div class="searching-state" id="searchingState">
+                    <div class="searching-text">Searching for scholarships<span id="ellipses">...</span></div>
+                    <div class="loading-spinner"></div>
+                </div>
+
+                <!-- Accordion Container -->
+                <div class="accordion-container" id="accordionContainer">
+                    <!-- Live Feed -->
+                    <div class="feed-section expanded" id="liveFeedSection">
+                        <div class="feed-header" id="liveFeedHeader">
+                            <div class="feed-title">Your Progress</div>
+                            <div class="feed-subtitle">Live feed</div>
+                        </div>
+                        <div class="feed-content" id="liveFeedContent">
+                            <!-- Scholarships will be added here -->
+                        </div>
+                    </div>
+
+                    <!-- Action Queue -->
+                    <div class="feed-section collapsed" id="actionQueueSection">
+                        <div class="feed-header" id="actionQueueHeader">
+                            <div class="feed-title">Action Required</div>
+                            <div class="feed-subtitle">Unlock more scholarships</div>
+                        </div>
+                        <div class="feed-content" id="actionQueueContent">
+                            <!-- Actions will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer-menu hidden" id="footerMenu">
+                <button class="footer-btn" id="homeBtn">Home</button>
+            </div>
+        </div>
+
+        <!-- Dim Overlay for Spotlight Effect -->
+        <div class="dim-overlay" id="dimOverlay"></div>
+
+        <!-- Quiz Modal -->
+        <div class="modal-overlay" id="quizModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Complete Your Profile</div>
+                    <div class="modal-description">Answer a few questions to match you with the best scholarships</div>
+                </div>
+                <div class="modal-body" id="quizBody">
+                    <!-- Quiz content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Modal -->
+        <div class="modal-overlay" id="inputModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="inputModalTitle">Upload Document</div>
+                    <div class="modal-description" id="inputModalDescription">Please provide the required information</div>
+                </div>
+                <div class="modal-body" id="inputModalBody">
+                    <!-- Input content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paywall Modal -->
+        <div class="modal-overlay" id="paywallModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Submit Your Applications</div>
+                    <div class="modal-description" id="paywallDescription">Start your 3-day free trial to submit applications</div>
+                </div>
+                <div class="modal-body">
+                    <div class="paywall-plans">
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <div class="plan-name">Monthly</div>
+                                <div>
+                                    <span class="plan-price">$20</span>
+                                    <span class="plan-period">/mo</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Unlimited scholarship matching</li>
+                                <li>AI-powered essay writing</li>
+                                <li>Automatic submission</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card recommended">
+                            <span class="plan-badge">BEST VALUE</span>
+                            <div class="plan-header">
+                                <div class="plan-name">Quarterly</div>
+                                <div>
+                                    <span class="plan-price">$15</span>
+                                    <span class="plan-period">/mo ($45/quarter)</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Everything in Monthly</li>
+                                <li>Priority application review</li>
+                                <li>25% savings</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <div class="plan-name">Semi-Annual</div>
+                                <div>
+                                    <span class="plan-price">$10</span>
+                                    <span class="plan-period">/mo ($60/6 months)</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Everything in Quarterly</li>
+                                <li>Dedicated support</li>
+                                <li>50% savings</li>
+                            </ul>
+                            <button class="plan-cta">Start Free Trial</button>
+                        </div>
+
+                        <div class="plan-card vip">
+                            <div class="plan-header">
+                                <div class="plan-name">VIP</div>
+                                <div>
+                                    <span class="plan-price">$69</span>
+                                    <span class="plan-period">/mo</span>
+                                </div>
+                            </div>
+                            <ul class="plan-features">
+                                <li>Extra compute resources dedicated to your scholarship search</li>
+                                <li>Dedicated scholarship search</li>
+                                <li>Premium essay generation</li>
+                                <li>White-glove support</li>
+                            </ul>
+                            <button class="plan-cta vip-cta">Start VIP Trial</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/State.js"></script>
+    <script src="js/UI.js"></script>
+    <script src="js/Scholarship.js"></script>
+    <script src="js/Metrics.js"></script>
+    <script src="js/Event.js"></script>
+    <script src="js/Quiz.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

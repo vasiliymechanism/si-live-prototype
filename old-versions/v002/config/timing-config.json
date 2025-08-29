@@ -1,0 +1,94 @@
+{
+  "timings": {
+    "initialDelay": 1000,
+    "firstScholarshipDelay": 1000,
+    "spotlightDelay": 500,
+    "paywallDelay": 5000,
+    "stateTransitions": {
+      "scanning": {
+        "min": 600,
+        "max": 1200,
+        "timeSaved": {
+          "min": 5,
+          "max": 10
+        }
+      },
+      "checkingDeadline": {
+        "min": 500,
+        "max": 800,
+        "timeSaved": {
+          "min": 3,
+          "max": 6
+        }
+      },
+      "checkingEligibility": {
+        "min": 300,
+        "max": 800,
+        "timeSaved": {
+          "min": 10,
+          "max": 20
+        }
+      },
+      "matchFound": {
+        "min": 1000,
+        "max": 2000,
+        "timeSaved": {
+          "min": 2,
+          "max": 4
+        }
+      },
+      "gettingRequirements": {
+        "min": 2000,
+        "max": 4000,
+        "timeSaved": {
+          "min": 8,
+          "max": 15
+        }
+      },
+      "preparingMaterials": {
+        "min": 4000,
+        "max": 6000,
+        "timeSaved": {
+          "min": 15,
+          "max": 30
+        }
+      },
+      "writingEssay": {
+        "min": 5000,
+        "max": 8000,
+        "timeSaved": {
+          "min": 20,
+          "max": 40
+        }
+      },
+      "finalizingApplication": {
+        "min": 3000,
+        "max": 5000,
+        "timeSaved": {
+          "min": 10,
+          "max": 20
+        }
+      },
+      "readyToSubmit": {
+        "min": 1000,
+        "max": 2000,
+        "timeSaved": {
+          "min": 2,
+          "max": 5
+        }
+      },
+      "applicationSubmitted": {
+        "min": 500,
+        "max": 1000,
+        "timeSaved": {
+          "min": 1,
+          "max": 2
+        }
+      }
+    },
+    "newScholarshipInterval": {
+      "min": 8000,
+      "max": 15000
+    }
+  }
+}

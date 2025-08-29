@@ -1,0 +1,92 @@
+{
+  // Global state machine (random/default path)
+  "version": 1,
+  "start": "scanning",
+  "states": {
+    "scanning": {
+      "label": "Searching sources…",
+      "durationMs": [800, 1500],
+      "progress": [0, 15],
+      "next": "analyzing"
+    },
+
+    "analyzing": {
+      "label": "Reviewing eligibility…",
+      "durationMs": [1200, 1800],
+      "progress": [15, 35],
+      // 90% proceed to matched, 10% end as no match
+      "next": [
+        { "to": "matched", "weight": 0.9 },
+        { "to": "noMatch", "weight": 0.1 }
+      ]
+    },
+
+    "matched": {
+      "label": "Found a match",
+      "durationMs": [900, 1400],
+      "progress": [35, 55],
+      "next": "confirmEligibility"
+    },
+
+    "confirmEligibility": {
+      "label": "Confirm eligibility",
+      "durationMs": [1000, 1600],
+      "progress": [55, 70],
+
+      // RANDOM/BY-DEFAULT: choose a subset of blockers from this pool.
+      // We’ll pick 1–2 unsatisfied blockers, weighted by "weight".
+      // Each chosen blocker pauses the item; ALL chosen must be satisfied to resume.
+      "blockers": {
+        "mode": "subset",
+        "pick": { "min": 1, "max": 2 },          // choose 1–2 blockers
+        // If you prefer independent probabilities instead of "pick", you can use:
+        // "includeProb": true and set "prob" on each pool item (engine supports both).
+        "pool": [
+          { "id": "updateProfileViaQuiz",   "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" },
+          { "id": "gpaEntered",             "type": "userField",  "weight": 0.8, "actionType": "inputGPA", "field": "gpa" },
+          { "id": "transcriptUploaded",     "type": "userField",  "weight": 0.9, "actionType": "uploadTranscript", "field": "transcript" },
+          { "id": "headshotUploaded",       "type": "userField",  "weight": 0.35, "actionType": "uploadHeadshot", "field": "headshot" },
+          { "id": "recommendationUploaded", "type": "userField",  "weight": 0.45, "actionType": "uploadRecommendation", "field": "recommendation" }
+        ]
+      },
+
+      "next": "readyToSubmit"
+    },
+
+    "readyToSubmit": {
+      "label": "Ready to submit",
+      "durationMs": [1800, 3200],
+      "progress": [70, 95],
+      "next": "submitted",
+      "blockers": {
+        "mode": "all",   // ALL required blockers must be satisfied to proceed
+        "list": [
+          // Requires a trial for all users
+          { "id": "trialStarted",      "type": "custom", "actionType": "startTrial",      "condition": { "trialStarted": true } }
+        ]
+      }
+    },
+
+    "submitted": {
+      "label": "Application submitted",
+      "durationMs": [0, 0],
+      "progress": [100, 100],
+      "terminal": true
+    },
+
+    "noMatch": {
+      "label": "Not a fit",
+      "durationMs": [0, 0],
+      "progress": [100, 100],
+      "terminal": true
+    }
+  },
+  "timeSavedMinRangeByState": {
+    "scanning": [120,120],
+    "analyzing": [120,120],
+    "matched": [120,120],
+    "confirmEligibility": [120,120],
+    "readyToSubmit": [100, 180],
+    "submitted": [120,120]
+  }
+}

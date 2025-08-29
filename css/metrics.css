@@ -1,0 +1,44 @@
+/* =========================
+   Metrics Section (Unified)
+   ========================= */
+.metrics-header {
+   background: var(--metrics-bg, #0a0a0a);
+   padding: 12px;
+   border-bottom: 1px solid var(--metrics-border, #222);
+   /* animation: slideDown 0.4s ease-out; */
+}
+.metrics-title {
+   font-size: 14px;
+   color: var(--metrics-title, #666);
+   margin-bottom: 6px;
+   font-weight: 600;
+}
+.metrics-grid {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 8px;
+}
+.metric-box {
+   background: var(--metric-box-bg, #111);
+   border-radius: var(--metric-box-radius, 12px);
+   padding: 4px;
+   text-align: center;
+   border: 1px solid var(--metric-box-border, #222);
+   transition: all 0.3s ease;
+}
+.metric-value {
+   font-size: 16px;
+   font-weight: 700;
+   color: var(--metric-value, #fff);
+   margin-bottom: 4px;
+   transition: transform 0.3s ease;
+}
+.metric-value.updating {
+   animation: pulse 0.3s ease;
+}
+.metric-label {
+   font-size: 8px;
+   color: var(--metric-label, #666);
+   text-transform: uppercase;
+   letter-spacing: 0.5px;
+}

@@ -1,0 +1,95 @@
+{
+  "scholarships": [
+    {
+      "name": "National Merit Scholarship",
+      "amount": 2500,
+      "deadline": 7,
+      "quizUnlock": "gpa",
+      "forcedPath": ["scanning", "checkingDeadline", "checkingEligibility"]
+    },
+    {
+      "name": "Gates Millennium Scholars Program",
+      "amount": 15000,
+      "deadline": 14,
+      "quizUnlock": "major"
+    },
+    {
+      "name": "Coca-Cola Scholars Foundation",
+      "amount": 20000,
+      "deadline": 21,
+      "quizUnlock": null
+    },
+    {
+      "name": "Dell Scholars Program",
+      "amount": 5000,
+      "deadline": 30,
+      "quizUnlock": "financialNeed"
+    },
+    {
+      "name": "Amazon Future Engineer Scholarship",
+      "amount": 40000,
+      "deadline": 45,
+      "quizUnlock": "major"
+    },
+    {
+      "name": "Google Lime Scholarship",
+      "amount": 10000,
+      "deadline": 10,
+      "quizUnlock": null
+    },
+    {
+      "name": "Microsoft Disability Scholarship",
+      "amount": 5000,
+      "deadline": 18,
+      "quizUnlock": null
+    },
+    {
+      "name": "Adobe Design Achievement Awards",
+      "amount": 8000,
+      "deadline": 25,
+      "quizUnlock": null
+    },
+    {
+      "name": "STEM Premier Scholarship",
+      "amount": 3000,
+      "deadline": 35,
+      "quizUnlock": "major"
+    },
+    {
+      "name": "Jack Kent Cooke Foundation",
+      "amount": 55000,
+      "deadline": 40,
+      "quizUnlock": "gpa"
+    },
+    {
+      "name": "Elks National Foundation",
+      "amount": 4000,
+      "deadline": 12,
+      "quizUnlock": null
+    },
+    {
+      "name": "Ron Brown Scholar Program",
+      "amount": 40000,
+      "deadline": 28,
+      "quizUnlock": "extracurriculars"
+    },
+    {
+      "name": "Horatio Alger Scholarship",
+      "amount": 25000,
+      "deadline": 50,
+      "quizUnlock": "financialNeed"
+    },
+    {
+      "name": "Burger King Scholars Program",
+      "amount": 1000,
+      "deadline": 8,
+      "quizUnlock": null
+    },
+    {
+      "name": "Davidson Fellows Scholarship",
+      "amount": 50000,
+      "deadline": 60,
+      "quizUnlock": null
+    }
+  ]
+}

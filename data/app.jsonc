@@ -1,0 +1,43 @@
+{
+  "//": "Global demo flow, timings, feature flags",
+  "seed": 42,                     // deterministic randomness; change for variety
+  "spotlight": { "enabled": true, "opacity": 0.55 },
+  "blocking": { "blockMode": "all" }, // all | new | none
+  "searchTiming": {
+    "firstMs": [2200, 4200],      // B.3: range for the first result
+    "subsequentMs": [800, 3000]   // range for others
+  },
+  "paywallTrigger": {
+    "mode": "afterQuiz",          // afterQuiz | afterNMatches | afterMs | custom
+    "nMatches": 8,
+    "afterMs": 60000
+  },
+  "sticky": {
+    "aboveQueue": ["quizPrompt", "paywallCTA"] // 13. pin to top
+  },
+  "phaseScript": [
+    { "phase": "welcome" },
+    { "phase": "onboarding" },
+    { "phase": "steady" },
+    { "phase": "paywall" },
+    { "phase": "end" }
+  ],
+  "reset": { "hotkey": "Shift+R", "holdMs": 1200 }, // hidden clear between users
+  "onboarding": {
+    // How long to show the centered "Searching for scholarships..." text
+    "searchIntroMs": 1600,
+
+    // While this intro runs, pause new matches after the first
+    "pauseFeedDuringIntro": true,
+
+    // When to start the “settle into dashboard” animation for the first card
+    // Option A: when the card reaches a state…
+    // "finishOn": { "type": "stateReached", "state": "confirmEligibility" },
+    "finishOn": { "type": "stateReached", "state": "analyzing" },
+    // Option B (alternative): after a fixed time
+    // "finishOn": { "type": "afterMs", "ms": 2500 }
+
+    // For debugging: freeze before centering the card
+    "debugFreezeBeforeCenterMs": 0   // set to 30000 when you want to inspect
+  }
+}
