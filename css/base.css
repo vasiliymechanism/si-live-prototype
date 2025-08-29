@@ -140,10 +140,12 @@ body {
   font-size: 12px;
   flex-shrink: 0;
 }
+/* Add top padding to main-app to prevent metrics bar overlap */
 .main-app {
   display: none;
   flex-direction: column;
   height: 100vh;
+  padding-top: 56px; /* Adjust if metrics-header height changes */
 }
 .content-area {
   flex: 1;
