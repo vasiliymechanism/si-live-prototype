@@ -25,7 +25,8 @@
   "reset": { "hotkey": "Shift+R", "holdMs": 1200 }, // hidden clear between users
   "onboarding": {
     // How long to show the centered "Searching for scholarships..." text
-    "searchIntroMs": 1600,
+    "searchIntroMs": 2600,
+    "matchFoundFlashMs": 1000,
 
     // While this intro runs, pause new matches after the first
     "pauseFeedDuringIntro": true,

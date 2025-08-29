@@ -53,6 +53,7 @@ function msFromCSSVar(name, fallback = 350){
 export async function runOnboarding() {
   const cfg = store.app?.onboarding || {};
   const introMs = Math.max(0, cfg.searchIntroMs ?? 1400);
+  const matchFoundFlashMs = Math.max(0, cfg.matchFoundFlashMs ?? 1000);
   const finishCond = cfg.finishOn || { type: 'stateReached', state: 'matched' };
 
   UI.showDashboard();
@@ -62,6 +63,15 @@ export async function runOnboarding() {
   const overlay = ensureOverlay();
   overlay.classList.add('active');
   if (introMs > 0) await new Promise(r => setTimeout(r, introMs));
+  /*replace intro text with "Potential match found" for a quick flash; also hid the ellipses*/
+  if (matchFoundFlashMs > 0) {
+    // add a quick flash effect
+    overlay.classList.add('flash');
+    overlay.querySelector('.search-intro-text span').textContent = 'Potential match found';
+    overlay.querySelector('.search-intro-ellipses').style.display = 'none';
+    await new Promise(r => setTimeout(r, matchFoundFlashMs));
+    overlay.classList.remove('flash');
+  }
   overlay.classList.remove('active');
 
   // Ensure a first scholarship exists (ignorePause so we can create it while paused)
