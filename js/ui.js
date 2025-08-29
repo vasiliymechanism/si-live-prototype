@@ -889,6 +889,8 @@ export function closeModal(el) {
       focusFirst(lastFocus);
     }
   }
+  // Scroll to top of the page when any modal is closed
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Wiring for quiz/paywall modals (simple)
