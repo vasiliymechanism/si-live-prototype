@@ -51,12 +51,12 @@ async function boot() {
 
   // Load configs
   const [app, sm, actions, paywall, quiz, catalog] = await Promise.all([
-    loadJSONC('./data/app.jsonc'),
-    loadJSONC('./data/stateMachine.jsonc'),
-    loadJSONC('./data/actions.jsonc'),
-    loadJSONC('./data/paywall.jsonc'),
-    loadJSONC('./data/quiz.jsonc'),
-    loadJSONC('./data/scholarships.jsonc')
+    loadJSONC('/si-live-prototype/data/app.jsonc'),
+    loadJSONC('/si-live-prototype/data/stateMachine.jsonc'),
+    loadJSONC('/si-live-prototype/data/actions.jsonc'),
+    loadJSONC('/si-live-prototype/data/paywall.jsonc'),
+    loadJSONC('/si-live-prototype/data/quiz.jsonc'),
+    loadJSONC('/si-live-prototype/data/scholarships.jsonc')
     // fetch('/data/scholarships.json').then(r => r.json())
   ]);
 
