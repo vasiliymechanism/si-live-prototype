@@ -1,9 +1,3 @@
-// import { store } from './store.js';
-// import { bus, EV } from './eventBus.js';
-// import { randRange } from './rng.js';
-// import { updateScholarshipCardState, addScholarshipCard } from './ui.js';
-// import { resolveAction } from './actionResolver.js';
-
 import { store } from './store.js';
 import { bus, EV } from './eventBus.js';
 import { randRange } from './rng.js';

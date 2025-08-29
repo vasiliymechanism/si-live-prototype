@@ -911,7 +911,7 @@ export function initUI() {
     overlay.addEventListener('click', (e) => {
       if (e.target !== overlay) return;          // ignore clicks inside .modal-content
       if (!isDismissible(overlay)) {
-        nudge(overlay.querySelector('.modal-content')); // little feedback
+        // nudge(overlay.querySelector('.modal-content')); // little feedback
         return;
       }
       closeModal(overlay);
@@ -924,7 +924,7 @@ export function initUI() {
     const open = Array.from(document.querySelectorAll('.modal-overlay.active'));
     const top = open.at(-1);
     if (!top) return;
-    if (!isDismissible(top)) { nudge(top.querySelector('.modal-content')); return; }
+    if (!isDismissible(top)) { /* nudge(top.querySelector('.modal-content')); */ return; }
     closeModal(top);
     setSpotlight(false);
   });
@@ -935,7 +935,7 @@ export function initUI() {
     const open = Array.from(document.querySelectorAll('.modal-overlay.active'));
     const top = open.at(-1);
     if (!top) return;
-    if (!allowEscClose(top)) { nudge(top.querySelector('.modal-content')); return; }
+    if (!allowEscClose(top)) { /* nudge(top.querySelector('.modal-content')); */ return; }
     closeModal(top);
     setSpotlight(false);
   });

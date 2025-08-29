@@ -1,61 +1,122 @@
-/* Ensure modal content uses the same font and color as the main app */
+/* =========================
+   Modal, Quiz, and Button Styles (Deduplicated)
+   ========================= */
+
+/* Modal containers */
 .modal-content, .modal-header, .modal-body, .modal-form-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  color: #fff;
+  color: var(--modal-form-label, #e5e7eb);
   font-size: 15px;
   font-weight: 400;
+  background: var(--modal-form-bg, #0f0f12);
 }
 
 /* Modal titles and descriptions */
 .modal-title {
   font-size: 20px;
   font-weight: 700;
-  color: #fff;
+  color: var(--modal-form-label, #e5e7eb);
 }
 .modal-description {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--modal-form-hint, #9ca3af);
   font-weight: 400;
 }
 
-/* Modal input fields */
+/* Modal and quiz input fields (unified) */
 .modal-content input[type="text"],
 .modal-content input[type="number"],
 .modal-content input[type="email"],
 .modal-content input[type="date"],
-.modal-content textarea {
+.modal-content textarea,
+#quizBody input[type="text"],
+#quizBody input[type="number"],
+#quizBody input[type="email"],
+#quizBody input[type="date"],
+#quizBody textarea {
   font-family: inherit;
-  color: #fff;
-  font-size: 15px;
+  color: var(--modal-form-label, #e5e7eb);
+  font-size: var(--modal-form-input-font, 15px);
   font-weight: 400;
   background: var(--modal-form-input-bg, #171717);
   border: 2px solid var(--modal-form-input-border, #2f2f2f);
   border-radius: var(--modal-form-input-radius, 12px);
   padding: var(--modal-form-input-padding, 12px 14px);
+  box-sizing: border-box;
+  margin-bottom: 1em;
+  transition: border-color 0.2s;
+}
+.modal-content input:focus,
+.modal-content textarea:focus,
+#quizBody input:focus,
+#quizBody textarea:focus {
+  border-color: var(--modal-form-input-focus, #3b82f6);
+  outline: none;
 }
 
-/* Modal labels */
-.modal-content label, .modal-content .q-label {
+/* Modal and quiz labels (unified) */
+.modal-content label, .modal-content .q-label,
+#quizBody label, #quizBody .q-label {
   font-family: inherit;
-  color: #e5e7eb;
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--modal-form-label, #e5e7eb);
+  font-size: var(--modal-form-label-size, 13px);
+  font-weight: var(--modal-form-label-weight, 600);
+  margin-bottom: 0.3em;
+  display: block;
 }
 
-/* Modal buttons */
-.modal-content .btn, .modal-content .quiz-btn, .modal-content .plan-cta {
+/* =========================
+   Button Styles (Unified)
+   ========================= */
+.btn {
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: var(--modal-form-btn-color, #fff);
+  background: var(--modal-form-btn-bg, #3b82f6);
+  border: none;
+  border-radius: var(--modal-form-btn-radius, 8px);
+  padding: var(--modal-form-btn-padding, 12px);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-/* Shimmer effect for landing-screen start button */
+.btn:hover {
+  background: var(--modal-form-btn-bg-hover, #2563eb);
+}
+
+/* Quiz and plan buttons inherit from .btn */
+.quiz-btn, .plan-cta {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--modal-form-btn-color, #fff);
+  background: var(--modal-form-btn-bg, #3b82f6);
+  border: none;
+  border-radius: var(--modal-form-btn-radius, 8px);
+  padding: var(--modal-form-btn-padding, 12px);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.quiz-btn:hover, .plan-cta:hover {
+  background: var(--modal-form-btn-bg-hover, #2563eb);
+}
+.modal-content .btn,
+.modal-content .quiz-btn,
+.modal-content .plan-cta {
+  width: 100%;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
 
 /* Match AQ CTA button effect for landing-screen .btn */
 .landing-screen .btn {
   background: linear-gradient(90deg, #3b82f6, #8b5cf6);
   transition: background 0.2s ease, transform 0.1s ease;
   box-shadow: 0 4px 20px rgba(59,130,246,0.18);
+  font-size: 18px;
+  padding: 1em 2em;
 }
 .landing-screen .btn:hover {
   background: linear-gradient(90deg, #2563eb, #7c3aed);
@@ -176,8 +237,9 @@ body {
     font-weight: 700;
     margin-bottom: 30px;
     background: linear-gradient(135deg, #fff 0%, #888 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .landing-screen ol {
@@ -216,54 +278,49 @@ body {
     height: 100vh;
 }
 
-/* Metrics Header */
+/* =========================
+   Metrics Section (Unified)
+   ========================= */
 .metrics-header {
-    background: #0a0a0a;
-    padding: 12px;
-    border-bottom: 1px solid #222;
-    /* animation: slideDown 0.4s ease-out; */
+  background: var(--metrics-bg, #0a0a0a);
+  padding: 12px;
+  border-bottom: 1px solid var(--metrics-border, #222);
+  /* animation: slideDown 0.4s ease-out; */
 }
-
 .metrics-title {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 6px;
-    font-weight: 600;
+  font-size: 14px;
+  color: var(--metrics-title, #666);
+  margin-bottom: 6px;
+  font-weight: 600;
 }
-
 .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
-
 .metric-box {
-    background: #111;
-    border-radius: 12px;
-    padding: 4px;
-    text-align: center;
-    border: 1px solid #222;
-    transition: all 0.3s ease;
+  background: var(--metric-box-bg, #111);
+  border-radius: var(--metric-box-radius, 12px);
+  padding: 4px;
+  text-align: center;
+  border: 1px solid var(--metric-box-border, #222);
+  transition: all 0.3s ease;
 }
-
 .metric-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 4px;
-    transition: transform 0.3s ease;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--metric-value, #fff);
+  margin-bottom: 4px;
+  transition: transform 0.3s ease;
 }
-
 .metric-value.updating {
   animation: pulse 0.3s ease;
 }
-
-
 .metric-label {
-    font-size: 8px;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: 8px;
+  color: var(--metric-label, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Content Area */
@@ -402,15 +459,18 @@ body {
   scrollbar-color: rgba(255,255,255,0.18) transparent;
 }
 
-/* Scholarship Box */
-.scholarship-box {
-    background: #0a0a0a;
-    border: 1px solid #222;
-    border-radius: 12px;
-    padding: 8px 12px;
-    margin-bottom: 4px;
-    animation: fadeInUp 0.4s ease-out;
-    transition: all 0.3s ease;
+
+/* =========================
+   Card Containers (Unified)
+   ========================= */
+.scholarship-box, .sch-card {
+  background: var(--card-bg, #0a0a0a);
+  border: 1px solid var(--card-border, #222);
+  border-radius: var(--card-radius, 12px);
+  padding: var(--card-padding, 8px 12px);
+  margin-bottom: 4px;
+  animation: fadeInUp 0.4s ease-out;
+  transition: all 0.3s ease;
 }
 
 .scholarship-header {
@@ -440,37 +500,37 @@ body {
     margin: 0px 0;
 }
 
+
+/* Status Text (Unified) */
 .status-text {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--status-color, #888);
+  margin-bottom: 8px;
 }
-
 .status-text.action-required {
-    color: #f59e0b;
-    font-weight: 600;
+  color: var(--status-action, #f59e0b);
+  font-weight: 600;
 }
-
 .status-text.failed {
-    color: #ef4444;
+  color: var(--status-failed, #ef4444);
 }
-
 .status-text.success {
-    color: #4ade80;
+  color: var(--status-success, #4ade80);
 }
 
-.progress-bar {
-    height: 4px;
-    background: #222;
-    border-radius: 2px;
-    overflow: hidden;
-}
 
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    border-radius: 2px;
-    transition: width 0.5s ease;
+/* Progress Bar (Unified) */
+.progress-bar, .sch-card .sch-progress {
+  height: var(--progress-height, 4px);
+  background: var(--progress-bg, #222);
+  border-radius: var(--progress-radius, 2px);
+  overflow: hidden;
+}
+.progress-fill, .sch-card .sch-progress .bar {
+  height: 100%;
+  background: var(--progress-bar-gradient, linear-gradient(90deg, #3b82f6, #8b5cf6));
+  border-radius: var(--progress-radius, 2px);
+  transition: width 0.5s ease;
 }
 
 .scholarship-deadline {
@@ -1412,18 +1472,11 @@ body {
     color: var(--modal-form-btn-color-secondary);
     border: 1px solid var(--modal-form-btn-border-secondary);
   }
+
   #quizBody .quiz-btn:disabled, #inputModalBody .quiz-btn:disabled, .modal-form-body .quiz-btn:disabled {
     opacity: var(--modal-form-btn-disabled-opacity);
     cursor: var(--modal-form-btn-disabled-cursor);
   }
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
 
 .plan-cta:hover {
     background: #2563eb;
@@ -1818,7 +1871,10 @@ body {
     50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
 }
 
-/* Utility Classes */
+
+/* =========================
+  Utility Classes
+  ========================= */
 .hidden { display: none !important; }
 .dim { opacity: 0.3; }
 
