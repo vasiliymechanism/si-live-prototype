@@ -1,3 +1,8 @@
+/* FLIP animation for action queue items */
+.aq-item.aq-animating {
+  z-index: 2;
+  box-shadow: 0 4px 24px rgba(59,130,246,0.12);
+}
 /* css/style.css - Scholarship Institute Styles */
 
 :root{

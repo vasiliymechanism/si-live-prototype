@@ -6,14 +6,16 @@
       "type": "interstitial",
       "title": "Let’s customize your matches",
       "subtitle": "60 seconds. No trick questions.",
-      "next": "q_citizen"
+      "next": "q_citizen",
+      "quizQuestionNumber": 1
     },
     "q_citizen": {
       "type": "single",
       "var": "us_citizen",
       "title": "Are you a U.S. citizen?",
       "choices": [{"label":"Yes","value":true},{"label":"No","value":false},{"label":"Not sure","value":null}],
-      "next": "q_gpa"
+      "next": "q_gpa",
+      "quizQuestionNumber": 2
     },
     "q_gpa": {
       "type": "short",
@@ -21,39 +23,45 @@
       "title": "What’s your GPA? (unweighted)",
       "placeholder": "e.g., 3.6",
       "validate": { ">=": [ { "var": "value" }, 0 ], "<=": [ { "var": "value" }, 4.0 ] },
-      "next": { "if": [{ ">=": [ { "var": "gpa" }, 3.5 ] }, "q_sports", "q_grad"] }
+      "next": { "if": [{ ">=": [ { "var": "gpa" }, 3.5 ] }, "q_sports", "q_grad"] },
+      "quizQuestionNumber": 3
     },
     "q_sports": {
       "type": "multi",
       "var": "sports",
       "title": "Do you play any sports?",
       "choices": ["Basketball","Soccer","Track","Other"],
-      "next": "q_grad"
+      "next": "q_grad",
+      "quizQuestionNumber": 4
     },
     "q_grad": {
       "type": "date",
       "var": "gradYear",
       "title": "When do you graduate high school?",
-      "next": "q_transcript"
+      "next": "q_transcript",
+      "quizQuestionNumber": 5
     },
     "q_transcript": {
       "type": "file",
       "var": "transcript",
       "title": "Please upload your transcript",
       "accept": ".pdf,.png,.jpg",
-      "next": "q_confirm"
+      "next": "q_confirm",
+      "quizQuestionNumber": 6
     },
     "q_confirm": {
       "type": "checkbox",
       "label": "I confirm that the information provided is accurate.",
       "required": true,
       "errorMessage": "You must confirm your information to continue.",
-      "next": "done"
+      "next": "done",
+      "quizQuestionNumber": 7
     },
     "done": {
       "type": "interstitial",
       "title": "Nice! We’ve updated your profile.",
-      "onCompleteSets": ["quizCompleted"]
+      "onCompleteSets": ["quizCompleted"],
+      "quizQuestionNumber": 8
     }
   }
 }

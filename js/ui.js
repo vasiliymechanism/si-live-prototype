@@ -475,11 +475,20 @@ export function updateScholarshipCardState(id, state, progressPct = null) {
 
 export function renderActionQueue(items) {
   if (!dom.actionQueue) return;
-  dom.actionQueue.innerHTML = '';
 
+  // Remove DOM elements for actions no longer present in items
+  const itemTypes = new Set(items.map(i => i.type));
+  Array.from(dom.actionQueue.children).forEach(el => {
+    if (!itemTypes.has(el.dataset.type)) {
+      dom.actionQueue.removeChild(el);
+    }
+  });
+
+  // Only append new items to the end
   items.forEach(raw => {
-    const item = resolveAction(raw.type, raw); // fill label/cta/modal/sticky from config
-
+    // If the item already exists in the DOM, skip
+    if (dom.actionQueue.querySelector(`[data-type="${raw.type}"]`)) return;
+    const item = resolveAction(raw.type, raw);
     const li = document.createElement('div');
     li.className = `aq-item ${item.sticky ? 'aq-sticky' : ''}`;
     li.dataset.type = item.type;
@@ -493,9 +502,7 @@ export function renderActionQueue(items) {
       } else if (item.modal === 'paywall') {
         bus.emit(EV.PAYWALL_SHOW);
       } else {
-        // Use input modal for all other action types
         openInputModalForAction(item.type, (val) => {
-          // Set the appropriate flag and emit ACTION_COMPLETED
           if (item.type === 'uploadTranscript') {
             store.flags.add('transcriptUploaded');
           } else if (item.type === 'uploadEssay') {
@@ -513,6 +520,76 @@ export function renderActionQueue(items) {
     });
     dom.actionQueue.appendChild(li);
   });
+
+  // After all current logic, re-sort the DOM elements in place for smoothness
+  setTimeout(() => {
+    const aqParent = dom.actionQueue;
+    if (!aqParent) return;
+    // Build quiz question number map and var-to-questionId map (repeat for sort logic)
+    const quizCfg = store.quiz?.questions || {};
+    const quizOrder = {};
+    const varToQid = {};
+    for (const [qid, q] of Object.entries(quizCfg)) {
+      if (q.quizQuestionNumber) quizOrder[qid] = q.quizQuestionNumber;
+      if (q.var) varToQid[q.var] = qid;
+    }
+    const actionsCfg = store.actions?.types || {};
+    // FLIP: record first positions
+    const domItems = Array.from(aqParent.children).map((el, idx) => {
+      const type = el.dataset.type;
+      const cfg = actionsCfg[type] || {};
+      let quizQid = null;
+      if (cfg.quizQuestionId && quizOrder[cfg.quizQuestionId]) {
+        quizQid = cfg.quizQuestionId;
+      } else if (cfg.var && varToQid[cfg.var] && quizOrder[varToQid[cfg.var]]) {
+        quizQid = varToQid[cfg.var];
+      }
+      let sortBucket = 3, sortKey = idx;
+      if (cfg.sticky) {
+        sortBucket = 1;
+        sortKey = typeof cfg.priority === 'number' ? cfg.priority : 999;
+      } else if (quizQid) {
+        sortBucket = 2;
+        sortKey = quizOrder[quizQid];
+      }
+      return { el, type, sortBucket, sortKey, origIdx: idx, firstRect: el.getBoundingClientRect() };
+    });
+    // Sort by bucket, then key, then original order
+    domItems.sort((a, b) =>
+      a.sortBucket - b.sortBucket || a.sortKey - b.sortKey || a.origIdx - b.origIdx
+    );
+    // Check if the new order is different from the last order
+    const newOrder = domItems.map(d => d.type).join(',');
+    if (aqParent.dataset.lastOrder === newOrder) {
+      // No change, skip re-append and animation
+      return;
+    }
+    aqParent.dataset.lastOrder = newOrder;
+    // Re-append in sorted order (this will move only those out of order)
+    domItems.forEach(({ el }) => aqParent.appendChild(el));
+    // FLIP: record last positions and animate
+    domItems.forEach(({ el, firstRect }) => {
+      const lastRect = el.getBoundingClientRect();
+      const dx = firstRect.left - lastRect.left;
+      const dy = firstRect.top - lastRect.top;
+      if (dx || dy) {
+        el.style.transition = 'none';
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        // Force reflow
+        el.getBoundingClientRect();
+        el.style.transition = 'transform 320ms cubic-bezier(.22,1,.36,1)';
+        el.style.transform = '';
+        el.classList.add('aq-animating');
+        setTimeout(() => el.classList.remove('aq-animating'), 340);
+      }
+    });
+    // Optionally, add a log for debugging
+    console.log('[AQ] DOM re-sort complete', domItems.map(d => d.el.dataset.type));
+  }, 0);
+
+  // Bump expanded height for action queue section if expanded
+  const queueSection = document.getElementById('actionQueueSection');
+  if (queueSection) bumpExpandedHeight(queueSection);
 }
 
 
@@ -536,6 +613,8 @@ function setSiblingsInert(el, on) {
     else k.removeAttribute('inert');
   });
 }
+
+    
 
 export function openModal(el) {
     if (!el) return;
