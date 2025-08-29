@@ -1,3 +1,66 @@
+/* Ensure modal content uses the same font and color as the main app */
+.modal-content, .modal-header, .modal-body, .modal-form-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* Modal titles and descriptions */
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.modal-description {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Modal input fields */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="email"],
+.modal-content input[type="date"],
+.modal-content textarea {
+  font-family: inherit;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+  background: var(--modal-form-input-bg, #171717);
+  border: 2px solid var(--modal-form-input-border, #2f2f2f);
+  border-radius: var(--modal-form-input-radius, 12px);
+  padding: var(--modal-form-input-padding, 12px 14px);
+}
+
+/* Modal labels */
+.modal-content label, .modal-content .q-label {
+  font-family: inherit;
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Modal buttons */
+.modal-content .btn, .modal-content .quiz-btn, .modal-content .plan-cta {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+/* Shimmer effect for landing-screen start button */
+
+/* Match AQ CTA button effect for landing-screen .btn */
+.landing-screen .btn {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.18);
+}
+.landing-screen .btn:hover {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  transform: scale(1.03);
+}
 /* FLIP animation for action queue items */
 .aq-item.aq-animating {
   z-index: 2;
@@ -15,7 +78,58 @@
   --onb-ease-reveal: ease;
 
   --feed-transition: none; /* "all 0.3s ease" or "none" during onboarding */
+
+  /* Modal form shared variables */
+  --modal-form-bg: #0f0f12;
+  --modal-form-border: #232323;
+  --modal-form-padding: 20px;
+  --modal-form-gap: 16px;
+  --modal-form-label: #e5e7eb;
+  --modal-form-label-weight: 600;
+  --modal-form-label-size: 13px;
+  --modal-form-hint: #9ca3af;
+  --modal-form-error: #f87171;
+  --modal-form-input-bg: #171717;
+  --modal-form-input-border: #2f2f2f;
+  --modal-form-input-radius: 12px;
+  --modal-form-input-padding: 12px 14px;
+  --modal-form-input-font: 14px;
+  --modal-form-input-placeholder: #6b7280;
+  --modal-form-input-focus: #3b82f6;
+  --modal-form-btn-bg: #3b82f6;
+  --modal-form-btn-bg-secondary: transparent;
+  --modal-form-btn-color: #fff;
+  --modal-form-btn-color-secondary: #666;
+  --modal-form-btn-border-secondary: #333;
+  --modal-form-btn-radius: 8px;
+  --modal-form-btn-padding: 12px;
+  --modal-form-btn-font: 14px;
+  --modal-form-btn-weight: 600;
+  --modal-form-btn-disabled-opacity: 0.5;
+  --modal-form-btn-disabled-cursor: not-allowed;
+  --modal-form-choices-gap: 10px;
+  --modal-form-chip-bg: #171717;
+  --modal-form-chip-border: #2f2f2f;
+  --modal-form-chip-radius: 12px;
+  --modal-form-chip-font: 14px;
+  --modal-form-chip-weight: 600;
+  --modal-form-chip-color: #e5e7eb;
+  --modal-form-chip-active-bg: linear-gradient(135deg, #1e293b, #0f172a);
+  --modal-form-chip-active-border: #3b82f6;
+  --modal-form-chip-active-color: #fff;
+  --modal-form-checkbox-accent: #3b82f6;
+  --modal-form-file-bg: #171717;
+  --modal-form-file-border: #2f2f2f;
+  --modal-form-file-radius: 12px;
+  --modal-form-file-padding: 10px;
+  --modal-form-file-font: 13px;
+  --modal-form-file-btn-bg: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  --modal-form-file-btn-radius: 8px;
+  --modal-form-file-btn-color: #fff;
+  --modal-form-file-btn-padding: 8px 12px;
+  --modal-form-file-btn-hover-filter: brightness(1.06);
 }
+/* } */
 
 /* Reset and Base Styles */
 * {
@@ -1080,354 +1194,228 @@ body {
   letter-spacing: .2px;
 }
 #quizBody .q-head p {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #9ca3af; /* subtle gray */
-}
 
-/* Choice layout */
-#quizBody .choices {
-  /* display: grid; */
-  display: flex;
-  /* grid-template-columns: 1fr 1fr; */ /* Yes/No = two columns */
-  gap: 10px;
-}
-
-/* If you want vertical stack on narrow screens */
-@media (max-width: 360px) {
-  #quizBody .choices { grid-template-columns: 1fr; }
-}
-
-/* Chips (buttons) */
-#quizBody .chip {
-  appearance: none;
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 2px solid #2f2f2f;
-  background: #171717;
-  color: #e5e7eb;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
-}
-
-#quizBody .chip:hover {
-  border-color: #4b5563;
-  transform: translateY(-1px);
-}
-
-#quizBody .chip:active {
-  transform: translateY(0);
-}
-
-/* Keyboard focus ring */
-#quizBody .chip:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px #3b82f6;
-}
-
-/* Selected/active state (used by multi-select, or if you toggle .active) */
-#quizBody .chip.active,
-#quizBody .chip[aria-pressed="true"] {
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59,130,246,.25);
-  color: #fff;
-}
-
-/* Optional: a subtle divider if you add more sections later */
-#quizBody .section-divider {
-  height: 1px;
-  background: #222;
-  margin: 6px 0;
-  border-radius: 1px;
-}
-
-/* =========================
-   Quiz modal styling
-   (scoped to #quizBody)
-   ========================= */
-
-#quizBody {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  /* Optional “card” feel */
-  background: #0f0f12;
-  border: 1px solid #232323;
-  /* border-radius: 16px; */
-}
-
-/* Title + subtitle */
-#quizBody .q-head h3 {
+/* Modal form body: apply to both #quizBody and #inputModalBody and .modal-form-body */
+#quizBody .q-head h3, #inputModalBody .q-head h3, .modal-form-body .q-head h3 {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: .2px;
 }
-#quizBody .q-head p {
+#quizBody .q-head p, #inputModalBody .q-head p, .modal-form-body .q-head p {
   margin-top: 6px;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--modal-form-hint);
 }
-
-/* Field wrapper */
-#quizBody .q-field {
+#quizBody .q-field, #inputModalBody .q-field, .modal-form-body .q-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
-/* Labels, hints, errors */
-#quizBody .q-label {
-  font-size: 13px;
-  font-weight: 600;
+#quizBody .q-label, #inputModalBody .q-label, .modal-form-body .q-label {
+  font-size: var(--modal-form-label-size);
+  font-weight: var(--modal-form-label-weight);
 }
-#quizBody .q-hint {
+#quizBody .q-hint, #inputModalBody .q-hint, .modal-form-body .q-hint {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--modal-form-hint);
 }
-#quizBody .q-error {
-  font-size: 12px;
-  color: #f87171;
-}
-
-/* Text inputs (short/long) */
-#quizBody input[type="text"],
-#quizBody input[type="number"],
-#quizBody input[type="email"],
-#quizBody input[type="date"],
-#quizBody textarea {
+#quizBody input[type="text"], #inputModalBody input[type="text"],
+#quizBody input[type="number"], #inputModalBody input[type="number"],
+#quizBody input[type="email"], #inputModalBody input[type="email"],
+#quizBody input[type="date"], #inputModalBody input[type="date"],
+#quizBody textarea, #inputModalBody textarea {
   width: 100%;
-  color: #e5e7eb;
-  background: #171717;
-  border: 2px solid #2f2f2f;
-  border-radius: 12px;
-  padding: 12px 14px;
-  font-size: 14px;
+  color: var(--modal-form-label);
+  background: var(--modal-form-input-bg);
+  border: 2px solid var(--modal-form-input-border);
+  border-radius: var(--modal-form-input-radius);
+  padding: var(--modal-form-input-padding);
+  font-size: var(--modal-form-input-font);
   transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
-
-#quizBody textarea {
+#quizBody textarea, #inputModalBody textarea {
   min-height: 110px;
   resize: vertical;
 }
-
-#quizBody input::placeholder,
-#quizBody textarea::placeholder {
-  color: #6b7280;
+#quizBody input::placeholder, #inputModalBody input::placeholder,
+#quizBody textarea::placeholder, #inputModalBody textarea::placeholder {
+  color: var(--modal-form-input-placeholder);
 }
-
-#quizBody input:focus-visible,
-#quizBody textarea:focus-visible {
+#quizBody input:focus-visible, #inputModalBody input:focus-visible,
+#quizBody textarea:focus-visible, #inputModalBody textarea:focus-visible {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px rgba(59,130,246,.65);
+  border-color: var(--modal-form-input-focus);
+  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px var(--modal-form-input-focus, #3b82f6);
 }
-
-/* Error state (toggle by adding .is-error to the input/textarea) */
-#quizBody .is-error {
-  border-color: #ef4444 !important;
+#quizBody .is-error, #inputModalBody .is-error, .modal-form-body .is-error {
+  border-color: var(--modal-form-error) !important;
   box-shadow: 0 0 0 2px #1a0b0b, 0 0 0 4px rgba(239,68,68,.45) !important;
 }
-
-/* Date input: keep same look; hide ugly spinner in some browsers */
-#quizBody input[type="date"]::-webkit-calendar-picker-indicator {
+#quizBody input[type="date"]::-webkit-calendar-picker-indicator, #inputModalBody input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.8);
   opacity: .9;
 }
-
-/* File input (uses ::file-selector-button) */
-#quizBody input[type="file"] {
-  color: #9ca3af;               /* filename text */
-  background: #171717;
-  border: 2px solid #2f2f2f;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
+#quizBody input[type="file"], #inputModalBody input[type="file"] {
+  color: var(--modal-form-hint);
+  background: var(--modal-form-file-bg);
+  border: 2px solid var(--modal-form-file-border);
+  border-radius: var(--modal-form-file-radius);
+  padding: var(--modal-form-file-padding);
+  font-size: var(--modal-form-file-font);
 }
-#quizBody input[type="file"]::file-selector-button {
+#quizBody input[type="file"]::file-selector-button, #inputModalBody input[type="file"]::file-selector-button {
   margin-right: 10px;
-  padding: 8px 12px;
+  padding: var(--modal-form-file-btn-padding);
   border: none;
-  border-radius: 8px;
-  color: #fff;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: var(--modal-form-file-btn-radius);
+  color: var(--modal-form-file-btn-color);
+  background: var(--modal-form-file-btn-bg);
   cursor: pointer;
   transition: transform .12s ease, filter .2s ease;
 }
-#quizBody input[type="file"]::file-selector-button:hover {
-  filter: brightness(1.06);
+#quizBody input[type="file"]::file-selector-button:hover, #inputModalBody input[type="file"]::file-selector-button:hover {
+  filter: var(--modal-form-file-btn-hover-filter);
   transform: translateY(-1px);
 }
-
-/* Checkbox & radio (keep native for a11y, style via accent-color) */
-#quizBody input[type="checkbox"],
-#quizBody input[type="radio"] {
-  accent-color: #3b82f6;
+#quizBody input[type="checkbox"], #inputModalBody input[type="checkbox"],
+#quizBody input[type="radio"], #inputModalBody input[type="radio"] {
+  accent-color: var(--modal-form-checkbox-accent);
   transform: translateY(1px);
 }
-
-/* Choice chips (single/multi) — from earlier, kept here for completeness */
-#quizBody .choices {
+#quizBody .choices, #inputModalBody .choices, .modal-form-body .choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: var(--modal-form-choices-gap);
 }
-@media (max-width: 360px) { #quizBody .choices { grid-template-columns: 1fr; } }
-
-#quizBody .chip {
+@media (max-width: 360px) { #quizBody .choices, #inputModalBody .choices { grid-template-columns: 1fr; } }
+#quizBody .chip, #inputModalBody .chip, .modal-form-body .chip {
   appearance: none;
   width: 100%;
   padding: 12px 14px;
-  border-radius: 12px;
-  border: 2px solid #2f2f2f;
-  background: #171717;
-  color: #e5e7eb;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: var(--modal-form-chip-radius);
+  border: 2px solid var(--modal-form-chip-border);
+  background: var(--modal-form-chip-bg);
+  color: var(--modal-form-chip-color);
+  font-size: var(--modal-form-chip-font);
+  font-weight: var(--modal-form-chip-weight);
   cursor: pointer;
   transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
-#quizBody .chip:hover { border-color: #4b5563; transform: translateY(-1px); }
-#quizBody .chip:focus-visible {
+#quizBody .chip:hover, #inputModalBody .chip:hover, .modal-form-body .chip:hover { border-color: #4b5563; transform: translateY(-1px); }
+#quizBody .chip:focus-visible, #inputModalBody .chip:focus-visible, .modal-form-body .chip:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px #3b82f6;
+  box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px var(--modal-form-input-focus);
 }
-#quizBody .chip.active,
-#quizBody .chip[aria-pressed="true"] {
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border-color: #3b82f6;
+#quizBody .chip.active, #inputModalBody .chip.active, .modal-form-body .chip.active,
+#quizBody .chip[aria-pressed="true"], #inputModalBody .chip[aria-pressed="true"], .modal-form-body .chip[aria-pressed="true"] {
+  background: var(--modal-form-chip-active-bg);
+  border-color: var(--modal-form-chip-active-border);
   box-shadow: 0 0 0 2px rgba(59,130,246,.25);
-  color: #fff;
+  color: var(--modal-form-chip-active-color);
 }
-
-/* Buttons inside quiz (matches your app buttons) */
-#quizBody .btn,
-#quizBody .btn-primary {
-  align-self: start;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 10px 16px;
-  border-radius: 10px;
+#quizBody .quiz-actions, #inputModalBody .quiz-actions, .modal-form-body .quiz-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+#quizBody .quiz-btn, #inputModalBody .quiz-btn, .modal-form-body .quiz-btn {
+  flex: 1;
+  padding: var(--modal-form-btn-padding);
+  border-radius: var(--modal-form-btn-radius);
+  font-size: var(--modal-form-btn-font);
+  font-weight: var(--modal-form-btn-weight);
   border: none;
   cursor: pointer;
-  color: #fff;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  transition: transform .1s ease, filter .2s ease, box-shadow .2s ease;
+  transition: all 0.2s ease;
 }
-#quizBody .btn:hover,
-#quizBody .btn-primary:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+#quizBody .quiz-btn.primary, #inputModalBody .quiz-btn.primary, .modal-form-body .quiz-btn.primary {
+  background: var(--modal-form-btn-bg);
+  color: var(--modal-form-btn-color);
 }
-#quizBody .btn:active,
-#quizBody .btn-primary:active { transform: translateY(0); }
-
-/* Spacing helpers for multi-part questions */
-#quizBody .row { display: flex; gap: 10px; }
-#quizBody .row > * { flex: 1; }
-
-/* Subtle divider you can drop between sections */
-#quizBody .section-divider {
-  height: 1px;
-  background: #222;
-  margin: 6px 0;
-  border-radius: 1px;
+#quizBody .quiz-btn.secondary, #inputModalBody .quiz-btn.secondary, .modal-form-body .quiz-btn.secondary {
+  background: var(--modal-form-btn-bg-secondary);
+  color: var(--modal-form-btn-color-secondary);
+  border: 1px solid var(--modal-form-btn-border-secondary);
 }
-
-
-
-/* Paywall Modal */
-.paywall-plans {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+#quizBody .quiz-btn:disabled, #inputModalBody .quiz-btn:disabled, .modal-form-body .quiz-btn:disabled {
+  opacity: var(--modal-form-btn-disabled-opacity);
+  cursor: var(--modal-form-btn-disabled-cursor);
 }
-
-.plan-card {
-    background: #1a1a1a;
-    border: 2px solid #333;
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.plan-card.recommended {
-    border-color: #3b82f6;
-}
-
-.plan-card.vip {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    border-color: #f59e0b;
-}
-
-.plan-card.vip * {
-    color: #000 !important;
-}
-
-.plan-badge {
-    position: absolute;
-    top: -12px;
-    right: 20px;
-    background: #3b82f6;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.plan-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-.plan-name {
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.plan-price {
-    font-size: 20px;
-    font-weight: 700;
-    color: #3b82f6;
-}
-
-.plan-period {
-    font-size: 12px;
-    color: #666;
-}
-
-.plan-features {
-    list-style: none;
-    margin: 16px 0;
-}
-
-.plan-features li {
-    font-size: 13px;
-    color: #888;
-    margin: 8px 0;
-    padding-left: 20px;
-    position: relative;
-}
-
-.plan-features li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #4ade80;
-}
-
-.plan-cta {
+    border: none;
+    border-radius: var(--modal-form-file-btn-radius);
+    color: var(--modal-form-file-btn-color);
+    background: var(--modal-form-file-btn-bg);
+    cursor: pointer;
+    transition: transform .12s ease, filter .2s ease;
+  }
+  #quizBody input[type="file"]::file-selector-button:hover, #inputModalBody input[type="file"]::file-selector-button:hover {
+    filter: var(--modal-form-file-btn-hover-filter);
+    transform: translateY(-1px);
+  }
+  #quizBody input[type="checkbox"], #inputModalBody input[type="checkbox"],
+  #quizBody input[type="radio"], #inputModalBody input[type="radio"] {
+    accent-color: var(--modal-form-checkbox-accent);
+    transform: translateY(1px);
+  }
+  #quizBody .choices, #inputModalBody .choices, .modal-form-body .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--modal-form-choices-gap);
+  }
+  @media (max-width: 360px) { #quizBody .choices, #inputModalBody .choices { grid-template-columns: 1fr; } }
+  #quizBody .chip, #inputModalBody .chip, .modal-form-body .chip {
+    appearance: none;
     width: 100%;
-    padding: 12px;
-    background: #3b82f6;
+    padding: 12px 14px;
+    border-radius: var(--modal-form-chip-radius);
+    border: 2px solid var(--modal-form-chip-border);
+    background: var(--modal-form-chip-bg);
+    color: var(--modal-form-chip-color);
+    font-size: var(--modal-form-chip-font);
+    font-weight: var(--modal-form-chip-weight);
+    cursor: pointer;
+    transition: transform .12s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+  #quizBody .chip:hover, #inputModalBody .chip:hover, .modal-form-body .chip:hover { border-color: #4b5563; transform: translateY(-1px); }
+  #quizBody .chip:focus-visible, #inputModalBody .chip:focus-visible, .modal-form-body .chip:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #0b1220, 0 0 0 4px var(--modal-form-input-focus);
+  }
+  #quizBody .chip.active, #inputModalBody .chip.active, .modal-form-body .chip.active,
+  #quizBody .chip[aria-pressed="true"], #inputModalBody .chip[aria-pressed="true"], .modal-form-body .chip[aria-pressed="true"] {
+    background: var(--modal-form-chip-active-bg);
+    border-color: var(--modal-form-chip-active-border);
+    box-shadow: 0 0 0 2px rgba(59,130,246,.25);
+    color: var(--modal-form-chip-active-color);
+  }
+  #quizBody .quiz-actions, #inputModalBody .quiz-actions, .modal-form-body .quiz-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  #quizBody .quiz-btn, #inputModalBody .quiz-btn, .modal-form-body .quiz-btn {
+    flex: 1;
+    padding: var(--modal-form-btn-padding);
+    border-radius: var(--modal-form-btn-radius);
+    font-size: var(--modal-form-btn-font);
+    font-weight: var(--modal-form-btn-weight);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  #quizBody .quiz-btn.primary, #inputModalBody .quiz-btn.primary, .modal-form-body .quiz-btn.primary {
+    background: var(--modal-form-btn-bg);
+    color: var(--modal-form-btn-color);
+  }
+  #quizBody .quiz-btn.secondary, #inputModalBody .quiz-btn.secondary, .modal-form-body .quiz-btn.secondary {
+    background: var(--modal-form-btn-bg-secondary);
+    color: var(--modal-form-btn-color-secondary);
+    border: 1px solid var(--modal-form-btn-border-secondary);
+  }
+  #quizBody .quiz-btn:disabled, #inputModalBody .quiz-btn:disabled, .modal-form-body .quiz-btn:disabled {
+    opacity: var(--modal-form-btn-disabled-opacity);
+    cursor: var(--modal-form-btn-disabled-cursor);
+  }
     color: white;
     border: none;
     border-radius: 8px;
@@ -1842,4 +1830,26 @@ body {
   animation: none !important;
 }
 
+.landing-screen ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  text-align: left;
+}
 
+.landing-screen h1 {
+  margin: 0 0 12px 0;
+}
+
+.q-error {
+  color: var(--modal-form-error);
+  /* background: rgba(248,113,113,0.08); */
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 4px 8px 4px 8px;
+  margin-top: 5px;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  display: block;
+}

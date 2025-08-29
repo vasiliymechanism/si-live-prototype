@@ -20,8 +20,88 @@ function renderInputModal({ actionType, onSubmit, overrides = {} }) {
   let qCfg = null;
   if (window.app?.store?.quiz && ACTION_TO_QUIZ_QUESTION[actionType]) {
     qCfg = window.app.store.quiz.questions[ACTION_TO_QUIZ_QUESTION[actionType]];
+  // Render input modal content using quiz question styling
+  // Supported types: text, number, email, date, file, checkbox, radio, textarea
+  function renderInputModalContent(fields, actions = []) {
+    // fields: [{type, label, name, value, placeholder, options, hint, error, required, ...}]
+    // actions: [{label, className, onClick, type}]
+    let html = '';
+    html += `<div class="q-head">
+      <h3>Upload Document</h3>
+      <p>Please provide the required information</p>
+    </div>`;
+    fields.forEach(field => {
+      html += `<div class="q-field">`;
+      if (field.label) {
+        html += `<label class="q-label" for="${field.name}">${field.label}${field.required ? ' <span style=\"color:#f87171\">*</span>' : ''}</label>`;
+      // Helper to show the input modal with quiz-style fields
+      function showInputModal(fields, actions = []) {
+        const modal = document.getElementById('inputModal');
+        const body = document.getElementById('inputModalBody');
+        if (!modal || !body) return;
+        body.innerHTML = renderInputModalContent(fields, actions);
+        modal.classList.add('active');
+        // Attach button handlers if needed
+        const btns = body.querySelectorAll('.quiz-btn');
+        btns.forEach((btn, idx) => {
+          btn.addEventListener('click', e => {
+            if (actions[idx] && typeof actions[idx].onClick === 'function') {
+              actions[idx].onClick(e, fields, modal, body);
+            }
+          });
+        });
+      }
+      }
+      if (field.hint) {
+      // showInputModal([
+      //   {type:'file', label:'Document', name:'docUpload', required:true},
+      //   {type:'text', label:'Document Name', name:'docName', placeholder:'Enter document name'},
+      // ], [
+      //   {label:'Submit', className:'primary', type:'submit', onClick:()=>{/* handle submit */}},
+      //   {label:'Cancel', className:'secondary', onClick:()=>{document.getElementById('inputModal').classList.remove('active');}},
+      // ]);
+        html += `<div class="q-hint">${field.hint}</div>`;
+      }
+      if (field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'date') {
+        html += `<input type="${field.type}" id="${field.name}" name="${field.name}" class="quiz-input${field.error ? ' is-error' : ''}" value="${field.value || ''}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}/>`;
+      } else if (field.type === 'textarea') {
+        html += `<textarea id="${field.name}" name="${field.name}" class="quiz-input${field.error ? ' is-error' : ''}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}>${field.value || ''}</textarea>`;
+      } else if (field.type === 'file') {
+        html += `<input type="file" id="${field.name}" name="${field.name}" class="quiz-file-upload${field.error ? ' is-error' : ''}" ${field.required ? 'required' : ''}/>`;
+      } else if (field.type === 'checkbox') {
+        html += `<div class="quiz-checkbox"><input type="checkbox" id="${field.name}" name="${field.name}" ${field.value ? 'checked' : ''} ${field.required ? 'required' : ''}/><label for="${field.name}">${field.label}</label></div>`;
+      } else if (field.type === 'radio' && Array.isArray(field.options)) {
+        html += `<div class="choices">`;
+        field.options.forEach(opt => {
+          html += `<label class="chip" style="margin-bottom:0"><input type="radio" name="${field.name}" value="${opt.value}" ${field.value === opt.value ? 'checked' : ''}/> ${opt.label}</label>`;
+        });
+        html += `</div>`;
+      }
+      if (field.error) {
+        html += `<div class="q-error" style="color:#ef4444;font-size:12px;margin-top:4px;">${field.error}</div>`;
+      }
+      html += `</div>`;
+    });
+    if (actions.length) {
+      html += `<div class="quiz-actions">`;
+      actions.forEach(action => {
+        html += `<button class="quiz-btn${action.className ? ' ' + action.className : ''}" type="${action.type || 'button'}">${action.label}</button>`;
+      });
+      html += `</div>`;
+    }
+    return html;
+  }
   }
 
+  // const fields = [
+  //   {type:'file', label:'Document', name:'docUpload', required:true},
+  //   {type:'text', label:'Document Name', name:'docName', placeholder:'Enter document name'},
+  // ];
+  // const actions = [
+  //   {label:'Submit', className:'primary', type:'submit'},
+  //   {label:'Cancel', className:'secondary'},
+  // ];
+  // document.getElementById('inputModalBody').innerHTML = renderInputModalContent(fields, actions);
   // Find userField info from state machine config if available
   let userField = null;
   if (window.app?.store?.sm?.states) {
@@ -60,54 +140,126 @@ function renderInputModal({ actionType, onSubmit, overrides = {} }) {
 function renderQuizStyleInput(q, content, onSubmit, overrides) {
   // Minimal: support 'file', 'short', 'date', 'single', 'multi', 'checkbox', 'interstitial'
   // For now, only implement 'file' and 'short' as examples
-  if (q.type === 'file') {
-    const label = document.createElement('div');
-    label.className = 'q-label';
-    label.textContent = q.title || 'Upload file';
-    content.appendChild(label);
+  // Clear content
+  content.innerHTML = '';
 
-    const input = document.createElement('input');
+  // Modal header
+  const modalHeader = document.createElement('div');
+  modalHeader.className = 'modal-header';
+  const modalTitle = document.createElement('div');
+  modalTitle.className = 'modal-title';
+  modalTitle.textContent = 'Help us find the right matches';
+  const modalDesc = document.createElement('div');
+  modalDesc.className = 'modal-description';
+  modalDesc.textContent = "We'll fill out applications in the meantime";
+  modalHeader.appendChild(modalTitle);
+  modalHeader.appendChild(modalDesc);
+  content.appendChild(modalHeader);
+
+  // Modal body
+  const modalBody = document.createElement('div');
+  modalBody.className = 'modal-body modal-form-body';
+  content.appendChild(modalBody);
+
+  // q-head
+  const qHead = document.createElement('div');
+  qHead.className = 'q-head';
+  const h3 = document.createElement('h3');
+  h3.textContent = q.title || 'Input';
+  qHead.appendChild(h3);
+  if (q.description) {
+    const p = document.createElement('p');
+    p.textContent = q.description;
+    qHead.appendChild(p);
+  }
+  modalBody.appendChild(qHead);
+
+  // q-field
+  const qField = document.createElement('div');
+  qField.className = 'q-field';
+
+  // Input
+  let input;
+  if (q.type === 'file') {
+    // Use a single label for file input
+    const fileLabel = document.createElement('label');
+    fileLabel.className = 'q-label';
+    fileLabel.textContent = q.label || q.title || 'Upload file(s)';
+    // Optionally associate label with input for accessibility
+    const inputId = `file-input-${Math.random().toString(36).slice(2)}`;
+    fileLabel.setAttribute('for', inputId);
+
+    input = document.createElement('input');
     input.type = 'file';
     if (q.accept) input.accept = q.accept;
-    content.appendChild(input);
+    input.className = 'quiz-file-upload';
+    input.id = inputId;
 
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.textContent = 'Submit';
-    btn.onclick = () => {
-      if (!input.files || !input.files[0]) return;
-      onSubmit?.(input.files[0]);
-      closeModal(inputModal());
-    };
-    content.appendChild(btn);
+    qField.appendChild(fileLabel);
+    qField.appendChild(input);
   } else if (q.type === 'short') {
-    const label = document.createElement('div');
+    // Label for non-file inputs
+    const label = document.createElement('label');
     label.className = 'q-label';
-    label.textContent = q.title || 'Enter value';
-    content.appendChild(label);
+    label.textContent = q.title || 'Input';
+    qField.appendChild(label);
 
-    const input = document.createElement('input');
+    input = document.createElement('input');
     input.type = 'text';
     input.placeholder = q.placeholder || '';
-    content.appendChild(input);
+    input.className = 'quiz-input';
+    qField.appendChild(input);
+  } else {
+    // Label for fallback
+    const label = document.createElement('label');
+    label.className = 'q-label';
+    label.textContent = q.title || 'Input';
+    qField.appendChild(label);
 
-    const error = document.createElement('div');
-    error.className = 'q-error';
-    error.style.color = 'red';
-    error.style.display = 'none';
-    content.appendChild(error);
+    input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'quiz-input';
+    qField.appendChild(input);
+  }
 
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.textContent = 'Submit';
-    btn.onclick = () => {
-      const val = input.value;
-      // Validation logic from quiz config
+  // Hint
+  if (q.hint) {
+    const hint = document.createElement('div');
+    hint.className = 'q-hint';
+    hint.textContent = q.hint;
+    qField.appendChild(hint);
+  }
+
+  // Error
+  const error = document.createElement('div');
+  error.className = 'q-error';
+  error.style.display = 'none';
+  qField.appendChild(error);
+
+  modalBody.appendChild(qField);
+
+  // Actions
+  const actions = document.createElement('div');
+  actions.className = 'quiz-actions';
+  const btn = document.createElement('button');
+  btn.className = 'quiz-btn primary';
+  btn.textContent = 'Submit';
+  btn.type = 'button';
+  btn.onclick = () => {
+    let val;
+    if (q.type === 'file') {
+      if (!input.files || !input.files[0]) {
+        error.textContent = 'Please select a file.';
+        error.style.display = '';
+        return;
+      }
+      val = input.files[0];
+    } else {
+      val = input.value;
       let valid = true;
       let errMsg = '';
       if (q.validate) {
         try {
-          // Use the same minimal JSONLogic evaluator as quizEngine
           const logic = window.app?.jsonlogic || window.jsonlogic || null;
           const evaluateLogic = logic ? logic.evaluateLogic : window.evaluateLogic;
           if (evaluateLogic) {
@@ -121,27 +273,26 @@ function renderQuizStyleInput(q, content, onSubmit, overrides) {
         error.style.display = '';
         return;
       }
-      error.style.display = 'none';
-      onSubmit?.(val);
-      closeModal(inputModal());
-    };
-    content.appendChild(btn);
-  } else {
-    // Fallback: just show label
-    const label = document.createElement('div');
-    label.className = 'q-label';
-    label.textContent = q.title || 'Input';
-    content.appendChild(label);
-    // Add more types as needed
-  }
+    }
+    error.style.display = 'none';
+    onSubmit?.(val);
+    closeModal(inputModal());
+  };
+  actions.appendChild(btn);
+  modalBody.appendChild(actions);
 }
 
 // Render custom input for actions not in quiz
 function renderCustomInput(actionType, content, onSubmit, overrides) {
   // Example: uploadEssay = file, uploadHeadshot = file (image), etc.
+  // Use quiz-style structure for custom input
+  content.innerHTML = '';
+  // Align input modal structure to quiz modal
+  // Add modal-header if not present
   let label = 'Provide input';
   let inputType = 'text';
   let accept = '';
+  let placeholder = '';
   if (actionType === 'uploadEssay') {
     label = 'Upload your essay';
     inputType = 'file';
@@ -154,40 +305,133 @@ function renderCustomInput(actionType, content, onSubmit, overrides) {
     label = 'Upload recommendation letter';
     inputType = 'file';
     accept = '.pdf';
+  } else if (actionType === 'inputGPA') {
+    label = 'What’s your GPA? (unweighted)';
+    inputType = 'text';
+    placeholder = 'e.g., 3.6';
   }
-  // Add more as needed
 
-  const labelEl = document.createElement('div');
-  labelEl.className = 'q-label';
-  labelEl.textContent = label;
-  content.appendChild(labelEl);
+  // Clear content
+  content.innerHTML = '';
 
-  const input = document.createElement('input');
-  input.type = inputType;
-  if (accept) input.accept = accept;
-  content.appendChild(input);
+  // Always add modal-header
+  const modalHeader = document.createElement('div');
+  modalHeader.className = 'modal-header';
+  const modalTitle = document.createElement('div');
+  modalTitle.className = 'modal-title';
+  modalTitle.textContent = 'Help us find the right matches';
+  const modalDesc = document.createElement('div');
+  modalDesc.className = 'modal-description';
+  modalDesc.textContent = "We'll fill out applications in the meantime";
+  modalHeader.appendChild(modalTitle);
+  modalHeader.appendChild(modalDesc);
+  content.appendChild(modalHeader);
 
+  // Always add modal-body
+  const modalBody = document.createElement('div');
+  modalBody.className = 'modal-body modal-form-body';
+  content.appendChild(modalBody);
+
+  // q-head
+  const qHead = document.createElement('div');
+  qHead.className = 'q-head';
+  const h3 = document.createElement('h3');
+  h3.textContent = label;
+  qHead.appendChild(h3);
+  modalBody.appendChild(qHead);
+
+  // q-field
+  const qField = document.createElement('div');
+  qField.className = 'q-field';
+
+  // Input (match quiz modal: visible file input, simple label)
+  let input;
+  if (inputType === 'file') {
+    // Label
+    const fileLabel = document.createElement('div');
+    fileLabel.className = 'q-label';
+    fileLabel.textContent = 'Upload file(s)';
+    qField.appendChild(fileLabel);
+
+    input = document.createElement('input');
+    input.type = 'file';
+    if (accept) input.accept = accept;
+    input.className = '';
+    qField.appendChild(input);
+  } else {
+    input = document.createElement('input');
+    input.type = inputType;
+    input.className = 'text';
+    if (placeholder) input.placeholder = placeholder;
+    qField.appendChild(input);
+  }
+
+  // Error
+  const error = document.createElement('div');
+  error.className = 'q-error';
+  error.style.display = 'none';
+  qField.appendChild(error);
+
+  modalBody.appendChild(qField);
+
+  // Button directly in modal-body, not in quiz-actions
   const btn = document.createElement('button');
-  btn.className = 'btn';
-  btn.textContent = 'Submit';
+  btn.className = 'btn btn-primary';
+  btn.textContent = 'Next';
+  btn.type = 'button';
+  btn.style.marginTop = '18px';
   btn.onclick = () => {
     let val;
     if (inputType === 'file') {
-      // If multiple files are allowed, use input.files.length; otherwise, 1 if a file is present, 0 if not
-      val = input.files ? input.files.length : 0;
+      if (!input.files || !input.files[0]) {
+        error.textContent = 'Please select a file.';
+        error.style.display = '';
+        return;
+      }
+      val = input.files[0];
     } else {
-      val = input.value;  
+      val = input.value;
+      if (!val) {
+        error.textContent = 'Please enter a value.';
+        error.style.display = '';
+        return;
+      }
     }
-    if (!val) return;
+    error.style.display = 'none';
     onSubmit?.(val);
     closeModal(inputModal());
   };
-  content.appendChild(btn);
+  modalBody.appendChild(btn);
 }
 
 // Public API
 export function openInputModalForAction(actionType, onSubmit, overrides = {}) {
-  renderInputModal({ actionType, onSubmit, overrides });
+  // Wrap onSubmit to ensure it is only called on valid submit, not on modal close
+  let submitted = false;
+  const guardedOnSubmit = (val) => {
+    submitted = true;
+    onSubmit?.(val);
+  };
+  renderInputModal({ actionType, onSubmit: guardedOnSubmit, overrides });
+
+  // Patch closeModal to prevent onSubmit or event emission on close unless submitted
+  const modal = inputModal();
+  if (modal) {
+    const origClose = closeModal;
+    modal._closeHandler = function(...args) {
+      if (!submitted) {
+        // Just close, do not emit or call onSubmit
+        modal.classList.remove('in','active');
+        modal.classList.add('hidden');
+        if (!document.querySelector('.modal.active, .modal-overlay.active')) {
+          document.querySelector('#dimOverlay')?.classList.remove('active');
+          setSiblingsInert(modal, false);
+        }
+        return;
+      }
+      origClose.apply(this, args);
+    };
+  }
 }
 import { store } from './store.js';
 import { bus, EV } from './eventBus.js';
@@ -503,18 +747,21 @@ export function renderActionQueue(items) {
         bus.emit(EV.PAYWALL_SHOW);
       } else {
         openInputModalForAction(item.type, (val) => {
-          if (item.type === 'uploadTranscript') {
-            store.flags.add('transcriptUploaded');
-          } else if (item.type === 'uploadEssay') {
-            store.flags.add('essayUploaded');
-          } else if (item.type === 'uploadHeadshot') {
-            store.flags.add('headshotUploaded');
-          } else if (item.type === 'uploadRecommendation') {
-            store.flags.add('recommendationUploaded');
-          } else if (item.type === 'inputCurrentSchoolLevel') {
-            store.flags.add('schoolLevelInput');
+          // Only emit event if a valid value is present (file or text)
+          if (val) {
+            if (item.type === 'uploadTranscript') {
+              store.flags.add('transcriptUploaded');
+            } else if (item.type === 'uploadEssay') {
+              store.flags.add('essayUploaded');
+            } else if (item.type === 'uploadHeadshot') {
+              store.flags.add('headshotUploaded');
+            } else if (item.type === 'uploadRecommendation') {
+              store.flags.add('recommendationUploaded');
+            } else if (item.type === 'inputCurrentSchoolLevel') {
+              store.flags.add('schoolLevelInput');
+            }
+            bus.emit(EV.ACTION_COMPLETED, { type: item.type, value: val });
           }
-          bus.emit(EV.ACTION_COMPLETED, { type: item.type, value: val });
         });
       }
     });
