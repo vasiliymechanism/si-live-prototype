@@ -45,18 +45,37 @@ function attachPaywallTriggersOnce() {
   paywallListenerAttached = true;
 }
 
+
+// Helper to try two loads in order, returning the first that succeeds
+// Suppresses the error from the first if the fallback succeeds, but logs if both fail
+async function tryBothLoads(primary, fallback) {
+  try {
+    return await loadJSONC(primary);
+  } catch (error1) {
+    try {
+      return await loadJSONC(fallback);
+    } catch (error2) {
+      // If both fail, log both errors
+      console.error(`Failed to load both configs: ${primary} and ${fallback}`);
+      console.error('Primary error:', error1);
+      console.error('Fallback error:', error2);
+      throw error2;
+    }
+  }
+}
+
 async function boot() {
   initUI();
   initQuizEngine();
 
   // Load configs
   const [app, sm, actions, paywall, quiz, catalog] = await Promise.all([
-    loadJSONC('/si-live-prototype/data/app.jsonc'),
-    loadJSONC('/si-live-prototype/data/stateMachine.jsonc'),
-    loadJSONC('/si-live-prototype/data/actions.jsonc'),
-    loadJSONC('/si-live-prototype/data/paywall.jsonc'),
-    loadJSONC('/si-live-prototype/data/quiz.jsonc'),
-    loadJSONC('/si-live-prototype/data/scholarships.jsonc')
+    tryBothLoads('/si-live-prototype/data/app.jsonc', '/data/app.jsonc'),
+    tryBothLoads('/si-live-prototype/data/stateMachine.jsonc', '/data/stateMachine.jsonc'),
+    tryBothLoads('/si-live-prototype/data/actions.jsonc', '/data/actions.jsonc'),
+    tryBothLoads('/si-live-prototype/data/paywall.jsonc', '/data/paywall.jsonc'),
+    tryBothLoads('/si-live-prototype/data/quiz.jsonc', '/data/quiz.jsonc'),
+    tryBothLoads('/si-live-prototype/data/scholarships.jsonc', '/data/scholarships.jsonc')
     // fetch('/data/scholarships.json').then(r => r.json())
   ]);
 

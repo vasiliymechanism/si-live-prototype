@@ -6,6 +6,10 @@
 :root {
   --primary-blue: #3b82f6;
   --primary-blue-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  --accent-blue: #60a5fa;
+  --accent-blue-gradient: linear-gradient(135deg, #60a5fa, #a5b4fc);
+  --accent-orange: #f59e0b;
+  --accent-orange-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
   --onb-hero-fade: 1s;
   --onb-hero-move: 2s;
   --onb-reveal-rest: 2.2s;
@@ -107,13 +111,15 @@ body {
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 .landing-screen h1 {
-  font-size: 28px;
+  /* font-size: 28px; */
+  font-size: 30px;
   font-weight: 700;
   margin-bottom: 30px;
-  background: linear-gradient(135deg, #fff 0%, #888 100%);
-  -webkit-background-clip: text;
+  color: #fff;
+  /* background: linear-gradient(135deg, #fff 0%, #888 100%); */
+  /* -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: transparent; */
 }
 .landing-screen ol {
   list-style: none;
@@ -121,11 +127,18 @@ body {
   text-align: left;
 }
 .landing-screen li {
-  color: #888;
+  /* color: #888; */
+  color: transparent;
+  background: linear-gradient(135deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* -webkit-text-fill-color: transparent; */
   margin: 12px 0;
-  font-size: 16px;
+  /* font-size: 16px; */
+  font-size: 18px;
   display: flex;
-  align-items: center;
+  /* align-items: center; */
+  align-items: flex-start;
 }
 .landing-screen li::before {
   content: attr(data-number);
@@ -133,13 +146,24 @@ body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #222;
+  /* background: #222; */
   color: #fff;
+  /* color: linear-gradient(135deg, #fff 0%, #888 100%); */
+  /* -webkit-text-fill-color: linear-gradient(135deg, #fff 0%, #888 100%); */
   text-align: center;
   line-height: 24px;
   margin-right: 12px;
+  /* font-size: 12px; */
   font-size: 12px;
   flex-shrink: 0;
+}
+.landing-screen li strong {
+  color: transparent;
+  background: var(--accent-blue-gradient);
+  background-clip: text;
+  /* undo transparent color on text */
+  /* -webkit-text-fill-color: var(--accent-orange-gradient)
+  text-fill-color: var(--accent-orange-gradient) */
 }
 .main-app {
   display: none;
