@@ -161,17 +161,31 @@ function openQuiz(payload = {}) {
     content.appendChild(h);
   }
 
-  function addNextButton(label = 'Continue', onClick) {
+  function addNextButton(label = 'Continue', onClick, showSkip = true) {
+    // Main button centered
+    const btnWrap = document.createElement('div');
+    btnWrap.style.display = 'flex';
+    btnWrap.style.justifyContent = 'center';
+    btnWrap.style.marginTop = '18px';
     const btn = document.createElement('button');
     btn.className = 'btn btn-primary';
     btn.textContent = label;
     btn.addEventListener('click', onClick);
-    content.appendChild(btn);
+    btnWrap.appendChild(btn);
+    content.appendChild(btnWrap);
+    // Add skip button below, centered
+    if (showSkip) {
+      const skipBtn = document.createElement('button');
+      skipBtn.className = 'btn-skip';
+      skipBtn.textContent = 'Skip';
+      skipBtn.addEventListener('click', () => gotoNext(cfg.questions[currentId], null));
+      content.appendChild(skipBtn);
+    }
   }
 
   function renderInterstitial(q) {
     addTitleSub(q);
-    addNextButton(q.cta || 'Continue', () => gotoNext(q, null));
+    addNextButton(q.cta || 'Continue', () => gotoNext(q, null), true);
   }
 
   function renderSingle(q) {
@@ -185,6 +199,12 @@ function openQuiz(payload = {}) {
       list.appendChild(b);
     });
     content.appendChild(list);
+    // Only show skip button below choices
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'btn-skip';
+    skipBtn.textContent = 'Skip';
+    skipBtn.addEventListener('click', () => gotoNext(q, null));
+    content.appendChild(skipBtn);
   }
 
   function renderMulti(q) {
@@ -203,7 +223,12 @@ function openQuiz(payload = {}) {
       list.appendChild(b);
     });
     content.appendChild(list);
-    addNextButton(q.cta || 'Next', () => gotoNext(q, Array.from(chosen)));
+    // Only show skip button below choices
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'btn-skip';
+    skipBtn.textContent = 'Skip';
+    skipBtn.addEventListener('click', () => gotoNext(q, null));
+    content.appendChild(skipBtn);
   }
 
   function renderText(q) {
@@ -240,7 +265,7 @@ function openQuiz(payload = {}) {
         }
       }
       gotoNext(q, val);
-    });
+    }, true);
   }
 
 
@@ -257,7 +282,6 @@ function openQuiz(payload = {}) {
 
     content.appendChild(wrap);
 
-    // addNextButton(q.cta || 'Upload', () => {
     addNextButton('Next', () => {
       // For demo: record a count; in real app you’d store files or set a flag
       const count = input.files?.length || 0;
@@ -269,7 +293,7 @@ function openQuiz(payload = {}) {
         return;
       }
       gotoNext(q, count);
-    });
+    }, true);
   }
 
 
@@ -295,7 +319,7 @@ function openQuiz(payload = {}) {
         return;
       }
       gotoNext(q, input.value || null);
-    });
+    }, true);
   }
 
 
@@ -328,6 +352,7 @@ function openQuiz(payload = {}) {
 
     content.appendChild(wrap);
 
+    // Do NOT show skip button for checkbox questions
     addNextButton('Next', () => {
       if (q.required && !cb.checked) {
         cb.classList.add('is-error');
@@ -337,7 +362,7 @@ function openQuiz(payload = {}) {
         return;
       }
       gotoNext(q, cb.checked);
-    });
+    }, false);
   }
 
 }

@@ -587,7 +587,7 @@ function ensureMetricGrid() {
       { key: 'matches',         label: 'Potential matches',        val: '0' },
       { key: 'potentialAwards', label: 'Potential awards',     val: '$0' },
       { key: 'started',         label: 'Applications started', val: '0' },
-      { key: 'readyNow',        label: 'Almost ready to send',   val: '0' },
+      { key: 'readyNow',        label: 'Apps ready to send',   val: '0' },
       { key: 'nextDeadline',    label: 'Next deadline',        val: '—' },
       { key: 'timeSavedMin',    label: 'Time saved',           val: '0m' }
     ].map(t => `
@@ -746,28 +746,33 @@ export function updateScholarshipCardState(id, state, progressPct = null) {
   // --- NEW: Make Essay pill green when generateEssay step completes ---
   // Find the Essay pill
   const essayPill = card.querySelector('.flag');
-  if (essayPill && essayPill.textContent.trim() === 'Essay') {
-    // All states after and including draftEssays should keep the pill green
-    // List all post-draftEssays states from stateMachine.jsonc
-    const postDraftStates = [
-      'draftEssays',
-      'gatherMissingData',
-      'readinessDecision',
-      'readyPendingMinorDetails',
-      'readyPendingDocs',
-      'readyPendingBoth',
-      'preSubmitChecks',
-      'readyPendingTrial',
-      'submitted'
-    ];
-    if (postDraftStates.includes(state)) {
-      essayPill.classList.add('essay-green-fade');
-      essayPill.style.color = '#fff';
-    } else {
-      essayPill.classList.remove('essay-green-fade');
-      essayPill.style.color = '';
+    if (essayPill && (essayPill.textContent.trim() === 'Essay' || essayPill.textContent.trim() === 'Essay Done')) {
+      // All states after and including draftEssays should keep the pill green and update text
+      const postDraftStates = [
+        'draftEssays',
+        'gatherMissingData',
+        'readinessDecision',
+        'readyPendingMinorDetails',
+        'readyPendingDocs',
+        'readyPendingBoth',
+        'preSubmitChecks',
+        'readyPendingTrial',
+        'submitted'
+      ];
+      if (postDraftStates.includes(state)) {
+        essayPill.classList.add('essay-green-fade');
+        essayPill.style.color = '#fff';
+        if (essayPill.textContent.trim() === 'Essay') {
+          essayPill.textContent = 'Essay Done';
+        }
+      } else {
+        essayPill.classList.remove('essay-green-fade');
+        essayPill.style.color = '';
+        if (essayPill.textContent.trim() === 'Essay Done') {
+          essayPill.textContent = 'Essay';
+        }
+      }
     }
-  }
 }
 
 

@@ -287,7 +287,7 @@
       ],
       "next": {
         "if": [
-          {"!=": [{"var": "volunteer"}, "no"]}, "q_hs_volunteer_hours",
+          {"and": [{"var": "volunteer"}, {"!=": [{"var": "volunteer"}, "no"]}]}, "q_hs_volunteer_hours",
           "q_hs_first_gen"
         ]
       }
@@ -1640,22 +1640,16 @@
       "var": "email",
       "title": "Email for scholarship info?",
       "placeholder": "your@email.com",
-      "next": "done_unsure"
+      "next": "q_essay_samples"
     },
     
-    "done_unsure": {
-  "type": "interstitial",
-  "title": "We found 58 scholarships you may qualify for!",
-  "subtitle": "We'll help you determine eligibility.",
-  "onCompleteSets": ["quizCompleted"],
-  "next": "q_essay_samples"
-},
     "q_essay_samples": {
       "type": "file",
       "var": "essay_samples",
       "title": "We're already writing essays for you!",
       "subtitle": "But if you have any essay samples, upload them here to help us personalize your writing.",
       "accept": ".pdf,.docx,.txt",
+      "onCompleteSets": ["quizCompleted"],
       "next": "submit"
     }
   }
