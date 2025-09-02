@@ -71,7 +71,7 @@
       gap: 3px;
 }
 .search-intro-ellipses span {
-      width: 4px; height: 4px; border-radius: 50%;
+      width: 3px; height: 3px; border-radius: 50%;
       background: #cbd5e1;
       opacity: 0;
       animation: dotPulse 1900ms ease-in-out infinite;
@@ -498,6 +498,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      animation: glow 2s ease-in-out infinite;
 }
 .aq-item.aq-sticky .aq-label::before {
       content: "📌";

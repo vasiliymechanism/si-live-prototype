@@ -179,10 +179,19 @@ function enterState(inst, stateName) {
   const assigned = assignBlockersForState(inst, stCfg, step);
   inst._assignedBlockers = assigned; // store for resume checks
 
-  // Always animate progress to toPct, regardless of blockers
-  const ms = durationMsFor(stCfg);
+  // Use scripted duration if present
+  const ms = getStepDurationMs(inst, stCfg, step);
   const [fromPct, toPct] = progressRangeFor(stCfg);
   startTween(inst, fromPct, toPct, ms);
+// Returns duration in ms for the current state, preferring script step's durationMs if present
+function getStepDurationMs(inst, stCfg, step) {
+  // 1. Use durationMs from the script step if defined
+  if (step && typeof step.durationMs === 'number') {
+    return step.durationMs;
+  }
+  // 2. Otherwise, use state machine config durationMs
+  return durationMsFor(stCfg);
+}
 
   if (assigned.length) {
     // Create/merge action items per assigned blocker

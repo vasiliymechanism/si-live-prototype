@@ -54,7 +54,8 @@ export async function runOnboarding() {
   const cfg = store.app?.onboarding || {};
   const introMs = Math.max(0, cfg.searchIntroMs ?? 1400);
   const matchFoundFlashMs = Math.max(0, cfg.matchFoundFlashMs ?? 1000);
-  const finishCond = cfg.finishOn || { type: 'stateReached', state: 'matched' };
+  const finishCond = cfg.finishOn || { type: 'stateReached', state: 'vetEligibility' };
+  const resumeCond = cfg.resumeMatchingOn || { type: 'stateReached', state: 'confirmEligibility' };
 
   UI.showDashboard();
   UI.forceLiveFeedOpen?.();               // expand live feed, avoid max-height clipping
@@ -118,51 +119,8 @@ export async function runOnboarding() {
 
   document.documentElement.style.setProperty('--feed-transition', 'all 0.3s ease');
 
-  // --- wait for finish condition robustly ---
-  await new Promise(resolve => {
-    if (finishCond.type === 'afterMs') {
-      setTimeout(resolve, Math.max(0, finishCond.ms || 1500));
-      return;
-    }
-
-    if (finishCond.type === 'stateReached') {
-      const target = finishCond.state;
-
-      // if already there (e.g., fast path), resolve immediately
-      if (firstInst?.state === target) { resolve(); return; }
-
-      const onAdvance = ({ id, to, state }) => {
-        const newState = to ?? state;
-        if (id === firstInst?.id && newState === target) {
-          bus.off?.(EV.SCH_ADVANCED, onAdvance);
-          bus.off?.(EV.SCH_BLOCKED, onBlocked);
-          resolve();
-        }
-      };
-      const onBlocked = ({ id, state }) => {
-        if (id === firstInst?.id && state === target) {
-          bus.off?.(EV.SCH_ADVANCED, onAdvance);
-          bus.off?.(EV.SCH_BLOCKED, onBlocked);
-          resolve();
-        }
-      };
-      bus.on(EV.SCH_ADVANCED, onAdvance);
-      bus.on?.(EV.SCH_BLOCKED, onBlocked);
-
-      // safety: also poll in case we missed an event
-      const poll = setInterval(() => {
-        if (firstInst?.state === target) {
-          clearInterval(poll);
-          bus.off?.(EV.SCH_ADVANCED, onAdvance);
-          bus.off?.(EV.SCH_BLOCKED, onBlocked);
-          resolve();
-        }
-      }, 120);
-      return;
-    }
-
-    setTimeout(resolve, 1200);
-  });
+  // --- wait for finish condition robustly (reveal dashboard) ---
+  await waitForCondition(firstInst, finishCond);
 
   // animate back to the feed position (FLIP back)
   card.style.transform = 'translate(0, 0)';
@@ -179,8 +137,61 @@ export async function runOnboarding() {
   // make sure metrics are rendered/populated post-intro
   UI.renderMetrics?.();
 
+  // --- wait for resumeMatchingOn condition (resume matching) ---
+  await waitForCondition(firstInst, resumeCond);
+
+  // Expand Action Required queue via event
+  bus.emit(EV.ACTION_QUEUE_EXPAND);
+
+  // Optional delay before resuming matching
+  const resumeDelayMs = Number(cfg.resumeMatchingDelayMs ?? 3000);
+  if (resumeDelayMs > 0) await new Promise(r => setTimeout(r, resumeDelayMs));
+
   // resume the feed
   if (cfg.pauseFeedDuringIntro !== false) Scholarships.setSpawningPaused(false);
+
+// Helper: wait for a condition (stateReached or afterMs) for a scholarship instance
+async function waitForCondition(schInst, cond) {
+  return await new Promise(resolve => {
+    if (!cond || !schInst) return resolve();
+    if (cond.type === 'afterMs') {
+      setTimeout(resolve, Math.max(0, cond.ms || 1500));
+      return;
+    }
+    if (cond.type === 'stateReached') {
+      const target = cond.state;
+      if (schInst.state === target) { resolve(); return; }
+      const onAdvance = ({ id, to, state }) => {
+        const newState = to ?? state;
+        if (id === schInst.id && newState === target) {
+          bus.off?.(EV.SCH_ADVANCED, onAdvance);
+          bus.off?.(EV.SCH_BLOCKED, onBlocked);
+          resolve();
+        }
+      };
+      const onBlocked = ({ id, state }) => {
+        if (id === schInst.id && state === target) {
+          bus.off?.(EV.SCH_ADVANCED, onAdvance);
+          bus.off?.(EV.SCH_BLOCKED, onBlocked);
+          resolve();
+        }
+      };
+      bus.on(EV.SCH_ADVANCED, onAdvance);
+      bus.on?.(EV.SCH_BLOCKED, onBlocked);
+      // safety: also poll in case we missed an event
+      const poll = setInterval(() => {
+        if (schInst.state === target) {
+          clearInterval(poll);
+          bus.off?.(EV.SCH_ADVANCED, onAdvance);
+          bus.off?.(EV.SCH_BLOCKED, onBlocked);
+          resolve();
+        }
+      }, 120);
+      return;
+    }
+    setTimeout(resolve, 1200);
+  });
+}
 }
 
 // Helper: wait for specific card to exist in DOM

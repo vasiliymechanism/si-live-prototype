@@ -34,11 +34,14 @@
     // When to start the “settle into dashboard” animation for the first card
     // Option A: when the card reaches a state…
     // "finishOn": { "type": "stateReached", "state": "confirmEligibility" },
-    "finishOn": { "type": "stateReached", "state": "analyzing" },
+    "finishOn": { "type": "stateReached", "state": "vetEligibility" },
     // Option B (alternative): after a fixed time
     // "finishOn": { "type": "afterMs", "ms": 2500 }
 
     // For debugging: freeze before centering the card
     "debugFreezeBeforeCenterMs": 0   // set to 30000 when you want to inspect
+  ,
+  // Delay (ms) after expanding Action Required queue before resuming matching
+  "resumeMatchingDelayMs": 4000
   }
 }

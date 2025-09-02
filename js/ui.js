@@ -947,6 +947,13 @@ export function initUI() {
   bus.on(EV.QUIZ_OPEN, () => { setSpotlight(false); openModal(dom.quizModal); });
   bus.on(EV.PAYWALL_SHOW, () => { setSpotlight(false); openModal(dom.paywallModal); });
 
+  // Listen for ACTION_QUEUE_EXPAND event and expand the Action Queue section
+  bus.on(EV.ACTION_QUEUE_EXPAND, () => {
+    cacheDom();
+    const queueSection = dom.actionQueue?.closest('.feed-section') || document.getElementById('actionQueueSection');
+    if (queueSection) expandSection(queueSection);
+  });
+
   // Initialize the accordion once the DOM is ready
   initAccordion();
 }

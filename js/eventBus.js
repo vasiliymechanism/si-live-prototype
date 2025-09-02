@@ -31,5 +31,8 @@ export const EV = Object.freeze({
   ACTION_COMPLETED: 'ACTION.COMPLETED', // { type: 'uploadTranscript' }
 
   // New: fired when a quiz question is answered (for cross-unblock)
-  QUIZ_QUESTION_ANSWERED: 'QUIZ.QUESTION_ANSWERED'
+  QUIZ_QUESTION_ANSWERED: 'QUIZ.QUESTION_ANSWERED',
+
+  // Event to expand the Action Required queue
+  ACTION_QUEUE_EXPAND: 'ACTIONQUEUE.EXPAND'
 });

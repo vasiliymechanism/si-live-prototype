@@ -3,21 +3,22 @@
     "id": "s001",
     "name": "Future Leaders Scholarship",
     "award": 2500,
-    "deadline": "2025-10-14",
+    "deadline": "2025-09-10",
     "essayRequired": true,
     "transcriptRequired": false,
     // Scripted: requires quiz only at confirmEligibility
     "script": [
-      { "state": "scanning" },
-      { "state": "analyzing" },
+      { "state": "potentialMatch", "durationMs": 1500 },
+      { "state": "vetEligibility", "durationMs": 6000 },
       {
         "state": "confirmEligibility",
+        "durationMs": 1000,
         "blockers": [
           { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" }
         ]
       },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
+      { "state": "readyToSubmit", "durationMs": 40000 },
+      { "state": "submitted", "durationMs": 15000 }
     ],
     "minutesByState": {
       "scanning": 2,

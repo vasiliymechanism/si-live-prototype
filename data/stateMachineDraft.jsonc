@@ -40,10 +40,10 @@
         // If you prefer independent probabilities instead of "pick", you can use:
         // "includeProb": true and set "prob" on each pool item (engine supports both).
         "pool": [
-          { "id": "updateProfileViaQuiz",       "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" }
-          // , { "id": "gpaEntered",                 "type": "userField",  "weight": 0.03, "actionType": "inputGPA", "field": "gpa" }
-          // , { "id": "currentSchoolLevelEntered",  "type": "userField", "weight": 0.04, "actionType": "inputCurrentSchoolLevel", "field": "currentSchoolLevel" }
-          // , { "id": "genderEntered",              "type": "userField", "weight": 0.01, "actionType": "inputGender", "field": "gender" }
+          { "id": "updateProfileViaQuiz",       "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" },
+          { "id": "gpaEntered",                 "type": "userField",  "weight": 0.1, "actionType": "inputGPA", "field": "gpa" },
+          { "id": "currentSchoolLevelEntered",  "type": "userField", "weight": 0.4, "actionType": "inputCurrentSchoolLevel", "field": "currentSchoolLevel" },
+          { "id": "genderEntered",              "type": "userField", "weight": 0.01, "actionType": "inputGender", "field": "gender" }
         ]
       },
       "next": [
@@ -189,7 +189,7 @@
     },
 
     "readyPendingTrial": {
-      "label": "Ready to submit",
+      "label": "Ready to submit (start free trial)",
       "skipIfSatisfied": true,
       "durationMs": [100, 200],
       "progress": [96, 97],
