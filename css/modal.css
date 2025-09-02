@@ -321,6 +321,9 @@
       align-items: flex-start;
       padding-top: 120px;
 }
+#quizModal {
+      padding-top: 220px;
+}
 .modal-content {
       background: #111;
       border-radius: 20px;
@@ -477,6 +480,9 @@
 #quizModal .modal-title {
       font-size: 20px;
       color: #c5c7ca;
+}
+#quizBody .modal-body {
+   opacity: 1;
 }
 #quizBody {
    padding: 20px;
