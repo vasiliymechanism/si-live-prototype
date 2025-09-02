@@ -742,6 +742,32 @@ export function updateScholarshipCardState(id, state, progressPct = null) {
     bar.style.width = `${progressPct}%`;
     bar.classList.remove('animating'); void bar.offsetWidth; bar.classList.add('animating');
   }
+
+  // --- NEW: Make Essay pill green when generateEssay step completes ---
+  // Find the Essay pill
+  const essayPill = card.querySelector('.flag');
+  if (essayPill && essayPill.textContent.trim() === 'Essay') {
+    // All states after and including draftEssays should keep the pill green
+    // List all post-draftEssays states from stateMachine.jsonc
+    const postDraftStates = [
+      'draftEssays',
+      'gatherMissingData',
+      'readinessDecision',
+      'readyPendingMinorDetails',
+      'readyPendingDocs',
+      'readyPendingBoth',
+      'preSubmitChecks',
+      'readyPendingTrial',
+      'submitted'
+    ];
+    if (postDraftStates.includes(state)) {
+      essayPill.classList.add('essay-green-fade');
+      essayPill.style.color = '#fff';
+    } else {
+      essayPill.classList.remove('essay-green-fade');
+      essayPill.style.color = '';
+    }
+  }
 }
 
 

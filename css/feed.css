@@ -1,3 +1,19 @@
+/* Fade-in green background for Essay pill */
+.sch-card .sch-flags .flag.essay-green-fade {
+      background: #2ecc40 !important;
+      color: #fff !important;
+      transition: background 0.5s cubic-bezier(0.4,0,0.2,1), color 0.2s;
+}
+/* Subtle pulse animation for Essay pill */
+.sch-card .sch-flags .flag.essay-pulse {
+      animation: essay-pulse 0.5s ease;
+}
+
+@keyframes essay-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(46,204,64,0.5); }
+      50%  { box-shadow: 0 0 8px 4px rgba(46,204,64,0.25); }
+      100% { box-shadow: 0 0 0 0 rgba(46,204,64,0.0); }
+}
 .feed-header {
       display: flex;
       align-items: center;
