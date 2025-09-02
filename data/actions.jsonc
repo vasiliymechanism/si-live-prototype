@@ -1,12 +1,20 @@
 {
   "types": {
-    "updateProfileViaQuiz":     { "label": "Confirm eligibility to unlock matches", "cta": "Start", "modal": "quiz", "sticky": true, "priority": 10 },
+    "updateProfileViaQuiz":     { "label": "Answer questions to unlock matches", "cta": "Start", "modal": "quiz", "sticky": true, "priority": 10 },
     "uploadTranscript":         { "label": "Upload your transcript", "cta": "Upload PDF" },
-    "inputGPA":                 { "label": "Enter your GPA", "cta": "Submit GPA", "quizQuestionId": "q_gpa" },
-    "uploadEssay":              { "label": "Upload your essay", "cta": "Upload file" },
+    "gpaEntered":                 { "label": "Enter your GPA", "cta": "Submit GPA", "quizQuestionId": "q_college_gpa" },
+    "currentSchoolLevelEntered":  { "label": "Select your current school level", "cta": "Confirm", "quizQuestionId": "q_hs_grade" },
+    "inputGender":              { "label": "Enter your gender", "cta": "Submit", "quizQuestionId": "q_hs_gender" },
+    "inputFinancialAidAddress": { "label": "Enter your Financial Aid Address", "cta": "Submit" },
+    "enterFinancialAidAddress": { "label": "Enter your Financial Aid Address", "cta": "Submit" },
+    "inputHomeAddress":         { "label": "Enter your Home Address", "cta": "Submit", "quizQuestionId": "q_hs_state" },
+    "inputPhoneNumber":         { "label": "Enter your Phone Number", "cta": "Submit", "quizQuestionId": "q_hs_phone" },
+    "inputEmail":               { "label": "Enter your Email", "cta": "Submit", "quizQuestionId": "q_hs_email" },
+    "uploadCollegeTranscript":  { "label": "Upload your college transcript", "cta": "Upload PDF", "quizQuestionId": "q_college_transcript" },
+    "uploadHighSchoolTranscript": { "label": "Upload your high school transcript", "cta": "Upload PDF", "quizQuestionId": "q_hs_transcript" },
     "uploadHeadshot":           { "label": "Upload a headshot", "cta": "Upload image" },
     "uploadRecommendation":     { "label": "Upload recommendation letter", "cta": "Upload PDF" },
-    "paywallCTA":               { "label": "Finish applications (Free trial)", "cta": "Start Free Trial", "modal": "paywall", "sticky": true, "priority": 20 },
-    "inputCurrentSchoolLevel":  { "label": "Select your current school level", "cta": "Confirm", "modal": "schoolLevel" }
+    "paywallCTA":               { "label": "You have applications ready to send", "cta": "Send Now", "modal": "paywall", "sticky": true, "priority": 20 },
+    "startTrial":               { "label": "You have applications ready to send", "cta": "Send Now", "modal": "paywall", "sticky": true, "priority": 20 }
   }
 }

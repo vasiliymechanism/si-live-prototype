@@ -305,10 +305,38 @@ function renderCustomInput(actionType, content, onSubmit, overrides) {
     label = 'Upload recommendation letter';
     inputType = 'file';
     accept = '.pdf';
-  } else if (actionType === 'inputGPA') {
+  } else if (actionType === 'gpaEntered') {
     label = 'What’s your GPA? (unweighted)';
     inputType = 'text';
     placeholder = 'e.g., 3.6';
+  } else if (actionType === 'inputFinancialAidAddress' || actionType === 'enterFinancialAidAddress') {
+    label = 'What is your Financial Aid office address?';
+    inputType = 'text';
+    placeholder = 'e.g., 123 Main St, Anytown, USA';
+  } else if (actionType === 'uploadCollegeTranscript') {
+    label = 'Upload your college transcript';
+    inputType = 'file';
+    accept = '.pdf,.doc,.docx';
+  } else if (actionType === 'uploadHighSchoolTranscript') {
+    label = 'Upload your high school transcript';
+    inputType = 'file';
+    accept = '.pdf,.doc,.docx';
+  } else if (actionType === 'inputPhoneNumber') {
+    label = 'What is your phone number?';
+    inputType = 'text';
+    placeholder = '(555) 123-4567';
+  } else if (actionType === 'inputEmail') {
+    label = 'What is your email address?';
+    inputType = 'email';
+    placeholder = 'you@example.com';
+  } else if (actionType === 'inputHomeAddress') {
+    label = 'What is your home address?';
+    inputType = 'text';
+    placeholder = '123 Main St, Anytown, USA';
+  } else if (actionType === 'currentSchoolLevelEntered' || actionType === 'inputCurrentSchoolLevel') {
+    label = 'What is your current school level?';
+    inputType = 'text';
+    placeholder = 'e.g., High School Senior';
   }
 
   // Clear content
@@ -556,10 +584,10 @@ function ensureMetricGrid() {
   // If the grid has no cards yet, inject them once
   if (!grid.querySelector('[data-metric]')) {
     grid.innerHTML = [
-      { key: 'matches',         label: 'Matches found',        val: '0' },
+      { key: 'matches',         label: 'Potential matches',        val: '0' },
       { key: 'potentialAwards', label: 'Potential awards',     val: '$0' },
       { key: 'started',         label: 'Applications started', val: '0' },
-      { key: 'readyNow',        label: 'Ready to apply now',   val: '0' },
+      { key: 'readyNow',        label: 'Almost ready to send',   val: '0' },
       { key: 'nextDeadline',    label: 'Next deadline',        val: '—' },
       { key: 'timeSavedMin',    label: 'Time saved',           val: '0m' }
     ].map(t => `

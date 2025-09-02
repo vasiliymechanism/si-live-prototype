@@ -1,12 +1,11 @@
 [
   {
     "id": "s001",
-    "name": "Future Leaders Scholarship",
+    "name": "Robert & Martha Chen Memorial Scholarship",
     "award": 2500,
     "deadline": "2025-09-10",
     "essayRequired": true,
     "transcriptRequired": false,
-    // Scripted: requires quiz only at confirmEligibility
     "script": [
       { "state": "potentialMatch", "durationMs": 1500 },
       { "state": "vetEligibility", "durationMs": 6000 },
@@ -17,283 +16,2540 @@
           { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" }
         ]
       },
-      { "state": "readyToSubmit", "durationMs": 40000 },
+      { "state": "eligible", "durationMs": 1000 },
+      { "state": "buildPackage", "durationMs": 4000 },
+      { "state": "autofillCore", "durationMs": 3000 },
+      { "state": "draftEssays", "durationMs": 5000 },
+      { "state": "preSubmitChecks", "durationMs": 2000 },
+      { "state": "readyPendingTrial", "durationMs": 2000 },
       { "state": "submitted", "durationMs": 15000 }
     ],
     "minutesByState": {
-      "scanning": 2,
-      "analyzing": 4,
+      "potentialMatch": 2,
+      "vetEligibility": 4,
       "confirmEligibility": 3,
-      "readyToSubmit": 6,
+      "buildPackage": 15,
+      "autofillCore": 4,
+      "draftEssays": 47,
+      "preSubmitChecks": 2,
+      "readyPendingTrial": 6,
       "submitted": 3
     }
   },
-
   {
     "id": "s002",
-    "name": "STEM Excellence Grant",
+    "name": "TechForward Foundation Grant",
     "award": 5000,
     "deadline": "2025-10-31",
     "essayRequired": false,
-    "transcriptRequired": true,
-    // Scripted: requires quiz + transcript (ALL required; already-satisfied ignored)
+    // "transcriptRequired": true,
     "script": [
-      { "state": "scanning" },
-      { "state": "analyzing" },
+      { "state": "potentialMatch", "durationMs": 1300 },
+      { "state": "vetEligibility", "durationMs": 4100 },
       {
         "state": "confirmEligibility",
         "blockers": [
-          { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
-          { "id": "transcriptUploaded",   "type": "userField",   "actionType": "uploadTranscript", "field": "transcript"}
+          // { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
+          { "id": "currentSchoolLevelEntered", "type": "userField", "actionType": "currentSchoolLevelEntered", "field": "currentSchoolLevel"}
         ]
       },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
+      { "state": "eligible", "durationMs": 100 },
+      { "state": "buildPackage", "durationMs": 3000 },
+      { "state": "autofillCore", "durationMs": 2100 },
+      { "state": "draftEssays", "durationMs": 2200 },
+      { "state": "preSubmitChecks", "durationMs": 130 },
+      { "state": "readyPendingTrial", "durationMs": 2100 },
+      { "state": "submitted", "durationMs": 15000 }
     ]
+    , "minutesByState": {
+      "potentialMatch": 2,
+      "vetEligibility": 4,
+      "confirmEligibility": 3,
+      "buildPackage": 15,
+      "autofillCore": 4,
+      "draftEssays": 47,
+      "preSubmitChecks": 2,
+      "readyPendingTrial": 6,
+      "submitted": 3
+    }
   },
-
   {
     "id": "s003",
-    "name": "Community Builders Award",
+    "name": "Sunrise Diner Community Award",
     "award": 1500,
     "deadline": "2026-01-15",
     "essayRequired": true,
     "transcriptRequired": false
-    // No script → random machine (may choose 1–2 blockers from the pool)
   },
-
   {
     "id": "s004",
-    "name": "First-Gen Scholars Fund",
+    "name": "Genesis Educational Fund",
     "award": 3000,
     "deadline": "2025-12-05",
     "essayRequired": false,
-    "transcriptRequired": true,
-    // Scripted: transcript only
-    "script": [
-      { "state": "matched" },
-      {
-        "state": "confirmEligibility",
-        "blockers": [
-          { "id": "transcriptUploaded", "type": "userField", "actionType": "uploadTranscript", "field": "transcript" }
-        ]
-      },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
-    ]
+    "transcriptRequired": true
   },
-
   {
     "id": "s005",
-    "name": "Women in Tech Scholarship",
+    "name": "Pauline Morrison Legacy Scholarship",
     "award": 4000,
     "deadline": "2025-11-20",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s006",
-    "name": "Arts & Design Fellowship",
+    "name": "Creative Minds Initiative",
     "award": 3500,
     "deadline": "2025-11-08",
     "essayRequired": true,
-    "transcriptRequired": false,
-    // Scripted: a simple “start later” path
-    "script": [
-      { "state": "analyzing" },
-      { "state": "matched" },
-      { "state": "confirmEligibility" },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
-    ]
+    "transcriptRequired": false
   },
-
   {
     "id": "s007",
-    "name": "Healthcare Horizons Grant",
+    "name": "Blue Cross Health Futures Grant",
     "award": 4500,
     "deadline": "2025-12-12",
     "essayRequired": false,
     "transcriptRequired": true
   },
-
   {
     "id": "s008",
-    "name": "Green Future Scholarship",
+    "name": "EcoPath Sustainability Award",
     "award": 2000,
     "deadline": "2026-02-01",
     "essayRequired": false,
     "transcriptRequired": false
   },
-
   {
     "id": "s009",
-    "name": "Entrepreneur Launchpad Award",
+    "name": "StartUp Dreams Foundation",
     "award": 5000,
     "deadline": "2026-03-01",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s010",
-    "name": "Data Science Merit",
+    "name": "DataWorks Analytics Scholarship",
     "award": 3000,
     "deadline": "2025-12-30",
     "essayRequired": false,
     "transcriptRequired": true
   },
-
   {
     "id": "s011",
-    "name": "Public Service Scholarship",
+    "name": "Citizens for Tomorrow Grant",
     "award": 2500,
     "deadline": "2025-11-28",
     "essayRequired": false,
     "transcriptRequired": false
   },
-
   {
     "id": "s012",
-    "name": "Global Citizen Grant",
+    "name": "Bridge Builders International Award",
     "award": 3500,
     "deadline": "2026-01-20",
     "essayRequired": true,
-    "transcriptRequired": false,
-    // Scripted: recommendation letter required
-    "script": [
-      { "state": "matched" },
-      {
-        "state": "confirmEligibility",
-        "blockers": [
-          { "id": "recommendationUploaded", "type": "userField", "actionType": "uploadRecommendation", "field": "recommendation" }
-        ]
-      },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
-    ]
+    "transcriptRequired": false
   },
-
   {
     "id": "s013",
-    "name": "Cybersecurity Pioneers",
+    "name": "SecureNet Cyber Defense Fund",
     "award": 4000,
     "deadline": "2026-01-05",
     "essayRequired": false,
     "transcriptRequired": false
   },
-
   {
     "id": "s014",
-    "name": "Robotics Innovators",
+    "name": "AutoTech Innovation Prize",
     "award": 5000,
     "deadline": "2025-09-10",
     "essayRequired": true,
-    "transcriptRequired": true,
-    // Scripted: quiz + essay (ALL)
-    "script": [
-      { "state": "scanning" },
-      { "state": "analyzing" },
-      {
-        "state": "confirmEligibility",
-        "blockers": [
-          { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
-          { "id": "inputGPA", "type": "userField", "actionType": "inputGPA", "field": "gpa" }
-          // { "id": "essayUploaded",       "type": "userField",   "actionType": "uploadEssay", "field": "essay" }
-        ]
-      },
-      { "state": "readyToSubmit" },
-      { "state": "submitted" }
-    ]
+    "transcriptRequired": true
   },
-
   {
     "id": "s015",
-    "name": "Humanities Research Grant",
+    "name": "Margaret Whitfield Memorial Fund",
     "award": 1500,
     "deadline": "2026-02-14",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s016",
-    "name": "Athletic Scholar Award",
+    "name": "Peak Performance Athletic Scholarship",
     "award": 2000,
     "deadline": "2025-11-10",
     "essayRequired": false,
     "transcriptRequired": true
   },
-
   {
     "id": "s017",
-    "name": "Journalism Rising Star",
+    "name": "Tribune Media Rising Voice Award",
     "award": 2500,
     "deadline": "2026-01-12",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s018",
-    "name": "Teachers of Tomorrow",
+    "name": "Bright Futures Teaching Grant",
     "award": 3000,
     "deadline": "2025-12-02",
     "essayRequired": false,
     "transcriptRequired": false
   },
-
   {
     "id": "s019",
-    "name": "Veterans Education Aid",
+    "name": "Heroes Home Foundation",
     "award": 4000,
     "deadline": "2026-02-28",
     "essayRequired": false,
     "transcriptRequired": true
   },
-
   {
     "id": "s020",
-    "name": "Rural Access Scholarship",
+    "name": "Heartland Access Scholarship",
     "award": 2500,
     "deadline": "2026-01-22",
     "essayRequired": false,
     "transcriptRequired": false
   },
-
   {
     "id": "s021",
-    "name": "Environmental Justice Grant",
+    "name": "Green Justice Alliance Grant",
     "award": 3500,
     "deadline": "2026-03-01",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s022",
-    "name": "Accessibility in Tech",
+    "name": "Ability First Technology Award",
     "award": 3000,
     "deadline": "2025-12-18",
     "essayRequired": false,
     "transcriptRequired": true
   },
-
   {
     "id": "s023",
-    "name": "Space & Astronomy Award",
+    "name": "Cosmos Research Fellowship",
     "award": 4500,
     "deadline": "2026-02-05",
     "essayRequired": true,
     "transcriptRequired": false
   },
-
   {
     "id": "s024",
-    "name": "Finance Future Leaders",
+    "name": "Sterling Financial Futures Fund",
     "award": 4000,
     "deadline": "2025-12-22",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s025",
+    "name": "Johnson Family Education Trust",
+    "award": 2800,
+    "deadline": "2025-10-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s026",
+    "name": "Quick Stop Markets Scholarship",
+    "award": 1000,
+    "deadline": "2025-11-30",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s027",
+    "name": "Dr. James Liu Memorial Award",
+    "award": 3200,
+    "deadline": "2026-01-08",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s028",
+    "name": "Horizon Opportunity Grant",
+    "award": 2500,
+    "deadline": "2025-12-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s029",
+    "name": "Miller & Associates Scholarship",
+    "award": 3500,
+    "deadline": "2026-02-10",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s030",
+    "name": "Unity Credit Union Student Fund",
+    "award": 2000,
+    "deadline": "2025-09-30",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s031",
+    "name": "Sarah Thompson Excellence Award",
+    "award": 4200,
+    "deadline": "2025-11-05",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s032",
+    "name": "Pacific Dental Group Scholarship",
+    "award": 3800,
+    "deadline": "2026-01-25",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s033",
+    "name": "Tomorrow's Promise Foundation",
+    "award": 2750,
+    "deadline": "2025-12-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s034",
+    "name": "Rivera Construction Trades Award",
+    "award": 2200,
+    "deadline": "2026-02-20",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s035",
+    "name": "Beacon Light Educational Grant",
+    "award": 3000,
+    "deadline": "2025-10-22",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s036",
+    "name": "MapleLeaf Insurance Scholarship",
+    "award": 2600,
+    "deadline": "2025-11-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s037",
+    "name": "William & Dorothy Park Fund",
+    "award": 3300,
+    "deadline": "2026-01-03",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s038",
+    "name": "NextGen Leaders Initiative",
+    "award": 4500,
+    "deadline": "2025-12-20",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s039",
+    "name": "Corner Bakery Community Award",
+    "award": 1200,
+    "deadline": "2026-02-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s040",
+    "name": "Eagle Manufacturing Scholarship",
+    "award": 2800,
+    "deadline": "2025-09-25",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s041",
+    "name": "Grace Memorial Education Fund",
+    "award": 3100,
+    "deadline": "2025-11-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s042",
+    "name": "Velocity Sports Equipment Grant",
+    "award": 2400,
+    "deadline": "2026-01-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s043",
+    "name": "Harbor Foundation Scholarship",
+    "award": 3600,
+    "deadline": "2025-12-28",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s044",
+    "name": "Peterson Law Firm Award",
+    "award": 3000,
+    "deadline": "2026-02-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s045",
+    "name": "Sunshine State Bank Scholarship",
+    "award": 2500,
+    "deadline": "2025-10-18",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s046",
+    "name": "Anthony Garcia Memorial Fund",
+    "award": 2900,
+    "deadline": "2025-11-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s047",
+    "name": "Pioneer Pathways Grant",
+    "award": 3400,
+    "deadline": "2026-01-30",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s048",
+    "name": "CityWide Plumbing Scholarship",
+    "award": 1800,
+    "deadline": "2025-12-10",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s049",
+    "name": "Dream Achievers Foundation",
+    "award": 4000,
+    "deadline": "2026-02-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s050",
+    "name": "Romano's Pizza Student Award",
+    "award": 1500,
+    "deadline": "2025-09-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s051",
+    "name": "Elizabeth Stern Nursing Fund",
+    "award": 3700,
+    "deadline": "2025-11-02",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s052",
+    "name": "Apex Technology Solutions Grant",
+    "award": 4200,
+    "deadline": "2026-01-10",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s053",
+    "name": "Compass Point Scholarship",
+    "award": 2700,
+    "deadline": "2025-12-05",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s054",
+    "name": "Valley Fresh Produce Award",
+    "award": 1600,
+    "deadline": "2026-02-18",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s055",
+    "name": "Marcus & Helen Wong Foundation",
+    "award": 3500,
+    "deadline": "2025-10-28",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s056",
+    "name": "Lightning Logistics Scholarship",
+    "award": 2300,
+    "deadline": "2025-11-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s057",
+    "name": "Inspire Education Trust",
+    "award": 3800,
+    "deadline": "2026-01-28",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s058",
+    "name": "Golden State Tire Company Grant",
+    "award": 2100,
+    "deadline": "2025-12-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s059",
+    "name": "Jennifer Adams Memorial Award",
+    "award": 3200,
+    "deadline": "2026-02-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s060",
+    "name": "Crossroads Community Fund",
+    "award": 2500,
+    "deadline": "2025-09-20",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s061",
+    "name": "TurboClean Services Scholarship",
+    "award": 1400,
+    "deadline": "2025-11-08",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s062",
+    "name": "Raymond Brooks Legacy Fund",
+    "award": 3900,
+    "deadline": "2026-01-05",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s063",
+    "name": "Pathway to Success Grant",
+    "award": 2800,
+    "deadline": "2025-12-24",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s064",
+    "name": "Metro Pharmacy Student Award",
+    "award": 2200,
+    "deadline": "2026-02-03",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s065",
+    "name": "Thomas & Lisa Kumar Foundation",
+    "award": 3600,
+    "deadline": "2025-10-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s066",
+    "name": "Reliable Roofing Scholarship",
+    "award": 1900,
+    "deadline": "2025-11-22",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s067",
+    "name": "Future Forward Initiative",
+    "award": 4100,
+    "deadline": "2026-01-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s068",
+    "name": "Crystal Springs Water Co. Grant",
+    "award": 2000,
+    "deadline": "2025-12-01",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s069",
+    "name": "Nancy Wilson Education Award",
+    "award": 3300,
+    "deadline": "2026-02-22",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s070",
+    "name": "Summit Achievement Fund",
+    "award": 2600,
+    "deadline": "2025-09-28",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s071",
+    "name": "Quality Auto Parts Scholarship",
+    "award": 1700,
+    "deadline": "2025-11-05",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s072",
+    "name": "David Chang Memorial Grant",
+    "award": 3400,
+    "deadline": "2026-01-22",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s073",
+    "name": "Aspire Wellness Center Award",
+    "award": 2900,
+    "deadline": "2025-12-13",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s074",
+    "name": "Cornerstone Builders Scholarship",
+    "award": 2400,
+    "deadline": "2026-02-06",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s075",
+    "name": "Patricia O'Brien Trust Fund",
+    "award": 3700,
+    "deadline": "2025-10-05",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s076",
+    "name": "Express Delivery Services Grant",
+    "award": 1800,
+    "deadline": "2025-11-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s077",
+    "name": "Breakthrough Scholars Program",
+    "award": 4300,
+    "deadline": "2026-01-08",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s078",
+    "name": "SafeGuard Security Scholarship",
+    "award": 2100,
+    "deadline": "2025-12-26",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s079",
+    "name": "Katherine Mitchell Memorial Award",
+    "award": 3100,
+    "deadline": "2026-02-14",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s080",
+    "name": "Gateway Financial Group Fund",
+    "award": 2700,
+    "deadline": "2025-09-18",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s081",
+    "name": "City Deli & Grill Scholarship",
+    "award": 1300,
+    "deadline": "2025-11-10",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s082",
+    "name": "Steven Rodriguez Education Fund",
+    "award": 3500,
+    "deadline": "2026-01-25",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s083",
+    "name": "Momentum Achievement Grant",
+    "award": 2800,
+    "deadline": "2025-12-07",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s084",
+    "name": "Premium Paint & Supply Award",
+    "award": 1600,
+    "deadline": "2026-02-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s085",
+    "name": "George & Maria Patel Foundation",
+    "award": 3900,
+    "deadline": "2025-10-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s086",
+    "name": "Rapid Response Medical Grant",
+    "award": 3200,
+    "deadline": "2025-11-28",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s087",
+    "name": "Elevate Education Initiative",
+    "award": 4000,
+    "deadline": "2026-01-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s088",
+    "name": "Diamond Car Wash Scholarship",
+    "award": 1100,
+    "deadline": "2025-12-19",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s089",
+    "name": "Alice Turner Memorial Award",
+    "award": 3300,
+    "deadline": "2026-02-09",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s090",
+    "name": "Bridge to Tomorrow Fund",
+    "award": 2500,
+    "deadline": "2025-09-08",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s091",
+    "name": "Precision Tools Inc. Scholarship",
+    "award": 2200,
+    "deadline": "2025-11-03",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s092",
+    "name": "Richard Cohen Legacy Grant",
+    "award": 3600,
+    "deadline": "2026-01-20",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s093",
+    "name": "Thrive Wellness Foundation Award",
+    "award": 2900,
+    "deadline": "2025-12-11",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s094",
+    "name": "United Flooring Specialists Fund",
+    "award": 1500,
+    "deadline": "2026-02-28",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s095",
+    "name": "Dr. Linda Foster Memorial Scholarship",
+    "award": 4200,
+    "deadline": "2025-10-16",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s096",
+    "name": "FastTrack Logistics Grant",
+    "award": 2400,
+    "deadline": "2025-11-14",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s097",
+    "name": "Vision Scholars Program",
+    "award": 3800,
+    "deadline": "2026-01-02",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s098",
+    "name": "Alliance Insurance Group Award",
+    "award": 2600,
+    "deadline": "2025-12-23",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s099",
+    "name": "Dorothy Jenkins Education Fund",
+    "award": 3100,
+    "deadline": "2026-02-11",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s100",
+    "name": "Neighborhood Market Scholarship",
+    "award": 1000,
+    "deadline": "2025-09-30",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s101",
+    "name": "Frank & Louise Davidson Fund",
+    "award": 2800,
+    "deadline": "2025-10-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s102",
+    "name": "Premier Accounting Services Scholarship",
+    "award": 3200,
+    "deadline": "2025-11-19",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s103",
+    "name": "Lakeside Community Grant",
+    "award": 1800,
+    "deadline": "2026-01-14",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s104",
+    "name": "PowerGrid Electric Award",
+    "award": 2500,
+    "deadline": "2025-12-03",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s105",
+    "name": "Emma Watson Memorial Scholarship",
+    "award": 3700,
+    "deadline": "2026-02-21",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s106",
+    "name": "Coastal Seafood Restaurant Fund",
+    "award": 1400,
+    "deadline": "2025-09-12",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s107",
+    "name": "Achieve Excellence Foundation",
+    "award": 4100,
+    "deadline": "2025-10-29",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s108",
+    "name": "Liberty Hardware Store Scholarship",
+    "award": 1600,
+    "deadline": "2025-11-24",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s109",
+    "name": "Michael & Sharon Lee Grant",
+    "award": 3400,
+    "deadline": "2026-01-07",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s110",
+    "name": "Sunrise Financial Partners Award",
+    "award": 2900,
+    "deadline": "2025-12-16",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s111",
+    "name": "Heritage Foundation Scholarship",
+    "award": 3500,
+    "deadline": "2026-02-04",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s112",
+    "name": "Tony's Auto Repair Grant",
+    "award": 1200,
+    "deadline": "2025-09-23",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s113",
+    "name": "Dr. Patricia Huang Education Fund",
+    "award": 4300,
+    "deadline": "2025-11-06",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s114",
+    "name": "Westside Printing Company Award",
+    "award": 2100,
+    "deadline": "2026-01-19",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s115",
+    "name": "Opportunity Knocks Grant",
+    "award": 2600,
+    "deadline": "2025-12-09",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s116",
+    "name": "Central Valley Bank Scholarship",
+    "award": 3000,
+    "deadline": "2026-02-13",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s117",
+    "name": "Robert Martinez Memorial Award",
+    "award": 3300,
+    "deadline": "2025-10-14",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s118",
+    "name": "Fresh Start Laundromat Fund",
+    "award": 1000,
+    "deadline": "2025-11-21",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s119",
+    "name": "Innovation Leaders Grant",
+    "award": 4500,
+    "deadline": "2026-01-26",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s120",
+    "name": "Maple Street Bakery Scholarship",
+    "award": 1500,
+    "deadline": "2025-12-14",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s121",
+    "name": "Charles & Betty Foster Foundation",
+    "award": 3800,
+    "deadline": "2026-02-07",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s122",
+    "name": "Swift Transportation Award",
+    "award": 2400,
+    "deadline": "2025-09-27",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s123",
+    "name": "Rising Star Education Fund",
+    "award": 3100,
+    "deadline": "2025-11-13",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s124",
+    "name": "Garden Grove Nursery Grant",
+    "award": 1700,
+    "deadline": "2026-01-04",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s125",
+    "name": "Jennifer Kim Memorial Scholarship",
+    "award": 3600,
+    "deadline": "2025-12-21",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s126",
+    "name": "Elite Fitness Center Award",
+    "award": 2000,
+    "deadline": "2026-02-19",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s127",
+    "name": "Pathfinder Scholarship Program",
+    "award": 2700,
+    "deadline": "2025-10-03",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s128",
+    "name": "Ace Plumbing & Heating Fund",
+    "award": 1900,
+    "deadline": "2025-11-16",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s129",
+    "name": "Dr. Samuel Wright Legacy Award",
+    "award": 4000,
+    "deadline": "2026-01-11",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s130",
+    "name": "Northstar Investment Group Grant",
+    "award": 3200,
+    "deadline": "2025-12-27",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s131",
+    "name": "Community First Foundation",
+    "award": 2500,
+    "deadline": "2026-02-10",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s132",
+    "name": "Joe's Coffee House Scholarship",
+    "award": 1100,
+    "deadline": "2025-09-19",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s133",
+    "name": "Margaret Chen Education Award",
+    "award": 3400,
+    "deadline": "2025-11-09",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s134",
+    "name": "Precision Engineering Grant",
+    "award": 2800,
+    "deadline": "2026-01-23",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s135",
+    "name": "Bright Horizons Fund",
+    "award": 3700,
+    "deadline": "2025-12-06",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s136",
+    "name": "Main Street Pharmacy Award",
+    "award": 2200,
+    "deadline": "2026-02-24",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s137",
+    "name": "William Thompson Memorial Grant",
+    "award": 3900,
+    "deadline": "2025-10-21",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s138",
+    "name": "QuickFix Computer Repair Fund",
+    "award": 1300,
+    "deadline": "2025-11-27",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s139",
+    "name": "Excellence in Education Award",
+    "award": 4200,
+    "deadline": "2026-01-16",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s140",
+    "name": "Riverside Dental Group Scholarship",
+    "award": 2600,
+    "deadline": "2025-12-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s141",
+    "name": "Helen & Arthur Goldman Fund",
+    "award": 3500,
+    "deadline": "2026-02-02",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s142",
+    "name": "Express Courier Services Grant",
+    "award": 1800,
+    "deadline": "2025-09-11",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s143",
+    "name": "Tomorrow's Leaders Initiative",
+    "award": 3100,
+    "deadline": "2025-10-26",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s144",
+    "name": "Village Pizza & Pasta Award",
+    "award": 1400,
+    "deadline": "2025-11-04",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s145",
+    "name": "Dr. Michelle Davis Memorial Fund",
+    "award": 4400,
+    "deadline": "2026-01-29",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s146",
+    "name": "Sterling Law Associates Grant",
+    "award": 3300,
+    "deadline": "2025-12-12",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s147",
+    "name": "Advancing Dreams Scholarship",
+    "award": 2900,
+    "deadline": "2026-02-16",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s148",
+    "name": "Pete's Tire Service Fund",
+    "award": 1600,
+    "deadline": "2025-09-24",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s149",
+    "name": "Barbara Johnson Legacy Award",
+    "award": 3600,
+    "deadline": "2025-11-11",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s150",
+    "name": "Metro Storage Solutions Grant",
+    "award": 2100,
+    "deadline": "2026-01-06",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s151",
+    "name": "Foundations for Success Program",
+    "award": 3800,
+    "deadline": "2025-12-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s152",
+    "name": "Country Kitchen Restaurant Award",
+    "award": 1200,
+    "deadline": "2026-02-05",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s153",
+    "name": "Thomas Lee Engineering Fund",
+    "award": 3200,
+    "deadline": "2025-10-07",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s154",
+    "name": "Speedy Glass Repair Scholarship",
+    "award": 1500,
+    "deadline": "2025-11-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s155",
+    "name": "Gateway to Tomorrow Grant",
+    "award": 2700,
+    "deadline": "2026-01-13",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s156",
+    "name": "Union Trust Bank Award",
+    "award": 3000,
+    "deadline": "2025-12-02",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s157",
+    "name": "Sandra Miller Memorial Scholarship",
+    "award": 3900,
+    "deadline": "2026-02-20",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s158",
+    "name": "Best Value Grocery Fund",
+    "award": 1000,
+    "deadline": "2025-09-16",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s159",
+    "name": "Leadership Excellence Award",
+    "award": 4600,
+    "deadline": "2025-10-31",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s160",
+    "name": "Downtown Barber Shop Grant",
+    "award": 1100,
+    "deadline": "2025-11-26",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s161",
+    "name": "James & Dorothy Wilson Foundation",
+    "award": 3700,
+    "deadline": "2026-01-21",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s162",
+    "name": "Reliable Moving Company Award",
+    "award": 1900,
+    "deadline": "2025-12-10",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s163",
+    "name": "Empowerment Scholarship Program",
+    "award": 3400,
+    "deadline": "2026-02-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s164",
+    "name": "Green Thumb Landscaping Fund",
+    "award": 1700,
+    "deadline": "2025-09-29",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s165",
+    "name": "Dr. Kevin Park Memorial Grant",
+    "award": 4100,
+    "deadline": "2025-11-07",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s166",
+    "name": "Quality Home Builders Award",
+    "award": 2500,
+    "deadline": "2026-01-03",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s167",
+    "name": "Promise Scholars Initiative",
+    "award": 3000,
+    "deadline": "2025-12-22",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s168",
+    "name": "Mike's Body Shop Scholarship",
+    "award": 1400,
+    "deadline": "2026-02-27",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s169",
+    "name": "Catherine Ross Education Fund",
+    "award": 3500,
+    "deadline": "2025-10-13",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s170",
+    "name": "Premier Security Systems Grant",
+    "award": 2300,
+    "deadline": "2025-11-20",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s171",
+    "name": "Building Futures Foundation",
+    "award": 3800,
+    "deadline": "2026-01-09",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s172",
+    "name": "Corner Mart Convenience Award",
+    "award": 1300,
+    "deadline": "2025-12-29",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s173",
+    "name": "Andrew Chang Memorial Scholarship",
+    "award": 3300,
+    "deadline": "2026-02-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s174",
+    "name": "Excel Accounting Services Fund",
+    "award": 2700,
+    "deadline": "2025-09-22",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s175",
+    "name": "Visionary Leaders Grant",
+    "award": 4300,
+    "deadline": "2025-11-01",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s176",
+    "name": "Family Cleaners Scholarship",
+    "award": 1600,
+    "deadline": "2026-01-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s177",
+    "name": "Paul & Nancy Martinez Foundation",
+    "award": 3600,
+    "deadline": "2025-12-04",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s178",
+    "name": "Rapid Repair Services Award",
+    "award": 2000,
+    "deadline": "2026-02-23",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s179",
+    "name": "Success Path Initiative",
+    "award": 3100,
+    "deadline": "2025-10-17",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s180",
+    "name": "Bella's Italian Restaurant Fund",
+    "award": 1800,
+    "deadline": "2025-11-12",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s181",
+    "name": "Dr. Lisa Anderson Memorial Grant",
+    "award": 4000,
+    "deadline": "2026-01-24",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s182",
+    "name": "Comfort Home Services Scholarship",
+    "award": 2200,
+    "deadline": "2025-12-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s183",
+    "name": "Endeavor Achievement Award",
+    "award": 3400,
+    "deadline": "2026-02-01",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s184",
+    "name": "Sam's Shoe Repair Fund",
+    "award": 1200,
+    "deadline": "2025-09-26",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s185",
+    "name": "Ruth Williams Education Award",
+    "award": 3700,
+    "deadline": "2025-11-23",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s186",
+    "name": "Allied Insurance Group Grant",
+    "award": 2800,
+    "deadline": "2026-01-27",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s187",
+    "name": "Milestone Scholars Program",
+    "award": 3200,
+    "deadline": "2025-12-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s188",
+    "name": "City Auto Parts Scholarship",
+    "award": 1500,
+    "deadline": "2026-02-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s189",
+    "name": "Daniel Kim Legacy Fund",
+    "award": 3900,
+    "deadline": "2025-10-09",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s190",
+    "name": "Professional Painters Award",
+    "award": 1700,
+    "deadline": "2025-11-14",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s191",
+    "name": "Opportunity Gateway Foundation",
+    "award": 3500,
+    "deadline": "2026-01-31",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s192",
+    "name": "Happy Paws Pet Store Grant",
+    "award": 1100,
+    "deadline": "2025-12-20",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s193",
+    "name": "Marie Thompson Memorial Award",
+    "award": 3300,
+    "deadline": "2026-02-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s194",
+    "name": "Value Furniture Warehouse Fund",
+    "award": 2100,
+    "deadline": "2025-09-14",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s195",
+    "name": "Academic Excellence Initiative",
+    "award": 4500,
+    "deadline": "2025-10-24",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s196",
+    "name": "Nick's Barbershop Scholarship",
+    "award": 1000,
+    "deadline": "2025-11-29",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s197",
+    "name": "Christopher & Susan Lee Foundation",
+    "award": 3800,
+    "deadline": "2026-01-18",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s198",
+    "name": "FastLane Delivery Services Award",
+    "award": 2400,
+    "deadline": "2025-12-31",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s199",
+    "name": "Transform Tomorrow Grant",
+    "award": 3600,
+    "deadline": "2026-02-26",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s200",
+    "name": "Suburban Lawn Care Fund",
+    "award": 1900,
+    "deadline": "2025-10-01",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s201",
+    "name": "Dr. Jeffrey Brown Memorial Scholarship",
+    "award": 4200,
+    "deadline": "2025-11-05",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s202",
+    "name": "Precision Automotive Grant",
+    "award": 2600,
+    "deadline": "2026-01-10",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s203",
+    "name": "Aspiring Scholars Award",
+    "award": 3100,
+    "deadline": "2025-12-19",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s204",
+    "name": "Al's Hardware Store Fund",
+    "award": 1400,
+    "deadline": "2026-02-03",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s205",
+    "name": "Patricia Yang Education Grant",
+    "award": 3700,
+    "deadline": "2025-09-17",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s206",
+    "name": "Summit Financial Advisors Award",
+    "award": 3200,
+    "deadline": "2025-10-28",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s207",
+    "name": "Empowering Futures Foundation",
+    "award": 3900,
+    "deadline": "2025-11-17",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s208",
+    "name": "Family Dollar Store Scholarship",
+    "award": 1200,
+    "deadline": "2026-01-02",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s209",
+    "name": "Steven Rodriguez Memorial Award",
+    "award": 3400,
+    "deadline": "2025-12-11",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s210",
+    "name": "Quality Carpets & Flooring Grant",
+    "award": 1800,
+    "deadline": "2026-02-21",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s211",
+    "name": "Reaching Higher Initiative",
+    "award": 3500,
+    "deadline": "2025-10-06",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s212",
+    "name": "Lou's Diner Scholarship Fund",
+    "award": 1300,
+    "deadline": "2025-11-10",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s213",
+    "name": "Nancy Peterson Legacy Grant",
+    "award": 3800,
+    "deadline": "2026-01-15",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s214",
+    "name": "Supreme Cleaning Services Award",
+    "award": 1600,
+    "deadline": "2025-12-24",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s215",
+    "name": "Vision Quest Scholarship",
+    "award": 4000,
+    "deadline": "2026-02-09",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s216",
+    "name": "Neighborhood Watch Fund",
+    "award": 2300,
+    "deadline": "2025-09-21",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s217",
+    "name": "Mark & Jennifer Walsh Foundation",
+    "award": 3600,
+    "deadline": "2025-11-02",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s218",
+    "name": "Speedy Print & Copy Grant",
+    "award": 2000,
+    "deadline": "2026-01-19",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s219",
+    "name": "Achievement Unlocked Award",
+    "award": 3300,
+    "deadline": "2025-12-30",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s220",
+    "name": "Mario's Pizzeria Scholarship",
+    "award": 1500,
+    "deadline": "2026-02-14",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s221",
+    "name": "Dr. Amanda Chen Memorial Fund",
+    "award": 4400,
+    "deadline": "2025-10-11",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s222",
+    "name": "Reliable Roofing Company Award",
+    "award": 2100,
+    "deadline": "2025-11-15",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s223",
+    "name": "Trailblazer Scholarship Program",
+    "award": 3700,
+    "deadline": "2026-01-06",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s224",
+    "name": "City Convenience Store Fund",
+    "award": 1100,
+    "deadline": "2025-12-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s225",
+    "name": "Richard Lopez Education Grant",
+    "award": 3200,
+    "deadline": "2026-02-28",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s226",
+    "name": "Premier Pest Control Award",
+    "award": 1700,
+    "deadline": "2025-09-13",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s227",
+    "name": "Soaring Eagles Foundation",
+    "award": 3900,
+    "deadline": "2025-10-20",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s228",
+    "name": "Frankie's Auto Glass Scholarship",
+    "award": 1400,
+    "deadline": "2025-11-25",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s229",
+    "name": "Linda Harrison Memorial Award",
+    "award": 3500,
+    "deadline": "2026-01-13",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s230",
+    "name": "Westside Insurance Agency Grant",
+    "award": 2700,
+    "deadline": "2025-12-26",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s231",
+    "name": "Limitless Potential Scholarship",
+    "award": 4100,
+    "deadline": "2026-02-06",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s232",
+    "name": "Bob's Appliance Repair Fund",
+    "award": 1300,
+    "deadline": "2025-09-25",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s233",
+    "name": "Gregory & Martha Liu Foundation",
+    "award": 3800,
+    "deadline": "2025-11-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s234",
+    "name": "Express Oil Change Award",
+    "award": 1900,
+    "deadline": "2026-01-22",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s235",
+    "name": "Destiny Achievers Grant",
+    "award": 3300,
+    "deadline": "2025-12-03",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s236",
+    "name": "Plaza Dental Care Scholarship",
+    "award": 2500,
+    "deadline": "2026-02-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s237",
+    "name": "Joseph Martinez Memorial Fund",
+    "award": 3600,
+    "deadline": "2025-10-04",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s238",
+    "name": "Quick & Clean Laundry Award",
+    "award": 1200,
+    "deadline": "2025-11-19",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s239",
+    "name": "Educational Excellence Initiative",
+    "award": 4300,
+    "deadline": "2026-01-01",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s240",
+    "name": "Main Street Market Grant",
+    "award": 1600,
+    "deadline": "2025-12-13",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s241",
+    "name": "Sharon Wong Legacy Scholarship",
+    "award": 3400,
+    "deadline": "2026-02-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s242",
+    "name": "Elite Moving Services Fund",
+    "award": 2200,
+    "deadline": "2025-09-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s243",
+    "name": "Breakthrough Success Award",
+    "award": 3700,
+    "deadline": "2025-10-30",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s244",
+    "name": "Tony's Taco Stand Scholarship",
+    "award": 1000,
+    "deadline": "2025-11-13",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s245",
+    "name": "Dr. Kenneth Park Memorial Grant",
+    "award": 4500,
+    "deadline": "2026-01-09",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s246",
+    "name": "Superior Home Services Award",
+    "award": 2400,
+    "deadline": "2025-12-21",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s247",
+    "name": "Rising Tide Foundation",
+    "award": 3100,
+    "deadline": "2026-02-04",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s248",
+    "name": "Phil's Fix-It Shop Fund",
+    "award": 1500,
+    "deadline": "2025-09-07",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s249",
+    "name": "Barbara Kim Education Award",
+    "award": 3900,
+    "deadline": "2025-10-19",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s250",
+    "name": "Central City Bank Scholarship",
+    "award": 2800,
+    "deadline": "2025-11-24",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s251",
+    "name": "Pinnacle Achievement Grant",
+    "award": 4000,
+    "deadline": "2026-01-16",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s252",
+    "name": "Jenny's Nail Salon Award",
+    "award": 1100,
+    "deadline": "2025-12-28",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s253",
+    "name": "Charles & Emma Davis Foundation",
+    "award": 3600,
+    "deadline": "2026-02-11",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s254",
+    "name": "Lightning Fast Internet Fund",
+    "award": 2300,
+    "deadline": "2025-09-30",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s255",
+    "name": "Illuminate Tomorrow Scholarship",
+    "award": 3500,
+    "deadline": "2025-11-06",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s256",
+    "name": "Eddie's Electronics Store Grant",
+    "award": 1800,
+    "deadline": "2026-01-23",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s257",
+    "name": "Michelle Taylor Memorial Award",
+    "award": 3300,
+    "deadline": "2025-12-07",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s258",
+    "name": "Ace Accounting Firm Fund",
+    "award": 2600,
+    "deadline": "2026-02-19",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s259",
+    "name": "Boundless Dreams Initiative",
+    "award": 3800,
+    "deadline": "2025-10-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s260",
+    "name": "Kim's Korean BBQ Scholarship",
+    "award": 1400,
+    "deadline": "2025-11-21",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s261",
+    "name": "Dr. Robert Johnson Legacy Grant",
+    "award": 4200,
+    "deadline": "2026-01-30",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s262",
+    "name": "Premium Car Wash Award",
+    "award": 1700,
+    "deadline": "2025-12-16",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s263",
+    "name": "Stepping Stones Foundation",
+    "award": 3200,
+    "deadline": "2026-02-02",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s264",
+    "name": "Dave's Bike Shop Fund",
+    "award": 1300,
+    "deadline": "2025-09-12",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s265",
+    "name": "Jennifer Chang Memorial Scholarship",
+    "award": 3700,
+    "deadline": "2025-10-27",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s266",
+    "name": "United Storage Solutions Grant",
+    "award": 2100,
+    "deadline": "2025-11-03",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s267",
+    "name": "Accelerate Success Award",
+    "award": 3900,
+    "deadline": "2026-01-12",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s268",
+    "name": "Rosa's Flower Shop Scholarship",
+    "award": 1200,
+    "deadline": "2025-12-25",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s269",
+    "name": "Timothy Wilson Education Fund",
+    "award": 3400,
+    "deadline": "2026-02-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s270",
+    "name": "Expert Plumbing Services Award",
+    "award": 1900,
+    "deadline": "2025-09-23",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s271",
+    "name": "Horizon Breakers Initiative",
+    "award": 4100,
+    "deadline": "2025-11-16",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s272",
+    "name": "Larry's Lawn Equipment Grant",
+    "award": 1600,
+    "deadline": "2026-01-04",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s273",
+    "name": "Susan Martinez Memorial Award",
+    "award": 3800,
+    "deadline": "2025-12-18",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s274",
+    "name": "Capital Investment Group Fund",
+    "award": 3000,
+    "deadline": "2026-02-07",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s275",
+    "name": "Beacon of Hope Scholarship",
+    "award": 3500,
+    "deadline": "2025-10-10",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s276",
+    "name": "Stan's Sandwich Shop Award",
+    "award": 1000,
+    "deadline": "2025-11-09",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s277",
+    "name": "Dr. Carol Lee Foundation Grant",
+    "award": 4400,
+    "deadline": "2026-01-21",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s278",
+    "name": "Quick Service HVAC Fund",
+    "award": 2200,
+    "deadline": "2025-12-02",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s279",
+    "name": "Forward Momentum Award",
+    "award": 3300,
+    "deadline": "2026-02-24",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s280",
+    "name": "Gina's Beauty Supply Scholarship",
+    "award": 1500,
+    "deadline": "2025-09-28",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s281",
+    "name": "Raymond Thompson Legacy Fund",
+    "award": 3600,
+    "deadline": "2025-11-01",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s282",
+    "name": "Reliable Electric Company Grant",
+    "award": 2500,
+    "deadline": "2026-01-14",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s283",
+    "name": "Shining Stars Initiative",
+    "award": 3900,
+    "deadline": "2025-12-09",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s284",
+    "name": "Paul's Pizza Palace Award",
+    "award": 1300,
+    "deadline": "2026-02-13",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s285",
+    "name": "Elizabeth Chen Memorial Scholarship",
+    "award": 3700,
+    "deadline": "2025-10-02",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s286",
+    "name": "Metro Medical Supply Fund",
+    "award": 2700,
+    "deadline": "2025-11-18",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s287",
+    "name": "Gateway Achievement Grant",
+    "award": 4000,
+    "deadline": "2026-01-26",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s288",
+    "name": "Juan's Auto Body Shop Award",
+    "award": 1800,
+    "deadline": "2025-12-22",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s289",
+    "name": "Christina Wong Education Fund",
+    "award": 3200,
+    "deadline": "2026-02-05",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s290",
+    "name": "Speedy Delivery Express Grant",
+    "award": 2000,
+    "deadline": "2025-09-15",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s291",
+    "name": "Catalyst for Change Scholarship",
+    "award": 3800,
+    "deadline": "2025-10-22",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s292",
+    "name": "Mike's Muffler Shop Fund",
+    "award": 1400,
+    "deadline": "2025-11-11",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s293",
+    "name": "Dr. Patricia Davis Memorial Award",
+    "award": 4300,
+    "deadline": "2026-01-08",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s294",
+    "name": "Suburban Security Systems Grant",
+    "award": 2400,
+    "deadline": "2025-12-14",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s295",
+    "name": "Ascend Higher Initiative",
+    "award": 3500,
+    "deadline": "2026-02-20",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s296",
+    "name": "Lee's Liquor Store Scholarship",
+    "award": 1100,
+    "deadline": "2025-09-20",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s297",
+    "name": "Jonathan & Amy Miller Foundation",
+    "award": 3900,
+    "deadline": "2025-11-07",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s298",
+    "name": "Value Printing Services Award",
+    "award": 1700,
+    "deadline": "2026-01-17",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s299",
+    "name": "Dream Builders Scholarship",
+    "award": 3300,
+    "deadline": "2025-12-29",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s300",
+    "name": "Family Foods Market Fund",
+    "award": 1500,
+    "deadline": "2026-02-10",
+    "essayRequired": false,
+    "transcriptRequired": true
+  }, 
+  {
+    "id": "s301",
+    "name": "Marcus Bradley Memorial Fund",
+    "award": 3200,
+    "deadline": "2025-10-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s302",
+    "name": "Riverside Automotive Excellence Award",
+    "award": 2600,
+    "deadline": "2025-11-30",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s303",
+    "name": "Golden Opportunity Grant",
+    "award": 4100,
+    "deadline": "2026-01-25",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s304",
+    "name": "Pete's Deli & Catering Scholarship",
+    "award": 1300,
+    "deadline": "2025-12-08",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s305",
+    "name": "Dr. Angela Patel Foundation",
+    "award": 4700,
+    "deadline": "2026-02-16",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s306",
+    "name": "TownSquare Insurance Partners Grant",
+    "award": 2900,
+    "deadline": "2025-09-25",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s307",
+    "name": "Elevate & Inspire Initiative",
+    "award": 3500,
+    "deadline": "2025-11-14",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s308",
+    "name": "Sam's Appliance World Fund",
+    "award": 1800,
+    "deadline": "2026-01-03",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s309",
+    "name": "Dorothy Nakamura Legacy Award",
+    "award": 3700,
+    "deadline": "2025-12-19",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s310",
+    "name": "Precision Glass & Mirror Scholarship",
+    "award": 2200,
+    "deadline": "2026-02-28",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+  {
+    "id": "s311",
+    "name": "Next Chapter Foundation",
+    "award": 3300,
+    "deadline": "2025-10-18",
+    "essayRequired": true,
+    "transcriptRequired": true
+  },
+  {
+    "id": "s312",
+    "name": "Valley Fresh Dry Cleaning Grant",
+    "award": 1500,
+    "deadline": "2025-11-22",
     "essayRequired": false,
     "transcriptRequired": false
   }

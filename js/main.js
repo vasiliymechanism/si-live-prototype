@@ -124,7 +124,7 @@ async function boot() {
     initScholarships();
     console.log('[app] Scholarship engine initialized.');
     await runOnboarding();
-    baselineFromStore({ animate: false });
+    // baselineFromStore({ animate: false }); // Commented out to prevent metrics reset
     console.log('[app] Onboarding flow completed.');
 
     store.phase = 'steady';
@@ -166,9 +166,9 @@ async function boot() {
       document.querySelectorAll('.searching-state').forEach(el => { el.style.display = 'none'; });
 
       // 2) Render metrics (if you already have some)
-      if (!store.metrics || !Number.isFinite(store.metrics.matches)) {
-        store.metrics = { matches: 0, potentialAwards: 0, started: 0, readyNow: 0, nextDeadline: null, timeSavedMin: 0 };
-      }
+    // if (!store.metrics || !Number.isFinite(store.metrics.matches)) {
+    //   store.metrics = { matches: 0, potentialAwards: 0, started: 0, readyNow: 0, nextDeadline: null, timeSavedMin: 0 };
+    // }
       UI.renderMetrics();
 
       // 3) Decide what to render in the feed

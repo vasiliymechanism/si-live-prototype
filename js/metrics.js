@@ -83,7 +83,23 @@ function onAdvanced({ id, from, to }) {
   const changed = [];
 
   // --- MATCHED STATES LOGIC ---
-  const MATCHED_STATES = ['matched', 'confirmEligibility', 'readyToSubmit', 'submitted'];
+  const MATCHED_STATES = [
+    'potentialMatch',
+    'vetEligibility',
+    'confirmEligibility',
+    'eligible',
+    'buildPackage',
+    'autofillCore',
+    'draftEssays',
+    'gatherMissingData',
+    'readinessDecision',
+    'readyPendingMinorDetails',
+    'readyPendingDocs',
+    'readyPendingBoth',
+    'preSubmitChecks',
+    'readyPendingTrial',
+    'submitted'
+  ];
   if (MATCHED_STATES.includes(to) && !countedMatch.has(id)) {
     countedMatch.add(id);
     store.metrics.matches = (store.metrics.matches || 0) + 1;
@@ -104,22 +120,30 @@ function onAdvanced({ id, from, to }) {
   }
 
   // Apps started: first-time reach confirmEligibility
-  if (to === 'confirmEligibility' && !countedStarted.has(id)) {
+  if (to === 'eligible' && !countedStarted.has(id)) {
     countedStarted.add(id);
     store.metrics.started = (store.metrics.started || 0) + 1;
     changed.push('started');
     console.log(`[metrics] Scholarship ${id} entered confirmEligibility. started=${store.metrics.started}`);
   }
 
-  // Ready now: first-time reach readyToSubmit
-  if (to === 'readyToSubmit') {
+  // Ready now: first-time reach any ready_now_state
+  const READY_NOW_STATES = [
+    'readyPendingMinorDetails',
+    'readyPendingDocs',
+    'readyPendingBoth',
+    'preSubmitChecks',
+    'readyPendingTrial',
+    'submitted'
+  ];
+  if (READY_NOW_STATES.includes(to)) {
     if (!countedReadyNow.has(id)) {
       countedReadyNow.add(id);
       store.metrics.readyNow = (store.metrics.readyNow || 0) + 1;
       changed.push('readyNow');
-      console.log(`[metrics] Scholarship ${id} entered readyToSubmit. readyNow=${store.metrics.readyNow}`);
+      console.log(`[metrics] Scholarship ${id} entered ${to}. readyNow=${store.metrics.readyNow}`);
     } else {
-      console.log(`[metrics] Scholarship ${id} entered readyToSubmit but was already counted.`);
+      console.log(`[metrics] Scholarship ${id} entered ${to} but was already counted.`);
     }
   }
 
@@ -167,7 +191,18 @@ export function baselineFromStore({ animate = false } = {}) {
     }
 
     // ready now (current or previously visited; you might prefer only current)
-    if (s.state === 'readyToSubmit' || s._visited?.has('readyToSubmit')) {
+    const READY_NOW_STATES = [
+      'readyPendingMinorDetails',
+      'readyPendingDocs',
+      'readyPendingBoth',
+      'preSubmitChecks',
+      'readyPendingTrial',
+      'submitted'
+    ];
+    if (
+      READY_NOW_STATES.includes(s.state) ||
+      (s._visited && [...s._visited].some(st => READY_NOW_STATES.includes(st)))
+    ) {
       countedReadyNow.add(s.id);
       m.readyNow += 1;
     }

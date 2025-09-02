@@ -41,7 +41,7 @@
         // "includeProb": true and set "prob" on each pool item (engine supports both).
         "pool": [
           { "id": "updateProfileViaQuiz",       "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" },
-          { "id": "gpaEntered",                 "type": "userField",  "weight": 0.1, "actionType": "inputGPA", "field": "gpa" },
+          { "id": "gpaEntered",                 "type": "userField",  "weight": 0.1, "actionType": "gpaEntered", "field": "gpa" },
           { "id": "currentSchoolLevelEntered",  "type": "userField", "weight": 0.4, "actionType": "inputCurrentSchoolLevel", "field": "currentSchoolLevel" },
           { "id": "genderEntered",              "type": "userField", "weight": 0.01, "actionType": "inputGender", "field": "gender" }
         ]

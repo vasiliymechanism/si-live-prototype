@@ -40,10 +40,10 @@
         // If you prefer independent probabilities instead of "pick", you can use:
         // "includeProb": true and set "prob" on each pool item (engine supports both).
         "pool": [
-          { "id": "updateProfileViaQuiz",       "type": "custom",     "weight": 1.0, "actionType": "updateProfileViaQuiz" }
-          // , { "id": "gpaEntered",                 "type": "userField",  "weight": 0.03, "actionType": "inputGPA", "field": "gpa" }
-          // , { "id": "currentSchoolLevelEntered",  "type": "userField", "weight": 0.04, "actionType": "inputCurrentSchoolLevel", "field": "currentSchoolLevel" }
-          // , { "id": "genderEntered",              "type": "userField", "weight": 0.01, "actionType": "inputGender", "field": "gender" }
+          { "id": "updateProfileViaQuiz",       "type": "custom",     "weight": 0.5, "actionType": "updateProfileViaQuiz" }
+          , { "id": "gpaEntered",                 "type": "userField",  "weight": 0.10, "actionType": "gpaEntered", "field": "gpa" }
+          , { "id": "currentSchoolLevelEntered",  "type": "userField", "weight": 0.30, "actionType": "currentSchoolLevelEntered", "field": "currentSchoolLevel" }
+          , { "id": "genderEntered",              "type": "userField", "weight": 0.10, "actionType": "inputGender", "field": "gender" }
         ]
       },
       "next": [
@@ -135,7 +135,7 @@
         // If you prefer independent probabilities instead of "pick", you can use:
         // "includeProb": true and set "prob" on each pool item (engine supports both).
         "pool": [
-          { "id": "financialAidAddressEntered", "type": "userField", "weight": 0.05, "actionType": "inputFinancialAidAddress", "field": "financialAidAddress" },
+          { "id": "financialAidAddressEntered", "type": "userField", "weight": 0.05, "actionType": "enterFinancialAidAddress", "field": "financialAidAddress" },
           { "id": "homeAddressEntered",         "type": "userField", "weight": 0.25, "actionType": "inputHomeAddress", "field": "homeAddress" },
           { "id": "phoneNumberEntered",         "type": "userField", "weight": 0.10, "actionType": "inputPhoneNumber", "field": "phoneNumber" },
           { "id": "emailEntered",               "type": "userField", "weight": 0.60, "actionType": "inputEmail", "field": "email" }
@@ -237,5 +237,18 @@
   //     },
   //     "next": "preSubmitChecks"
   //   }
+  },
+  "timeSavedMinRangeByState": {
+    "potentialMatch": [14, 17],
+    "vetEligibility": [8, 11],
+    "buildPackage": [22, 28],
+    "autofillCore": [5, 7],
+    "draftEssays": [54, 133],
+    "readyPendingMinorDetails": [10, 15],
+    "readyPendingDocs": [10, 15],
+    "readyPendingBoth": [12, 18],
+    "preSubmitChecks": [8, 12],
+    "readyPendingTrial": [6, 10],
+    "submitted": [4, 8]
   }
 }

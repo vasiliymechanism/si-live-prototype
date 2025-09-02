@@ -1,0 +1,309 @@
+[
+  {
+    "id": "s001",
+    "name": "Future Leaders Scholarship",
+    "award": 2500,
+    "deadline": "2025-09-10",
+    "essayRequired": true,
+    "transcriptRequired": false,
+    // Scripted: requires quiz only at confirmEligibility
+    "script": [
+      { "state": "potentialMatch", "durationMs": 1500 },
+      { "state": "vetEligibility", "durationMs": 6000 },
+      {
+        "state": "confirmEligibility",
+        "durationMs": 1000,
+        "blockers": [
+          { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" }
+        ]
+      },
+      { "state": "eligible", "durationMs": 1000 },
+      { "state": "buildPackage", "durationMs": 4000 },
+      { "state": "autofillCore", "durationMs": 3000 },
+      { "state": "draftEssays", "durationMs": 5000 },
+      { "state": "preSubmitChecks", "durationMs": 2000 },
+      { "state": "readyPendingTrial", "durationMs": 2000 },
+      { "state": "submitted", "durationMs": 15000 }
+    ],
+    "minutesByState": {
+      "potentialMatch": 2,
+      "vetEligibility": 4,
+      "confirmEligibility": 3,
+      "buildPackage": 15,
+      "autofillCore": 4,
+      "draftEssays": 47,
+      "preSubmitChecks": 2,
+      "readyPendingTrial": 6,
+      "submitted": 3
+    }
+  },
+
+  {
+    "id": "s002",
+    "name": "STEM Excellence Grant",
+    "award": 5000,
+    "deadline": "2025-10-31",
+    "essayRequired": false,
+    "transcriptRequired": true,
+    // Scripted: requires quiz + transcript (ALL required; already-satisfied ignored)
+    "script": [
+      { "state": "scanning" },
+      { "state": "analyzing" },
+      {
+        "state": "confirmEligibility",
+        "blockers": [
+          { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
+          { "id": "gpaEntered",   "type": "userField",   "actionType": "gpaEntered", "field": "gpa"}
+        ]
+      },
+      { "state": "readyToSubmit" },
+      { "state": "submitted" }
+    ]
+  },
+
+  {
+    "id": "s003",
+    "name": "Community Builders Award",
+    "award": 1500,
+    "deadline": "2026-01-15",
+    "essayRequired": true,
+    "transcriptRequired": false
+    // No script → random machine (may choose 1–2 blockers from the pool)
+  },
+
+  {
+    "id": "s004",
+    "name": "First-Gen Scholars Fund",
+    "award": 3000,
+    "deadline": "2025-12-05",
+    "essayRequired": false,
+    "transcriptRequired": true,
+    // Scripted: transcript only
+    "script": [
+      { "state": "matched" },
+      {
+        "state": "confirmEligibility"
+        //, "blockers": [
+        //   { "id": "transcriptUploaded", "type": "userField", "actionType": "uploadTranscript", "field": "transcript" }
+        // ]
+      },
+      { "state": "readyToSubmit" },
+      { "state": "submitted" }
+    ]
+  },
+
+  {
+    "id": "s005",
+    "name": "Women in Tech Scholarship",
+    "award": 4000,
+    "deadline": "2025-11-20",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s006",
+    "name": "Arts & Design Fellowship",
+    "award": 3500,
+    "deadline": "2025-11-08",
+    "essayRequired": true,
+    "transcriptRequired": false,
+    // Scripted: a simple “start later” path
+    "script": [
+      { "state": "analyzing" },
+      { "state": "matched" },
+      { "state": "confirmEligibility" },
+      { "state": "readyToSubmit" },
+      { "state": "submitted" }
+    ]
+  },
+
+  {
+    "id": "s007",
+    "name": "Healthcare Horizons Grant",
+    "award": 4500,
+    "deadline": "2025-12-12",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+
+  {
+    "id": "s008",
+    "name": "Green Future Scholarship",
+    "award": 2000,
+    "deadline": "2026-02-01",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s009",
+    "name": "Entrepreneur Launchpad Award",
+    "award": 5000,
+    "deadline": "2026-03-01",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s010",
+    "name": "Data Science Merit",
+    "award": 3000,
+    "deadline": "2025-12-30",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+
+  {
+    "id": "s011",
+    "name": "Public Service Scholarship",
+    "award": 2500,
+    "deadline": "2025-11-28",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s012",
+    "name": "Global Citizen Grant",
+    "award": 3500,
+    "deadline": "2026-01-20",
+    "essayRequired": true,
+    "transcriptRequired": false,
+    // Scripted: recommendation letter required
+    "script": [
+      { "state": "matched" },
+      {
+        "state": "confirmEligibility"
+        // , "blockers": [
+        //   { "id": "recommendationUploaded", "type": "userField", "actionType": "uploadRecommendation", "field": "recommendation" }
+        // ]
+      },
+      { "state": "readyToSubmit" },
+      { "state": "submitted" }
+    ]
+  },
+
+  {
+    "id": "s013",
+    "name": "Cybersecurity Pioneers",
+    "award": 4000,
+    "deadline": "2026-01-05",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s014",
+    "name": "Robotics Innovators",
+    "award": 5000,
+    "deadline": "2025-09-10",
+    "essayRequired": true,
+    "transcriptRequired": true,
+    // Scripted: quiz + essay (ALL)
+    "script": [
+      { "state": "scanning" },
+      { "state": "analyzing" },
+      {
+        "state": "confirmEligibility",
+        "blockers": [
+          { "id": "updateProfileViaQuiz", "type": "custom", "actionType": "updateProfileViaQuiz" },
+          { "id": "gpaEntered", "type": "userField", "actionType": "gpaEntered", "field": "gpa" }
+          // { "id": "essayUploaded",       "type": "userField",   "actionType": "uploadEssay", "field": "essay" }
+        ]
+      },
+      { "state": "readyToSubmit" },
+      { "state": "submitted" }
+    ]
+  },
+
+  {
+    "id": "s015",
+    "name": "Humanities Research Grant",
+    "award": 1500,
+    "deadline": "2026-02-14",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s016",
+    "name": "Athletic Scholar Award",
+    "award": 2000,
+    "deadline": "2025-11-10",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+
+  {
+    "id": "s017",
+    "name": "Journalism Rising Star",
+    "award": 2500,
+    "deadline": "2026-01-12",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s018",
+    "name": "Teachers of Tomorrow",
+    "award": 3000,
+    "deadline": "2025-12-02",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s019",
+    "name": "Veterans Education Aid",
+    "award": 4000,
+    "deadline": "2026-02-28",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+
+  {
+    "id": "s020",
+    "name": "Rural Access Scholarship",
+    "award": 2500,
+    "deadline": "2026-01-22",
+    "essayRequired": false,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s021",
+    "name": "Environmental Justice Grant",
+    "award": 3500,
+    "deadline": "2026-03-01",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s022",
+    "name": "Accessibility in Tech",
+    "award": 3000,
+    "deadline": "2025-12-18",
+    "essayRequired": false,
+    "transcriptRequired": true
+  },
+
+  {
+    "id": "s023",
+    "name": "Space & Astronomy Award",
+    "award": 4500,
+    "deadline": "2026-02-05",
+    "essayRequired": true,
+    "transcriptRequired": false
+  },
+
+  {
+    "id": "s024",
+    "name": "Finance Future Leaders",
+    "award": 4000,
+    "deadline": "2025-12-22",
+    "essayRequired": false,
+    "transcriptRequired": false
+  }
+]

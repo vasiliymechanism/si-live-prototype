@@ -1,67 +1,1661 @@
 {
-  "vars": { "gpa": null, "us_citizen": null, "sports": [], "gradYear": null },
-  "start": "q_welcome",
+  "vars": {
+    "journey_stage": null,
+    "enrolled": null,
+    "student_type": null,
+    "degree_type": null,
+    "currentSchoolLevel": null,
+    "graduation_year": null,
+    "graduation_month": null,
+    "full_time": null,
+    "major_declared": null,
+    "major": null,
+    "gpa": null,
+    "gpa_scale": null,
+    "class_rank": null,
+    "us_citizen": null,
+    "residency_status": null,
+    "state": null,
+    "county": null,
+    "city_type": null,
+    "age": null,
+    "gender": null,
+    "ethnicity": [],
+    "first_gen": null,
+    "parent_college": null,
+    "military_affiliated": null,
+    "military_branch": null,
+    "disability": null,
+    "financial_need": null,
+    "household_income": null,
+    "family_size": null,
+    "sports": [],
+    "sport_level": null,
+    "activities": [],
+    "leadership": null,
+    "volunteer": null,
+    "volunteer_hours": null,
+    "work": null,
+    "hours_per_week": null,
+    "career_interest": null,
+    "college_list": [],
+    "college_type_pref": null,
+    "college_size_pref": null,
+    "sat_taken": null,
+    "sat_score": null,
+    "act_taken": null,
+    "act_score": null,
+    "ap_courses": null,
+    "num_ap_courses": null,
+    "honors_courses": null,
+    "awards": null,
+    "special_circumstances": [],
+    "email": null,
+    "phone": null,
+    "transcript": null,
+    "resume": null,
+    "terms_accepted": null,
+    "leadership_details": null,
+    "research_details": null,
+    "internship_details": null,
+    "study_abroad_details": null,
+    "honors_program_details": null,
+    "grad_research_details": null,
+    "teaching_assistant_details": null,
+    "publications_details": null
+  },
+  "start": "q_journey",
   "questions": {
-    "q_welcome": {
-      "type": "interstitial",
-      "title": "Let’s customize your matches",
-      "subtitle": "60 seconds. No trick questions.",
-      "next": "q_citizen",
-      "quizQuestionNumber": 1
+    "q_journey": {
+      "type": "single",
+      "var": "journey_stage",
+      "title": "Where are you in your education?",
+      "choices": [
+        {"label": "In high school", "value": "high_school"},
+        {"label": "Starting college soon", "value": "pre_college"},
+        {"label": "In college", "value": "college"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "journey_stage"}, "high_school"]}, "q_hs_grade",
+          {"==": [{"var": "journey_stage"}, "pre_college"]}, "q_pre_graduation_year",
+          {"==": [{"var": "journey_stage"}, "college"]}, "q_college_type",
+          "q_unsure_enrolled"
+        ]
+      }
     },
-    "q_citizen": {
+    
+    "q_hs_grade": {
+      "type": "single",
+      "var": "currentSchoolLevel",
+      "title": "What grade are you in?",
+      "choices": [
+        {"label": "9th grade", "value": "hs_9"},
+        {"label": "10th grade", "value": "hs_10"},
+        {"label": "11th grade", "value": "hs_11"},
+        {"label": "12th grade", "value": "hs_12"}
+      ],
+      "next": "q_hs_graduation_year"
+    },
+    
+    "q_hs_graduation_year": {
+      "type": "single",
+      "var": "graduation_year",
+      "title": "When will you graduate?",
+      "choices": [
+        {"label": "2025", "value": 2025},
+        {"label": "2026", "value": 2026},
+        {"label": "2027", "value": 2027},
+        {"label": "2028", "value": 2028}
+      ],
+      "next": "q_hs_gpa"
+    },
+    
+    "q_hs_gpa": {
+      "type": "single",
+      "var": "gpa",
+      "title": "What's your current GPA?",
+      "choices": [
+        {"label": "3.5 or higher", "value": "3.5+"},
+        {"label": "3.0 - 3.49", "value": "3.0-3.49"},
+        {"label": "2.5 - 2.99", "value": "2.5-2.99"},
+        {"label": "Below 2.5", "value": "<2.5"}
+      ],
+      "next": "q_hs_citizen"
+    },
+    
+    "q_hs_citizen": {
       "type": "single",
       "var": "us_citizen",
       "title": "Are you a U.S. citizen?",
-      "choices": [{"label":"Yes","value":true},{"label":"No","value":false},{"label":"Not sure","value":null}],
-      "next": "q_gpa",
-      "quizQuestionNumber": 2
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Not sure", "value": null}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "us_citizen"}, false]}, "q_hs_residency",
+          "q_hs_state"
+        ]
+      }
     },
-    "q_gpa": {
+    
+    "q_hs_residency": {
+      "type": "single",
+      "var": "residency_status",
+      "title": "What's your residency status?",
+      "choices": [
+        {"label": "Permanent resident", "value": "permanent"},
+        {"label": "DACA", "value": "daca"},
+        {"label": "International student", "value": "international"},
+        {"label": "Other", "value": "other"}
+      ],
+      "next": "q_hs_state"
+    },
+    
+    "q_hs_state": {
       "type": "short",
-      "var": "gpa",
-      "title": "What’s your GPA? (unweighted)",
-      "placeholder": "e.g., 3.6",
-      "validate": { ">=": [ { "var": "value" }, 0 ], "<=": [ { "var": "value" }, 4.0 ] },
-      "next": { "if": [{ ">=": [ { "var": "gpa" }, 3.5 ] }, "q_sports", "q_grad"] },
-      "quizQuestionNumber": 3
+      "var": "state",
+      "title": "What state do you live in?",
+      "placeholder": "e.g., California",
+      "next": "q_hs_sports"
     },
-    "q_sports": {
-      "type": "multi",
-      "var": "sports",
+    
+    "q_hs_sports": {
+      "type": "single",
+      "var": "sports_participation",
       "title": "Do you play any sports?",
-      "choices": ["Basketball","Soccer","Track","Other"],
-      "next": "q_grad",
-      "quizQuestionNumber": 4
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "sports_participation"}, true]}, "q_hs_sport_type",
+          "q_hs_activities"
+        ]
+      }
     },
-    "q_grad": {
-      "type": "date",
-      "var": "gradYear",
-      "title": "When do you graduate high school?",
-      "next": "q_transcript",
-      "quizQuestionNumber": 5
+    
+    "q_hs_sport_type": {
+      "type": "short",
+      "var": "sports",
+      "title": "Which sports do you play?",
+      "placeholder": "e.g., Basketball, Soccer",
+      "next": "q_hs_sport_level"
     },
-    "q_transcript": {
+    
+    "q_hs_sport_level": {
+      "type": "single",
+      "var": "sport_level",
+      "title": "What level do you compete at?",
+      "choices": [
+        {"label": "Varsity", "value": "varsity"},
+        {"label": "JV", "value": "jv"},
+        {"label": "Club/Travel", "value": "club"},
+        {"label": "Recreational", "value": "rec"}
+      ],
+      "next": "q_hs_activities"
+    },
+    
+    "q_hs_activities": {
+      "type": "single",
+      "var": "activities_participation",
+      "title": "Are you in any clubs or activities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "activities_participation"}, true]}, "q_hs_activity_type",
+          "q_hs_work"
+        ]
+      }
+    },
+    
+    "q_hs_activity_type": {
+      "type": "short",
+      "var": "activities",
+      "title": "What clubs or activities are you in?",
+      "placeholder": "e.g., Academic clubs, Arts/Music",
+      "next": "q_hs_leadership"
+    },
+    
+    "q_hs_leadership": {
+      "type": "single",
+      "var": "leadership",
+      "title": "Do you hold any leadership positions?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "leadership"}, true]}, "q_hs_leadership_details",
+          "q_hs_work"
+        ]
+      }
+    },
+
+    "q_hs_leadership_details": {
+      "type": "short",
+      "var": "leadership_details",
+      "title": "Please describe your leadership role(s).",
+      "placeholder": "e.g., President of Student Government, Captain of soccer team",
+      "next": "q_hs_work"
+    },
+    
+    "q_hs_work": {
+      "type": "single",
+      "var": "work",
+      "title": "Do you have a job?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "work"}, true]}, "q_hs_work_hours",
+          "q_hs_volunteer"
+        ]
+      }
+    },
+    
+    "q_hs_work_hours": {
+      "type": "single",
+      "var": "hours_per_week",
+      "title": "How many hours per week?",
+      "choices": [
+        {"label": "Less than 10", "value": "<10"},
+        {"label": "10-20", "value": "10-20"},
+        {"label": "More than 20", "value": ">20"}
+      ],
+      "next": "q_hs_volunteer"
+    },
+    
+    "q_hs_volunteer": {
+      "type": "single",
+      "var": "volunteer",
+      "title": "Do you volunteer?",
+      "choices": [
+        {"label": "Yes, regularly", "value": "regular"},
+        {"label": "Sometimes", "value": "sometimes"},
+        {"label": "No", "value": "no"}
+      ],
+      "next": {
+        "if": [
+          {"!=": [{"var": "volunteer"}, "no"]}, "q_hs_volunteer_hours",
+          "q_hs_first_gen"
+        ]
+      }
+    },
+    
+    "q_hs_volunteer_hours": {
+      "type": "single",
+      "var": "volunteer_hours",
+      "title": "About how many hours total?",
+      "choices": [
+        {"label": "Less than 50", "value": "<50"},
+        {"label": "50-100", "value": "50-100"},
+        {"label": "More than 100", "value": ">100"}
+      ],
+      "next": "q_hs_first_gen"
+    },
+    
+    "q_hs_first_gen": {
+      "type": "single",
+      "var": "first_gen",
+      "title": "Did either parent graduate college?",
+      "choices": [
+        {"label": "Yes", "value": false},
+        {"label": "No", "value": true},
+        {"label": "Not sure", "value": null}
+      ],
+      "next": "q_hs_military"
+    },
+    
+    "q_hs_military": {
+      "type": "single",
+      "var": "military_affiliated",
+      "title": "Any military connection?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "military_affiliated"}, true]}, "q_hs_military_type",
+          "q_hs_sat"
+        ]
+      }
+    },
+    
+    "q_hs_military_type": {
+      "type": "single",
+      "var": "military_connection",
+      "title": "What's your connection?",
+      "choices": [
+        {"label": "Parent serves/served", "value": "parent"},
+        {"label": "I plan to serve", "value": "self"},
+        {"label": "Other family member", "value": "family"}
+      ],
+      "next": "q_hs_sat"
+    },
+    
+    "q_hs_sat": {
+      "type": "single",
+      "var": "sat_taken",
+      "title": "Have you taken the SAT?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Planning to", "value": "planning"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "sat_taken"}, true]}, "q_hs_sat_score",
+          "q_hs_act"
+        ]
+      }
+    },
+    
+    "q_hs_sat_score": {
+      "type": "single",
+      "var": "sat_score",
+      "title": "What was your score?",
+      "choices": [
+        {"label": "1400+", "value": "1400+"},
+        {"label": "1200-1399", "value": "1200-1399"},
+        {"label": "1000-1199", "value": "1000-1199"},
+        {"label": "Below 1000", "value": "<1000"}
+      ],
+      "next": "q_hs_act"
+    },
+    
+    "q_hs_act": {
+      "type": "single",
+      "var": "act_taken",
+      "title": "Have you taken the ACT?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Planning to", "value": "planning"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "act_taken"}, true]}, "q_hs_act_score",
+          "q_hs_ap"
+        ]
+      }
+    },
+    
+    "q_hs_act_score": {
+      "type": "single",
+      "var": "act_score",
+      "title": "What was your score?",
+      "choices": [
+        {"label": "30+", "value": "30+"},
+        {"label": "25-29", "value": "25-29"},
+        {"label": "20-24", "value": "20-24"},
+        {"label": "Below 20", "value": "<20"}
+      ],
+      "next": "q_hs_ap"
+    },
+    
+    "q_hs_ap": {
+      "type": "single",
+      "var": "ap_courses",
+      "title": "Are you taking AP classes?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "ap_courses"}, true]}, "q_hs_ap_count",
+          "q_hs_honors"
+        ]
+      }
+    },
+    
+    "q_hs_ap_count": {
+      "type": "single",
+      "var": "num_ap_courses",
+      "title": "How many AP classes total?",
+      "choices": [
+        {"label": "1-2", "value": "1-2"},
+        {"label": "3-5", "value": "3-5"},
+        {"label": "6+", "value": "6+"}
+      ],
+      "next": "q_hs_honors"
+    },
+    
+    "q_hs_honors": {
+      "type": "single",
+      "var": "honors_courses",
+      "title": "Any honors classes?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_hs_career"
+    },
+    
+    "q_hs_career": {
+      "type": "short",
+      "var": "career_interest",
+      "title": "What career interests you most?",
+      "placeholder": "e.g., Healthcare",
+      "next": "q_hs_college_plans"
+    },
+    
+    "q_hs_college_plans": {
+      "type": "single",
+      "var": "college_plans",
+      "title": "What type of college interests you?",
+      "choices": [
+        {"label": "4-year university", "value": "4year"},
+        {"label": "Community college", "value": "cc"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": "q_hs_financial_need"
+    },
+    
+    "q_hs_financial_need": {
+      "type": "single",
+      "var": "financial_need",
+      "title": "Will you need financial aid?",
+      "choices": [
+        {"label": "Yes, definitely", "value": "high"},
+        {"label": "Probably", "value": "medium"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": "q_hs_income"
+    },
+    
+    "q_hs_income": {
+      "type": "single",
+      "var": "household_income",
+      "title": "Household income range?",
+      "choices": [
+        {"label": "Under $50,000", "value": "<50k"},
+        {"label": "$50,000-$100,000", "value": "50-100k"},
+        {"label": "Over $100,000", "value": ">100k"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_hs_ethnicity"
+    },
+    
+    "q_hs_ethnicity": {
+      "type": "multi",
+      "var": "ethnicity",
+      "title": "Your background? (select all)",
+      "choices": ["Asian", "Black/African American", "Hispanic/Latino", "White", "Other"],
+      "next": "q_hs_gender"
+    },
+    
+    "q_hs_gender": {
+      "type": "single",
+      "var": "gender",
+      "title": "Gender?",
+      "choices": [
+        {"label": "Female", "value": "female"},
+        {"label": "Male", "value": "male"},
+        {"label": "Non-binary", "value": "non-binary"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_hs_disability"
+    },
+    
+    "q_hs_disability": {
+      "type": "single",
+      "var": "disability",
+      "title": "Do you have any disabilities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_hs_special"
+    },
+    
+    "q_hs_special": {
+      "type": "multi",
+      "var": "special_circumstances",
+      "title": "Any special circumstances? (select all)",
+      "choices": ["Foster care", "Single parent household", "Rural area", "None"],
+      "next": "q_hs_exact_gpa"
+    },
+    
+    "q_hs_exact_gpa": {
+      "type": "short",
+      "var": "exact_gpa",
+      "title": "Your exact GPA? (optional)",
+      "placeholder": "e.g., 3.75",
+      "validate": {">=": [{"var": "value"}, 0], "<=": [{"var": "value"}, 5.0]},
+      "next": "q_hs_class_rank"
+    },
+    
+    "q_hs_class_rank": {
+      "type": "short",
+      "var": "class_rank",
+      "title": "Class rank? (optional)",
+      "placeholder": "e.g., 25 out of 400",
+      "next": "q_hs_email"
+    },
+    
+    "q_hs_email": {
+      "type": "short",
+      "var": "email",
+      "title": "Email for your matches?",
+      "placeholder": "your@email.com",
+      "validate": {"regex": [{"var": "value"}, "^[^@]+@[^@]+\\.[^@]+$"]},
+      "next": "q_hs_phone"
+    },
+    
+    "q_hs_phone": {
+      "type": "short",
+      "var": "phone",
+      "title": "Phone number? (optional)",
+      "placeholder": "(555) 123-4567",
+      "next": "q_hs_transcript"
+    },
+    
+    "q_hs_transcript": {
       "type": "file",
       "var": "transcript",
-      "title": "Please upload your transcript",
+      "title": "Upload transcript? (optional - helps with automatic applications)",
       "accept": ".pdf,.png,.jpg",
-      "next": "q_confirm",
-      "quizQuestionNumber": 6
+      "next": "q_hs_terms"
     },
-    "q_confirm": {
-      "type": "checkbox",
-      "label": "I confirm that the information provided is accurate.",
-      "required": true,
-      "errorMessage": "You must confirm your information to continue.",
-      "next": "done",
-      "quizQuestionNumber": 7
+    
+    "q_hs_terms": {
+  "type": "checkbox",
+  "var": "terms_accepted",
+  "label": "I agree to the terms and privacy policy",
+  "required": true,
+  "errorMessage": "You must accept the terms to see your matches",
+  "next": "q_essay_samples"
     },
-    "done": {
-      "type": "interstitial",
-      "title": "Nice! We’ve updated your profile.",
-      "onCompleteSets": ["quizCompleted"],
-      "quizQuestionNumber": 8
+    
+    "q_pre_graduation_year": {
+      "type": "single",
+      "var": "graduation_year",
+      "title": "When did you graduate high school?",
+      "choices": [
+        {"label": "This year (2025)", "value": 2025},
+        {"label": "Last year (2024)", "value": 2024},
+        {"label": "Earlier", "value": "earlier"}
+      ],
+      "next": "q_pre_college_start"
+    },
+    
+    "q_pre_college_start": {
+      "type": "single",
+      "var": "college_start",
+      "title": "When do you start college?",
+      "choices": [
+        {"label": "Fall 2025", "value": "fall2025"},
+        {"label": "Spring 2026", "value": "spring2026"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": "q_pre_college_type"
+    },
+    
+    "q_pre_college_type": {
+      "type": "single",
+      "var": "college_type",
+      "title": "What type of college?",
+      "choices": [
+        {"label": "4-year university", "value": "4year"},
+        {"label": "Community college", "value": "cc"},
+        {"label": "Trade school", "value": "trade"}
+      ],
+      "next": "q_pre_college_decided"
+    },
+    
+    "q_pre_college_decided": {
+      "type": "single",
+      "var": "college_decided",
+      "title": "Have you chosen your college?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "Still deciding", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "college_decided"}, true]}, "q_pre_college_name",
+          "q_pre_major_decided"
+        ]
+      }
+    },
+    
+    "q_pre_college_name": {
+      "type": "short",
+      "var": "college_name",
+      "title": "Which college?",
+      "placeholder": "e.g., State University",
+      "next": "q_pre_major_decided"
+    },
+    
+    "q_pre_major_decided": {
+      "type": "single",
+      "var": "major_decided",
+      "title": "Know your major?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "major_decided"}, true]}, "q_pre_major_name",
+          "q_pre_hs_gpa"
+        ]
+      }
+    },
+    
+    "q_pre_major_name": {
+      "type": "short",
+      "var": "major",
+      "title": "What is your major?",
+      "placeholder": "e.g., Liberal Arts",
+      "next": "q_pre_hs_gpa"
+    },
+    
+    "q_pre_hs_gpa": {
+      "type": "single",
+      "var": "hs_gpa",
+      "title": "High school GPA?",
+      "choices": [
+        {"label": "3.5 or higher", "value": "3.5+"},
+        {"label": "3.0 - 3.49", "value": "3.0-3.49"},
+        {"label": "2.5 - 2.99", "value": "2.5-2.99"},
+        {"label": "Below 2.5", "value": "<2.5"}
+      ],
+      "next": "q_pre_citizen"
+    },
+    
+    "q_pre_citizen": {
+      "type": "single",
+      "var": "us_citizen",
+      "title": "U.S. citizen?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "us_citizen"}, false]}, "q_pre_residency",
+          "q_pre_state"
+        ]
+      }
+    },
+    
+    "q_pre_residency": {
+      "type": "single",
+      "var": "residency_status",
+      "title": "Residency status?",
+      "choices": [
+        {"label": "Permanent resident", "value": "permanent"},
+        {"label": "DACA", "value": "daca"},
+        {"label": "International", "value": "international"}
+      ],
+      "next": "q_pre_state"
+    },
+    
+    "q_pre_state": {
+      "type": "short",
+      "var": "state",
+      "title": "Home state?",
+      "placeholder": "e.g., California",
+      "next": "q_pre_first_gen"
+    },
+    
+    "q_pre_first_gen": {
+      "type": "single",
+      "var": "first_gen",
+      "title": "First in family to attend college?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_pre_financial_need"
+    },
+    
+    "q_pre_financial_need": {
+      "type": "single",
+      "var": "financial_need",
+      "title": "Need financial aid?",
+      "choices": [
+        {"label": "Yes, significant", "value": "high"},
+        {"label": "Some help needed", "value": "medium"},
+        {"label": "No", "value": "low"}
+      ],
+      "next": "q_pre_work_plans"
+    },
+    
+    "q_pre_work_plans": {
+      "type": "single",
+      "var": "work_plans",
+      "title": "Plan to work in college?",
+      "choices": [
+        {"label": "Yes, full-time", "value": "full"},
+        {"label": "Yes, part-time", "value": "part"},
+        {"label": "No", "value": "no"}
+      ],
+      "next": "q_pre_email"
+    },
+    
+    "q_pre_email": {
+      "type": "short",
+      "var": "email",
+      "title": "Email for scholarship matches?",
+      "placeholder": "your@email.com",
+      "next": "q_pre_ethnicity"
+    },
+
+    "q_pre_ethnicity": {
+      "type": "multi",
+      "var": "ethnicity",
+      "title": "Your background? (select all)",
+      "choices": ["Asian", "Black/African American", "Hispanic/Latino", "White", "Other"],
+      "next": "q_pre_gender"
+    },
+
+    "q_pre_gender": {
+      "type": "single",
+      "var": "gender",
+      "title": "Gender?",
+      "choices": [
+        {"label": "Female", "value": "female"},
+        {"label": "Male", "value": "male"},
+        {"label": "Non-binary", "value": "non-binary"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_pre_disability"
+    },
+
+    "q_pre_disability": {
+      "type": "single",
+      "var": "disability",
+      "title": "Do you have any disabilities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_pre_terms"
+    },
+    
+    "q_pre_terms": {
+  "type": "checkbox",
+  "var": "terms_accepted",
+  "label": "I agree to the terms and privacy policy",
+  "required": true,
+  "next": "q_essay_samples"
+    },
+    
+    "q_college_type": {
+      "type": "single",
+      "var": "student_type",
+      "title": "What type of student?",
+      "choices": [
+        {"label": "Undergraduate", "value": "undergrad"},
+        {"label": "Graduate", "value": "grad"},
+        {"label": "Certificate/Trade", "value": "cert"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "student_type"}, "undergrad"]}, "q_college_year",
+          {"==": [{"var": "student_type"}, "grad"]}, "q_grad_degree",
+          "q_cert_field"
+        ]
+      }
+    },
+    
+    "q_college_year": {
+      "type": "single",
+      "var": "currentSchoolLevel",
+      "title": "What year are you?",
+      "choices": [
+        {"label": "Freshman", "value": "college_freshman"},
+        {"label": "Sophomore", "value": "college_sophomore"},
+        {"label": "Junior", "value": "college_junior"},
+        {"label": "Senior+", "value": "college_senior"}
+      ],
+      "next": "q_college_full_time"
+    },
+    
+    "q_college_full_time": {
+      "type": "single",
+      "var": "full_time",
+      "title": "Full-time student (12+ credits)?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_college_major_declared"
+    },
+    
+    "q_college_major_declared": {
+      "type": "single",
+      "var": "major_declared",
+      "title": "Have you declared a major?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "major_declared"}, true]}, "q_college_major_name",
+          "q_college_gpa"
+        ]
+      }
+    },
+    
+    "q_college_major_name": {
+      "type": "short",
+      "var": "major",
+      "title": "What is your major?",
+      "placeholder": "e.g., Computer Science",
+      "next": "q_college_name"
+    },
+
+    "q_college_name": {
+      "type": "short",
+      "var": "college_name",
+      "title": "What college do you attend?",
+      "placeholder": "e.g., State University",
+      "next": "q_college_gpa"
+    },
+    
+    "q_college_gpa": {
+      "type": "single",
+      "var": "gpa",
+      "title": "Current college GPA?",
+      "choices": [
+        {"label": "3.5 or higher", "value": "3.5+"},
+        {"label": "3.0 - 3.49", "value": "3.0-3.49"},
+        {"label": "2.5 - 2.99", "value": "2.5-2.99"},
+        {"label": "Below 2.5", "value": "<2.5"}
+      ],
+      "next": "q_college_citizen"
+    },
+    
+    "q_college_citizen": {
+      "type": "single",
+      "var": "us_citizen",
+      "title": "U.S. citizen?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "us_citizen"}, false]}, "q_college_residency",
+          "q_college_state"
+        ]
+      }
+    },
+    
+    "q_college_residency": {
+      "type": "single",
+      "var": "residency_status",
+      "title": "Residency status?",
+      "choices": [
+        {"label": "Permanent resident", "value": "permanent"},
+        {"label": "DACA", "value": "daca"},
+        {"label": "International student", "value": "international"}
+      ],
+      "next": "q_college_state"
+    },
+    
+    "q_college_state": {
+      "type": "short",
+      "var": "state",
+      "title": "What state is your college in?",
+      "placeholder": "e.g., California",
+      "next": "q_college_transfer"
+    },
+    
+    "q_college_transfer": {
+      "type": "single",
+      "var": "transfer_student",
+      "title": "Are you a transfer student?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_college_work"
+    },
+    
+    "q_college_work": {
+      "type": "single",
+      "var": "work",
+      "title": "Do you work while in school?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "work"}, true]}, "q_college_work_hours",
+          "q_college_activities"
+        ]
+      }
+    },
+    
+    "q_college_work_hours": {
+      "type": "single",
+      "var": "hours_per_week",
+      "title": "How many hours per week?",
+      "choices": [
+        {"label": "Less than 10", "value": "<10"},
+        {"label": "10-20", "value": "10-20"},
+        {"label": "20-30", "value": "20-30"},
+        {"label": "30+", "value": "30+"}
+      ],
+      "next": "q_college_work_study"
+    },
+    
+    "q_college_work_study": {
+      "type": "single",
+      "var": "work_study",
+      "title": "Is it work-study?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_college_activities"
+    },
+    
+    "q_college_activities": {
+      "type": "single",
+      "var": "activities_participation",
+      "title": "Involved in campus activities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "activities_participation"}, true]}, "q_college_activity_type",
+          "q_college_research"
+        ]
+      }
+    },
+    
+    "q_college_activity_type": {
+      "type": "short",
+      "var": "activities",
+      "title": "What type of campus activities are you involved in?",
+      "placeholder": "e.g., Greek life, Student government",
+      "next": "q_college_leadership"
+    },
+    
+    "q_college_leadership": {
+      "type": "single",
+      "var": "leadership",
+      "title": "Any leadership roles?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "leadership"}, true]}, "q_college_leadership_details",
+          "q_college_research"
+        ]
+      }
+    },
+
+    "q_college_leadership_details": {
+      "type": "short",
+      "var": "leadership_details",
+      "title": "Please describe your leadership role(s).",
+      "placeholder": "e.g., President of Student Government, Captain of soccer team",
+      "next": "q_college_research"
+    },
+    
+    "q_college_research": {
+      "type": "single",
+      "var": "research",
+      "title": "Involved in research?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "research"}, true]}, "q_college_research_details",
+          "q_college_internship"
+        ]
+      }
+    },
+
+    "q_college_research_details": {
+      "type": "short",
+      "var": "research_details",
+      "title": "Please describe your research.",
+      "placeholder": "e.g., Research assistant in the biology lab",
+      "next": "q_college_internship"
+    },
+    
+    "q_college_internship": {
+      "type": "single",
+      "var": "internship",
+      "title": "Have you had internships?",
+      "choices": [
+        {"label": "Yes, paid", "value": "paid"},
+        {"label": "Yes, unpaid", "value": "unpaid"},
+        {"label": "No", "value": "no"}
+      ],
+      "next": {
+        "if": [
+          {"!=": [{"var": "internship"}, "no"]}, "q_college_internship_details",
+          "q_college_study_abroad"
+        ]
+      }
+    },
+
+    "q_college_internship_details": {
+      "type": "short",
+      "var": "internship_details",
+      "title": "Please describe your internship(s).",
+      "placeholder": "e.g., Summer Analyst at a bank",
+      "next": "q_college_study_abroad"
+    },
+    
+    "q_college_study_abroad": {
+      "type": "single",
+      "var": "study_abroad",
+      "title": "Planning to study abroad?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Maybe", "value": "maybe"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "study_abroad"}, true]}, "q_college_study_abroad_details",
+          "q_college_first_gen"
+        ]
+      }
+    },
+
+    "q_college_study_abroad_details": {
+      "type": "short",
+      "var": "study_abroad_details",
+      "title": "Where and when are you planning to study abroad?",
+      "placeholder": "e.g., Spain, Spring 2026",
+      "next": "q_college_first_gen"
+    },
+    
+    "q_college_first_gen": {
+      "type": "single",
+      "var": "first_gen",
+      "title": "First generation college student?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_college_military"
+    },
+    
+    "q_college_military": {
+      "type": "single",
+      "var": "military_affiliated",
+      "title": "Military connection?",
+      "choices": [
+        {"label": "Veteran", "value": "veteran"},
+        {"label": "Active duty", "value": "active"},
+        {"label": "Dependent", "value": "dependent"},
+        {"label": "None", "value": "none"}
+      ],
+      "next": "q_college_financial_aid"
+    },
+    
+    "q_college_financial_aid": {
+      "type": "single",
+      "var": "receiving_aid",
+      "title": "Currently receiving financial aid?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "receiving_aid"}, true]}, "q_college_aid_type",
+          "q_college_loans"
+        ]
+      }
+    },
+    
+    "q_college_aid_type": {
+      "type": "multi",
+      "var": "aid_types",
+      "title": "What type? (select all)",
+      "choices": ["Pell Grant", "Merit scholarships", "Need-based aid", "Work-study"],
+      "next": "q_college_loans"
+    },
+    
+    "q_college_loans": {
+      "type": "single",
+      "var": "student_loans",
+      "title": "Have student loans?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "student_loans"}, true]}, "q_college_loan_amount",
+          "q_college_housing"
+        ]
+      }
+    },
+    
+    "q_college_loan_amount": {
+      "type": "single",
+      "var": "loan_amount",
+      "title": "Total loan amount so far?",
+      "choices": [
+        {"label": "Under $10,000", "value": "<10k"},
+        {"label": "$10,000-$25,000", "value": "10-25k"},
+        {"label": "Over $25,000", "value": ">25k"}
+      ],
+      "next": "q_college_housing"
+    },
+    
+    "q_college_housing": {
+      "type": "single",
+      "var": "housing",
+      "title": "Where do you live?",
+      "choices": [
+        {"label": "On campus", "value": "campus"},
+        {"label": "Off campus", "value": "off_campus"},
+        {"label": "With parents", "value": "parents"}
+      ],
+      "next": "q_college_income"
+    },
+    
+    "q_college_income": {
+      "type": "single",
+      "var": "household_income",
+      "title": "Family income range?",
+      "choices": [
+        {"label": "Under $40,000", "value": "<40k"},
+        {"label": "$40,000-$80,000", "value": "40-80k"},
+        {"label": "Over $80,000", "value": ">80k"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_college_ethnicity"
+    },
+    
+    "q_college_ethnicity": {
+      "type": "multi",
+      "var": "ethnicity",
+      "title": "Your background? (select all)",
+      "choices": ["Asian", "Black/African American", "Hispanic/Latino", "White", "Other"],
+      "next": "q_college_gender"
+    },
+    
+    "q_college_gender": {
+      "type": "single",
+      "var": "gender",
+      "title": "Gender?",
+      "choices": [
+        {"label": "Female", "value": "female"},
+        {"label": "Male", "value": "male"},
+        {"label": "Non-binary", "value": "non-binary"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_college_disability"
+    },
+    
+    "q_college_disability": {
+      "type": "single",
+      "var": "disability",
+      "title": "Any disabilities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_college_dean_list"
+    },
+    
+    "q_college_dean_list": {
+      "type": "single",
+      "var": "dean_list",
+      "title": "Ever made Dean's List?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_college_honors"
+    },
+    
+    "q_college_honors": {
+      "type": "single",
+      "var": "honors_program",
+      "title": "In honors program?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "honors_program"}, true]}, "q_college_honors_details",
+          "q_college_exact_gpa"
+        ]
+      }
+    },
+
+    "q_college_honors_details": {
+      "type": "short",
+      "var": "honors_program_details",
+      "title": "Please describe the honors program.",
+      "placeholder": "e.g., University Honors Program",
+      "next": "q_college_exact_gpa"
+    },
+    
+    "q_college_exact_gpa": {
+      "type": "short",
+      "var": "exact_gpa",
+      "title": "Exact GPA? (optional)",
+      "placeholder": "e.g., 3.67",
+      "validate": {">=": [{"var": "value"}, 0], "<=": [{"var": "value"}, 4.0]},
+      "next": "q_college_credits"
+    },
+    
+    "q_college_credits": {
+      "type": "short",
+      "var": "total_credits",
+      "title": "Total credits earned?",
+      "placeholder": "e.g., 45",
+      "next": "q_college_graduation"
+    },
+    
+    "q_college_graduation": {
+      "type": "single",
+      "var": "expected_graduation",
+      "title": "Expected graduation?",
+      "choices": [
+        {"label": "2025", "value": 2025},
+        {"label": "2026", "value": 2026},
+        {"label": "2027", "value": 2027},
+        {"label": "2028 or later", "value": "2028+"}
+      ],
+      "next": "q_college_email"
+    },
+    
+    "q_college_email": {
+      "type": "short",
+      "var": "email",
+      "title": "Email for matches?",
+      "placeholder": "your@email.com",
+      "validate": {"regex": [{"var": "value"}, "^[^@]+@[^@]+\\.[^@]+$"]},
+      "next": "q_college_transcript"
+    },
+    
+    "q_college_transcript": {
+      "type": "file",
+      "var": "transcript",
+      "title": "Upload transcript? (optional - helps with applications)",
+      "accept": ".pdf,.png,.jpg",
+      "next": "q_college_resume"
+    },
+    
+    "q_college_resume": {
+      "type": "file",
+      "var": "resume",
+      "title": "Upload resume? (optional)",
+      "accept": ".pdf,.docx",
+      "next": "q_college_terms"
+    },
+    
+    "q_college_terms": {
+  "type": "checkbox",
+  "var": "terms_accepted",
+  "label": "I agree to the terms and privacy policy",
+  "required": true,
+  "errorMessage": "You must accept to continue",
+  "next": "q_essay_samples"
+    },
+    
+    "q_grad_degree": {
+      "type": "single",
+      "var": "grad_degree_type",
+      "title": "What degree are you pursuing?",
+      "choices": [
+        {"label": "Master's", "value": "masters"},
+        {"label": "Doctorate/PhD", "value": "phd"},
+        {"label": "Professional (JD, MD, etc.)", "value": "professional"}
+      ],
+      "next": "q_grad_field"
+    },
+    
+    "q_grad_field": {
+      "type": "short",
+      "var": "grad_field",
+      "title": "Field of study?",
+      "placeholder": "e.g., Medicine/Health",
+      "next": "q_grad_year"
+    },
+    
+    "q_grad_year": {
+      "type": "single",
+      "var": "currentSchoolLevel",
+      "title": "What year in your program?",
+      "choices": [
+        {"label": "First year", "value": "grad_1"},
+        {"label": "Second year", "value": "grad_2"},
+        {"label": "Third year+", "value": "grad_3+"}
+      ],
+      "next": "q_grad_research"
+    },
+    
+    "q_grad_research": {
+      "type": "single",
+      "var": "grad_research",
+      "title": "Doing research?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "grad_research"}, true]}, "q_grad_research_details",
+          "q_grad_teaching"
+        ]
+      }
+    },
+
+    "q_grad_research_details": {
+      "type": "short",
+      "var": "grad_research_details",
+      "title": "Please describe your research.",
+      "placeholder": "e.g., Dissertation on...",
+      "next": "q_grad_teaching"
+    },
+    
+    "q_grad_teaching": {
+      "type": "single",
+      "var": "teaching_assistant",
+      "title": "Teaching assistant?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "teaching_assistant"}, true]}, "q_grad_teaching_details",
+          "q_grad_gpa"
+        ]
+      }
+    },
+
+    "q_grad_teaching_details": {
+      "type": "short",
+      "var": "teaching_assistant_details",
+      "title": "What courses have you been a TA for?",
+      "placeholder": "e.g., Intro to Psychology",
+      "next": "q_grad_gpa"
+    },
+    
+    "q_grad_gpa": {
+      "type": "single",
+      "var": "grad_gpa",
+      "title": "Graduate GPA?",
+      "choices": [
+        {"label": "3.7 or higher", "value": "3.7+"},
+        {"label": "3.3 - 3.69", "value": "3.3-3.69"},
+        {"label": "Below 3.3", "value": "<3.3"}
+      ],
+      "next": "q_grad_undergrad_gpa"
+    },
+    
+    "q_grad_undergrad_gpa": {
+      "type": "single",
+      "var": "undergrad_gpa",
+      "title": "Undergraduate GPA?",
+      "choices": [
+        {"label": "3.5 or higher", "value": "3.5+"},
+        {"label": "3.0 - 3.49", "value": "3.0-3.49"},
+        {"label": "Below 3.0", "value": "<3.0"}
+      ],
+      "next": "q_grad_citizen"
+    },
+    
+    "q_grad_citizen": {
+      "type": "single",
+      "var": "us_citizen",
+      "title": "U.S. citizen?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": "q_grad_funding"
+    },
+    
+    "q_grad_funding": {
+      "type": "single",
+      "var": "current_funding",
+      "title": "Current funding?",
+      "choices": [
+        {"label": "Fellowship/Assistantship", "value": "fellowship"},
+        {"label": "Loans", "value": "loans"},
+        {"label": "Self-funded", "value": "self"},
+        {"label": "Mix", "value": "mix"}
+      ],
+      "next": "q_grad_publications"
+    },
+    
+    "q_grad_publications": {
+      "type": "single",
+      "var": "publications",
+      "title": "Any publications?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "publications"}, true]}, "q_grad_publications_details",
+          "q_grad_email"
+        ]
+      }
+    },
+
+    "q_grad_publications_details": {
+      "type": "short",
+      "var": "publications_details",
+      "title": "Please list your publications.",
+      "placeholder": "e.g., Journal of Science, 2025",
+      "next": "q_grad_email"
+    },
+    
+    "q_grad_email": {
+      "type": "short",
+      "var": "email",
+      "title": "Email for matches?",
+      "placeholder": "your@email.com",
+      "next": "q_grad_resume"
+    },
+
+    "q_grad_resume": {
+      "type": "file",
+      "var": "resume",
+      "title": "Upload resume? (optional)",
+      "accept": ".pdf,.docx",
+      "next": "q_grad_ethnicity"
+    },
+
+    "q_grad_ethnicity": {
+      "type": "multi",
+      "var": "ethnicity",
+      "title": "Your background? (select all)",
+      "choices": ["Asian", "Black/African American", "Hispanic/Latino", "White", "Other"],
+      "next": "q_grad_gender"
+    },
+
+    "q_grad_gender": {
+      "type": "single",
+      "var": "gender",
+      "title": "Gender?",
+      "choices": [
+        {"label": "Female", "value": "female"},
+        {"label": "Male", "value": "male"},
+        {"label": "Non-binary", "value": "non-binary"},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_grad_disability"
+    },
+
+    "q_grad_disability": {
+      "type": "single",
+      "var": "disability",
+      "title": "Do you have any disabilities?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false},
+        {"label": "Prefer not to say", "value": null}
+      ],
+      "next": "q_grad_terms"
+    },
+    
+    "q_grad_terms": {
+  "type": "checkbox",
+  "var": "terms_accepted",
+  "label": "I agree to the terms",
+  "required": true,
+  "next": "q_essay_samples"
+    },
+    
+    "q_cert_field": {
+      "type": "short",
+      "var": "cert_field",
+      "title": "What field is your certificate in?",
+      "placeholder": "e.g., Healthcare",
+      "next": "q_cert_timeline"
+    },
+    
+    "q_cert_timeline": {
+      "type": "single",
+      "var": "cert_timeline",
+      "title": "When will you complete?",
+      "choices": [
+        {"label": "Less than 6 months", "value": "<6mo"},
+        {"label": "6-12 months", "value": "6-12mo"},
+        {"label": "Over 1 year", "value": ">1yr"}
+      ],
+      "next": "q_cert_email"
+    },
+    
+    "q_cert_email": {
+  "type": "short",
+  "var": "email",
+  "title": "Email?",
+  "placeholder": "your@email.com",
+  "next": "q_essay_samples"
+    },
+    
+    "q_unsure_enrolled": {
+      "type": "single",
+      "var": "enrolled",
+      "title": "Are you currently enrolled in school?",
+      "choices": [
+        {"label": "Yes", "value": true},
+        {"label": "No", "value": false}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "enrolled"}, true]}, "q_unsure_level",
+          "q_unsure_plans"
+        ]
+      }
+    },
+    
+    "q_unsure_level": {
+      "type": "single",
+      "var": "education_level",
+      "title": "What level?",
+      "choices": [
+        {"label": "High school", "value": "hs"},
+        {"label": "College", "value": "college"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": {
+        "if": [
+          {"==": [{"var": "education_level"}, "hs"]}, "q_hs_grade",
+          {"==": [{"var": "education_level"}, "college"]}, "q_college_type",
+          "q_unsure_age"
+        ]
+      }
+    },
+    
+    "q_unsure_plans": {
+      "type": "single",
+      "var": "future_plans",
+      "title": "Planning to enroll?",
+      "choices": [
+        {"label": "Yes, soon", "value": "soon"},
+        {"label": "Yes, eventually", "value": "eventually"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": "q_unsure_age"
+    },
+    
+    "q_unsure_age": {
+      "type": "single",
+      "var": "age",
+      "title": "Your age?",
+      "choices": [
+        {"label": "Under 18", "value": "<18"},
+        {"label": "18-24", "value": "18-24"},
+        {"label": "25+", "value": "25+"}
+      ],
+      "next": "q_unsure_goal"
+    },
+    
+    "q_unsure_goal": {
+      "type": "single",
+      "var": "education_goal",
+      "title": "Education goal?",
+      "choices": [
+        {"label": "High school diploma", "value": "hs"},
+        {"label": "College degree", "value": "college"},
+        {"label": "Trade certification", "value": "trade"},
+        {"label": "Not sure", "value": "unsure"}
+      ],
+      "next": "q_unsure_email"
+    },
+    
+    "q_unsure_email": {
+      "type": "short",
+      "var": "email",
+      "title": "Email for scholarship info?",
+      "placeholder": "your@email.com",
+      "next": "done_unsure"
+    },
+    
+    "done_unsure": {
+  "type": "interstitial",
+  "title": "We found 58 scholarships you may qualify for!",
+  "subtitle": "We'll help you determine eligibility.",
+  "onCompleteSets": ["quizCompleted"],
+  "next": "q_essay_samples"
+},
+    "q_essay_samples": {
+      "type": "file",
+      "var": "essay_samples",
+      "title": "We're already writing essays for you! If you have any essay samples, upload them here to help us personalize your writing.",
+      "accept": ".pdf,.docx,.txt",
+      "next": "submit"
     }
   }
 }

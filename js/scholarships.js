@@ -350,6 +350,8 @@ export function initScholarships() {
   bus.on(EV.QUIZ_COMPLETED, tryResumeAll);
   bus.on(EV.ACTION_COMPLETED, tryResumeAll);
   bus.on(EV.QUIZ_QUESTION_ANSWERED, tryResumeAll);
+  // Resume on independent user field update (input modal)
+  bus.on(EV.USER_FIELD_UPDATED, tryResumeAll);
 }
 
 // create instance and enter first state
@@ -443,6 +445,7 @@ const FLAG_TO_ACTION = {
 };
 
 function actionTypeForBlocker(b) {
+  if (!b) return null;
   // Prevent action for trialStarted blocker
   if (b.id === 'trialStarted' && b.type === 'custom') return null;
   if (b.actionType) return b.actionType;
