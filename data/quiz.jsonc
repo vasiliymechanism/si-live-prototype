@@ -1653,7 +1653,8 @@
     "q_essay_samples": {
       "type": "file",
       "var": "essay_samples",
-      "title": "We're already writing essays for you! If you have any essay samples, upload them here to help us personalize your writing.",
+      "title": "We're already writing essays for you!",
+      "subtitle": "But if you have any essay samples, upload them here to help us personalize your writing.",
       "accept": ".pdf,.docx,.txt",
       "next": "submit"
     }

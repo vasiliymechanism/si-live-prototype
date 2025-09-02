@@ -257,7 +257,8 @@ function openQuiz(payload = {}) {
 
     content.appendChild(wrap);
 
-    addNextButton(q.cta || 'Upload', () => {
+    // addNextButton(q.cta || 'Upload', () => {
+    addNextButton('Next', () => {
       // For demo: record a count; in real app you’d store files or set a flag
       const count = input.files?.length || 0;
       if (q.required && count === 0) {
