@@ -469,7 +469,7 @@ body {
   border-radius: var(--card-radius, 12px);
   padding: var(--card-padding, 8px 12px);
   margin-bottom: 4px;
-  animation: fadeInUp 0.4s ease-out;
+  animation: fadeInDown 0.4s ease-out;
   transition: all 0.3s ease;
 }
 
@@ -557,7 +557,7 @@ body {
   padding:12px 14px 10px;
   margin:8px 0;
   box-shadow:0 2px 12px rgba(0,0,0,.35);
-  animation:fadeInUp .25s ease-out;
+  animation:fadeInDown .25s ease-out;
 }
 
 /* Disable for the hero + any cards during onboarding */

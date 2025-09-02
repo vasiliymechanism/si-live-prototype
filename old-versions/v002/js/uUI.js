@@ -178,7 +178,7 @@ const UI = {
         setTimeout(() => {
             const scholarshipElement = this.createScholarshipElement(scholarship);
             searchingDiv.replaceWith(scholarshipElement);
-            scholarshipElement.style.animation = 'fadeInUp 0.4s ease-out';
+            scholarshipElement.style.animation = 'fadeInDown 0.4s ease-out';
         }, 1000);
         
         // Limit visible scholarships
