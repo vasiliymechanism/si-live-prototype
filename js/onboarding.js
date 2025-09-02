@@ -140,8 +140,18 @@ export async function runOnboarding() {
   // --- wait for resumeMatchingOn condition (resume matching) ---
   await waitForCondition(firstInst, resumeCond);
 
-  // Expand Action Required queue via event
-  bus.emit(EV.ACTION_QUEUE_EXPAND);
+  // Fully simulate a user click to expand Action Required queue
+  try {
+    const { fullyExpandSection } = await import('./ui.js');
+    const container = document.getElementById('accordionContainer');
+    const queueSection = document.getElementById('actionQueueSection');
+    if (queueSection && container) {
+      fullyExpandSection(queueSection, container);
+    }
+  } catch (e) {
+    // fallback: emit event for legacy handler
+    bus.emit(EV.ACTION_QUEUE_EXPAND);
+  }
 
   // Optional delay before resuming matching
   const resumeDelayMs = Number(cfg.resumeMatchingDelayMs ?? 3000);

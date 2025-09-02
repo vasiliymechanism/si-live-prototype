@@ -974,6 +974,23 @@ export function bindStart(handler) {
 
 let accordionInited = false;
 
+// Helper: fully simulate a user click on a section toggle
+export function fullyExpandSection(sectionEl, containerEl) {
+  if (!sectionEl || !containerEl) return;
+  // Find the toggle button in the header
+  const header = sectionEl.querySelector('.feed-header');
+  const btn = header?.querySelector('.feed-toggle');
+  // If toggle button exists, simulate a click
+  if (btn) {
+    btn.click();
+    return;
+  }
+  // Fallback: manually expand and update visuals
+  setExpandedState(sectionEl, true);
+  refreshAllToggles(containerEl);
+  bumpExpandedHeight(sectionEl);
+}
+
 // Set preview heights per-section (tweak to taste)
 const PREVIEW_HEIGHTS = {
   liveFeedSection: 220,      // enough to show ~1 card (maybe 1.5)
